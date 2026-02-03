@@ -15,6 +15,29 @@ const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 const POLL_INTERVAL = 5000; // 5 seconds
 const MAX_POLLS = 60; // 5 minutes max
 
+const normalizeStatus = (value?: string) => value?.toLowerCase().trim();
+
+const getPaymentResult = (payload: any) => {
+    const status =
+        normalizeStatus(payload?.status) ||
+        normalizeStatus(payload?.payment_status) ||
+        normalizeStatus(payload?.paymentStatus) ||
+        normalizeStatus(payload?.data?.status) ||
+        "";
+
+    const isConfirmed =
+        payload?.is_confirmed === true ||
+        payload?.is_confirmed === "true" ||
+        ["success", "successful", "confirmed", "paid", "completed"].includes(status);
+
+    const isFailed =
+        payload?.is_failed === true ||
+        payload?.is_failed === "true" ||
+        ["failed", "declined", "cancelled", "canceled", "error"].includes(status);
+
+    return { isConfirmed, isFailed, status };
+};
+
 const PaymentStatus = ({
     registrationId,
     transactionReference,
@@ -35,6 +58,7 @@ const PaymentStatus = ({
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
+                        Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
                     },
                     body: JSON.stringify({
                         registration_id: registrationId,
@@ -44,11 +68,20 @@ const PaymentStatus = ({
 
                 const data = await response.json();
 
-                if (data.is_confirmed) {
+                if (!response.ok) {
+                    setStatus("failed");
+                    setMessage(data?.error || data?.message || `Payment verification failed (${response.status}).`);
+                    setIsPolling(false);
+                    return;
+                }
+
+                const { isConfirmed, isFailed } = getPaymentResult(data);
+
+                if (isConfirmed) {
                     setStatus("confirmed");
                     setMessage("Payment successful!");
                     setIsPolling(false);
-                } else if (data.is_failed) {
+                } else if (isFailed) {
                     setStatus("failed");
                     setMessage(data.message || "Payment failed. Please try again.");
                     setIsPolling(false);
