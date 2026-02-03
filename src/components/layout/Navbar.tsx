@@ -1,99 +1,111 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 const navLinks = [
-  { name: "Home", path: "/" },
-  { name: "About", path: "/about" },
-  { name: "Events", path: "/events" },
-  { name: "Game Day", path: "/game-day" },
-  { name: "Trivia", path: "/trivia" },
-  { name: "Travel", path: "/travel" },
-  { name: "Gallery", path: "/gallery" },
-  { name: "Contact", path: "/contact" },
+    { name: "Home", path: "/" },
+    { name: "About", path: "/about" },
+    { name: "Events", path: "/events" },
+    { name: "Game Day", path: "/game-day" },
+    { name: "Teams", path: "/teams" },
+    { name: "Contact", path: "/contact" },
 ];
 
 const Navbar = () => {
-  const [isOpen, setIsOpen] = useState(false);
-  const location = useLocation();
+    const [isOpen, setIsOpen] = useState(false);
+    const [scrolled, setScrolled] = useState(false);
+    const location = useLocation();
 
-  return (
-    <nav className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-16 items-center justify-between">
-        {/* Logo */}
-        <Link to="/" className="flex items-center gap-2">
-          <div className="flex gap-1">
-            <div className="h-3 w-3 rounded-full bg-team-red" />
-            <div className="h-3 w-3 rounded-full bg-team-yellow" />
-            <div className="h-3 w-3 rounded-full bg-team-blue" />
-            <div className="h-3 w-3 rounded-full bg-team-green" />
-          </div>
-          <span className="text-xl font-bold">Games & Connect</span>
-        </Link>
+    useEffect(() => {
+        const handleScroll = () => {
+            setScrolled(window.scrollY > 20);
+        };
 
-        {/* Desktop Navigation */}
-        <div className="hidden items-center gap-6 md:flex">
-          {navLinks.map((link) => (
-            <Link
-              key={link.path}
-              to={link.path}
-              className={cn(
-                "text-sm font-medium transition-colors hover:text-primary",
-                location.pathname === link.path
-                  ? "text-primary"
-                  : "text-muted-foreground"
-              )}
-            >
-              {link.name}
-            </Link>
-          ))}
-          <Button asChild>
-            <Link to="/community">Join Community</Link>
-          </Button>
-        </div>
+        window.addEventListener("scroll", handleScroll);
+        return () => window.removeEventListener("scroll", handleScroll);
+    }, []);
 
-        {/* Mobile Menu Button */}
-        <Button
-          variant="ghost"
-          size="icon"
-          className="md:hidden"
-          onClick={() => setIsOpen(!isOpen)}
+    // Close mobile menu when route changes
+    useEffect(() => {
+        setIsOpen(false);
+    }, [location.pathname]);
+
+    return (
+        <header
+            className={cn(
+                "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
+                scrolled
+                    ? "bg-background/80 backdrop-blur-md shadow-sm py-4"
+                    : "bg-transparent py-6"
+            )}
         >
-          {isOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-        </Button>
-      </div>
+            <div className="container flex items-center justify-between">
+                <Link
+                    to="/"
+                    className="text-2xl font-serif font-bold text-foreground tracking-tight hover:opacity-80 transition-opacity"
+                >
+                    Games & Connect
+                </Link>
 
-      {/* Mobile Navigation */}
-      {isOpen && (
-        <div className="border-t bg-background md:hidden">
-          <div className="container flex flex-col gap-4 py-4">
-            {navLinks.map((link) => (
-              <Link
-                key={link.path}
-                to={link.path}
-                onClick={() => setIsOpen(false)}
-                className={cn(
-                  "text-sm font-medium transition-colors hover:text-primary",
-                  location.pathname === link.path
-                    ? "text-primary"
-                    : "text-muted-foreground"
-                )}
-              >
-                {link.name}
-              </Link>
-            ))}
-            <Button asChild className="w-full">
-              <Link to="/community" onClick={() => setIsOpen(false)}>
-                Join Community
-              </Link>
-            </Button>
-          </div>
-        </div>
-      )}
-    </nav>
-  );
+                {/* Desktop Navigation */}
+                <nav className="hidden xl:flex items-center gap-8">
+                    {navLinks.map((link) => (
+                        <Link
+                            key={link.path}
+                            to={link.path}
+                            className={cn(
+                                "text-sm font-medium transition-colors hover:text-primary relative after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-0 after:bg-primary after:transition-all hover:after:w-full",
+                                location.pathname === link.path
+                                    ? "text-primary after:w-full"
+                                    : "text-muted-foreground"
+                            )}
+                        >
+                            {link.name}
+                        </Link>
+                    ))}
+                    <Button asChild variant="default" size="sm" className="rounded-full">
+                        <Link to="/events">Join Now</Link>
+                    </Button>
+                </nav>
+
+                {/* Mobile Menu Button */}
+                <button
+                    className="xl:hidden p-2 text-foreground"
+                    onClick={() => setIsOpen(!isOpen)}
+                    aria-label="Toggle menu"
+                >
+                    {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+                </button>
+            </div>
+
+            {/* Mobile Navigation */}
+            {isOpen && (
+                <div className="absolute top-full left-0 right-0 bg-background border-b border-border shadow-lg animate-fade-in-up xl:hidden">
+                    <nav className="container flex flex-col py-8 gap-4">
+                        {navLinks.map((link) => (
+                            <Link
+                                key={link.path}
+                                to={link.path}
+                                className={cn(
+                                    "text-lg font-medium py-2 border-b border-border/50 transition-colors",
+                                    location.pathname === link.path
+                                        ? "text-primary"
+                                        : "text-muted-foreground"
+                                )}
+                            >
+                                {link.name}
+                            </Link>
+                        ))}
+                        <Button asChild className="mt-4 w-full rounded-full">
+                            <Link to="/events">Join Now</Link>
+                        </Button>
+                    </nav>
+                </div>
+            )}
+        </header>
+    );
 };
 
 export default Navbar;

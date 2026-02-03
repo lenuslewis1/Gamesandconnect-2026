@@ -46,7 +46,7 @@ export interface GalleryImage {
   id: string;
   src: string;
   alt: string;
-  category: "games" | "travel" | "parties" | "trivia";
+  category: "games" | "travel" | "parties" | "trivia" | "team-red" | "team-green" | "team-blue" | "team-yellow";
 }
 
 // Mock Events
@@ -199,13 +199,41 @@ export const mockTrips: Trip[] = [
 ];
 
 // Mock Gallery Images
+// Mock Gallery Images
 export const mockGalleryImages: GalleryImage[] = [
-  { id: "1", src: "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=800", alt: "Game Day action", category: "games" },
-  { id: "2", src: "https://images.unsplash.com/photo-1523805009345-7448845a9e53?w=800", alt: "Cape Coast trip", category: "travel" },
-  { id: "3", src: "https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?w=800", alt: "Beach party", category: "parties" },
-  { id: "4", src: "https://images.unsplash.com/photo-1606092195730-5d7b9af1efc5?w=800", alt: "Trivia night", category: "trivia" },
-  { id: "5", src: "https://images.unsplash.com/photo-1517457373958-b7bdd4587205?w=800", alt: "Team celebration", category: "games" },
-  { id: "6", src: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800", alt: "Akosombo view", category: "travel" },
-  { id: "7", src: "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=800", alt: "Night party", category: "parties" },
-  { id: "8", src: "https://images.unsplash.com/photo-1543269865-cbf427effbad?w=800", alt: "Friends at event", category: "games" },
+  // General Moments (Games/Parties)
+  { id: "1", src: "https://res.cloudinary.com/drkjnrvtu/image/upload/v1742488675/_MG_1344_y4iq2a.jpg", alt: "Games and Connect Moment", category: "games" },
+  { id: "2", src: "https://res.cloudinary.com/drkjnrvtu/image/upload/v1742488675/_MG_1679_ovnanp.jpg", alt: "Community Fun", category: "parties" },
+  { id: "3", src: "https://res.cloudinary.com/drkjnrvtu/image/upload/v1742488675/_MG_1684_pv0ohb.jpg", alt: "Laughter and Joy", category: "games" },
+  { id: "4", src: "https://res.cloudinary.com/drkjnrvtu/image/upload/v1742488675/_MG_1414_ij80mu.jpg", alt: "Group Activity", category: "games" },
+  { id: "5", src: "https://res.cloudinary.com/drkjnrvtu/image/upload/v1742488675/_MG_1424_f0harp.jpg", alt: "Adventure Time", category: "games" },
+  { id: "6", src: "https://res.cloudinary.com/drkjnrvtu/image/upload/v1742488675/_MG_1623_olhksw.jpg", alt: "Smiling Faces", category: "parties" },
+  { id: "7", src: "https://res.cloudinary.com/drkjnrvtu/image/upload/v1742488676/_MG_1656_yoiklo.jpg", alt: "Event Highlights", category: "games" },
+  { id: "8", src: "https://res.cloudinary.com/drkjnrvtu/image/upload/v1742488676/_MG_1677_v8n5nu.jpg", alt: "Team Spirit", category: "games" },
+  { id: "9", src: "https://res.cloudinary.com/drkjnrvtu/image/upload/v1742488676/_MG_1758_mj5kho.jpg", alt: "Unforgettable Memories", category: "parties" },
+  { id: "10", src: "https://res.cloudinary.com/drkjnrvtu/image/upload/v1742488676/_MG_1776_eob5jv.jpg", alt: "Celebration", category: "parties" },
+  { id: "11", src: "https://res.cloudinary.com/drkjnrvtu/image/upload/v1742488676/back_k2fwpf.jpg", alt: "Back view", category: "games" },
+
+  // Team Red
+  { id: "r1", src: "https://res.cloudinary.com/drkjnrvtu/image/upload/v1746915399/_MG_2393_cv5xbp.jpg", alt: "Team Red Action", category: "team-red" },
+  { id: "r2", src: "https://res.cloudinary.com/drkjnrvtu/image/upload/v1746918852/_MG_2075_i2peyk.jpg", alt: "Team Red Squad", category: "team-red" },
+  { id: "r3", src: "https://res.cloudinary.com/drkjnrvtu/image/upload/v1746915388/_MG_2318_kszvtt.jpg", alt: "Team Red Moment", category: "team-red" },
+
+  // Team Green
+  { id: "g1", src: "https://res.cloudinary.com/drkjnrvtu/image/upload/v1746915398/_MG_2403_hknyss.jpg", alt: "Team Green Power", category: "team-green" },
+  { id: "g2", src: "https://res.cloudinary.com/drkjnrvtu/image/upload/v1746915399/_MG_2214_zq4dzb.jpg", alt: "Team Green Vibes", category: "team-green" },
+  { id: "g3", src: "https://res.cloudinary.com/drkjnrvtu/image/upload/v1746915389/_MG_2356_nlkxwl.jpg", alt: "Team Green Win", category: "team-green" },
+  { id: "g4", src: "https://res.cloudinary.com/drkjnrvtu/image/upload/v1746915382/_MG_2210_swxpme.jpg", alt: "Team Green Spirit", category: "team-green" },
+  { id: "g5", src: "https://res.cloudinary.com/drkjnrvtu/image/upload/v1746918852/_MG_2336_mxnylu.jpg", alt: "Team Green Fun", category: "team-green" },
+
+  // Team Blue
+  { id: "b1", src: "https://res.cloudinary.com/drkjnrvtu/image/upload/v1746918906/_MG_2027_oblrvo.jpg", alt: "Team Blue Focus", category: "team-blue" },
+  { id: "b2", src: "https://res.cloudinary.com/drkjnrvtu/image/upload/v1746915400/_MG_2284_njl6kn.jpg", alt: "Team Blue Crew", category: "team-blue" },
+  { id: "b3", src: "https://res.cloudinary.com/drkjnrvtu/image/upload/v1746915395/_MG_2305_z4ozhb.jpg", alt: "Team Blue Energy", category: "team-blue" },
+  { id: "b4", src: "https://res.cloudinary.com/drkjnrvtu/image/upload/v1746915383/_MG_2106_epgam5.jpg", alt: "Team Blue Moment", category: "team-blue" },
+
+  // Team Yellow
+  { id: "y1", src: "https://res.cloudinary.com/drkjnrvtu/image/upload/v1746915401/_MG_2185_rqpdrv.jpg", alt: "Team Yellow Sunshine", category: "team-yellow" },
+  { id: "y2", src: "https://res.cloudinary.com/drkjnrvtu/image/upload/v1746915388/_MG_2118_gi8okx.jpg", alt: "Team Yellow Joy", category: "team-yellow" },
+  { id: "y3", src: "https://res.cloudinary.com/drkjnrvtu/image/upload/v1746915393/_MG_2181_oohsbh.jpg", alt: "Team Yellow Hype", category: "team-yellow" },
 ];

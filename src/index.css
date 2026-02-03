@@ -1,172 +1,195 @@
-@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:wght@400;700&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
-
 @layer base {
-  :root {
-    --background: 0 0% 96%;
-    --foreground: 0 0% 9%;
+    :root {
+        /* Color Palette - Retreat Aesthetic (Beige, Brown, Earth) */
+        --background: 36 60% 97%;
+        /* #FBF8F3 - Warm Cream */
+        --foreground: 30 15% 25%;
+        /* #493E35 - Dark Brown text */
 
-    --card: 0 0% 98%;
-    --card-foreground: 0 0% 9%;
+        --card: 36 60% 97%;
+        /* Same as bg for seamless look, or slightly lighter */
+        --card-foreground: 30 15% 25%;
 
-    --popover: 0 0% 89%;
-    --popover-foreground: 0 0% 9%;
+        --popover: 36 60% 99%;
+        --popover-foreground: 30 15% 25%;
 
-    --primary: 20 90% 48%;
-    --primary-foreground: 33 100% 96%;
+        --primary: 32 30% 35%;
+        /* #745239 - Rich Brown Button */
+        --primary-foreground: 36 60% 97%;
 
-    --secondary: 0 0% 32%;
-    --secondary-foreground: 0 0% 98%;
+        --secondary: 40 20% 90%;
+        /* Light Beige for secondary actions */
+        --secondary-foreground: 30 15% 25%;
 
-    --muted: 0 0% 63%;
-    --muted-foreground: 0 0% 9%;
+        --muted: 35 15% 92%;
+        --muted-foreground: 30 10% 45%;
 
-    --accent: 47 100% 96%;
-    --accent-foreground: 37 92% 50%;
+        --accent: 30 30% 85%;
+        /* Warm accent */
+        --accent-foreground: 30 15% 25%;
 
-    --destructive: 0 72% 50%;
-    --destructive-foreground: 0 85% 97%;
+        --destructive: 0 65% 60%;
+        --destructive-foreground: 0 0% 98%;
 
-    --border: 0 0% 83%;
-    --input: 0 0% 83%;
-    --ring: 20 90% 48%;
+        --border: 30 15% 85%;
+        --input: 30 15% 85%;
+        --ring: 32 30% 35%;
 
-    --radius: 0.75rem;
+        --radius: 1.5rem;
+        /* Softer, more rounded corners */
 
-    --sidebar-background: 0 0% 98%;
+        /* Shadows - Soft and Organic */
+        --shadow-2xs: 0 1px 2px 0 rgba(73, 62, 53, 0.05);
+        --shadow-xs: 0 1px 3px 0 rgba(73, 62, 53, 0.08);
+        --shadow-sm: 0 2px 6px -1px rgba(73, 62, 53, 0.1);
+        --shadow-md: 0 4px 12px -2px rgba(73, 62, 53, 0.12);
+        --shadow-lg: 0 8px 24px -4px rgba(73, 62, 53, 0.14);
+        --shadow-xl: 0 16px 48px -8px rgba(73, 62, 53, 0.16);
 
-    --sidebar-foreground: 0 0% 9%;
+        /* Team Colors - Earthy Tones */
+        --team-red: 0 40% 65%;
+        --team-yellow: 40 60% 70%;
+        --team-blue: 200 30% 60%;
+        --team-green: 120 25% 55%;
+    }
 
-    --sidebar-primary: 20 90% 48%;
+    * {
+        @apply border-border;
+    }
 
-    --sidebar-primary-foreground: 33 100% 96%;
+    body {
+        @apply bg-background text-foreground;
+        font-feature-settings: "rlig" 1, "calt" 1;
+        font-family: 'Outfit', sans-serif;
+        /* Cleaner modern sans for body */
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
 
-    --sidebar-accent: 0 0% 32%;
+    /* Hide default cursor on desktop for custom cursor effect */
+    @media (hover: hover) and (pointer: fine) {
+        body {
+            cursor: none;
+        }
 
-    --sidebar-accent-foreground: 0 0% 98%;
+        a,
+        button,
+        [role="button"],
+        .cursor-pointer,
+        input,
+        textarea,
+        select {
+            cursor: none !important;
+        }
+    }
 
-    --sidebar-border: 0 0% 83%;
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        font-family: 'Cormorant Garamond', serif;
+        font-weight: 500;
+        letter-spacing: -0.02em;
+        line-height: 1.1;
+    }
 
-    --sidebar-ring: 20 90% 48%;
+    h1 {
+        @apply text-5xl md:text-7xl lg:text-8xl;
+    }
 
-    --chart-1: 27 95% 60%;
+    h2 {
+        @apply text-4xl md:text-5xl lg:text-6xl;
+    }
 
-    --chart-2: 43 96% 56%;
+    h3 {
+        @apply text-3xl md:text-4xl lg:text-5xl;
+    }
 
-    --chart-3: 47 95% 53%;
+    h4 {
+        @apply text-2xl md:text-3xl;
+    }
 
-    --chart-4: 24 94% 53%;
-
-    --chart-5: 0 0% 45%;
-
-    --sidebar: 0 0% 98%;
-
-    --font-sans: 'Roboto', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, 'Noto Sans', sans-serif;
-
-    --font-serif: 'Libre Caslon Text', ui-serif, Georgia, Cambria, 'Times New Roman', Times, serif;
-
-    --font-mono: 'Roboto Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
-
-    --shadow-2xs: 0 1px 3px 0px hsl(0 0% 0% / 0.05);
-
-    --shadow-xs: 0 1px 3px 0px hsl(0 0% 0% / 0.05);
-
-    --shadow-sm: 0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 1px 2px -1px hsl(0 0% 0% / 0.1);
-
-    --shadow: 0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 1px 2px -1px hsl(0 0% 0% / 0.1);
-
-    --shadow-md: 0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 2px 4px -1px hsl(0 0% 0% / 0.1);
-
-    --shadow-lg: 0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 4px 6px -1px hsl(0 0% 0% / 0.1);
-
-    --shadow-xl: 0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 8px 10px -1px hsl(0 0% 0% / 0.1);
-
-    --shadow-2xl: 0 1px 3px 0px hsl(0 0% 0% / 0.25);
-
-    --tracking-normal: 0em;
-
-    --spacing: 0.25rem;
-
-    /* Team Colors */
-    --team-red: 0 85% 55%;
-    --team-yellow: 45 100% 50%;
-    --team-blue: 210 100% 50%;
-    --team-green: 140 70% 45%;
-  }
-
-  .dark {
-    --background: 0 0% 9%;
-    --foreground: 0 0% 98%;
-
-    --card: 0 0% 14%;
-    --card-foreground: 0 0% 98%;
-
-    --popover: 0 0% 25%;
-    --popover-foreground: 0 0% 98%;
-
-    --primary: 27 95% 60%;
-    --primary-foreground: 12 81% 14%;
-
-    --secondary: 0 0% 45%;
-    --secondary-foreground: 0 0% 98%;
-
-    --muted: 0 0% 45%;
-    --muted-foreground: 0 0% 98%;
-
-    --accent: 20 91% 14%;
-    --accent-foreground: 43 96% 56%;
-
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 0 85% 97%;
-
-    --border: 0 0% 32%;
-    --input: 0 0% 32%;
-    --ring: 27 95% 60%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 0 0% 98%;
-    --sidebar-primary: 27 95% 60%;
-    --sidebar-primary-foreground: 12 81% 14%;
-    --sidebar-accent: 43 96% 56%;
-    --sidebar-accent-foreground: 20 91% 14%;
-    --sidebar-border: 0 0% 32%;
-    --sidebar-ring: 27 95% 60%;
-    --chart-1: 30 97% 72%;
-    --chart-2: 45 96% 64%;
-    --chart-3: 48 96% 76%;
-    --chart-4: 27 95% 60%;
-    --chart-5: 0 0% 45%;
-    --sidebar: 0 0% 14%;
-    --shadow-2xs: 0 1px 3px 0px hsl(0 0% 0% / 0.05);
-    --shadow-xs: 0 1px 3px 0px hsl(0 0% 0% / 0.05);
-    --shadow-sm: 0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 1px 2px -1px hsl(0 0% 0% / 0.1);
-    --shadow: 0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 1px 2px -1px hsl(0 0% 0% / 0.1);
-    --shadow-md: 0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 2px 4px -1px hsl(0 0% 0% / 0.1);
-    --shadow-lg: 0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 4px 6px -1px hsl(0 0% 0% / 0.1);
-    --shadow-xl: 0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 8px 10px -1px hsl(0 0% 0% / 0.1);
-    --shadow-2xl: 0 1px 3px 0px hsl(0 0% 0% / 0.25);
-
-    /* Team Colors (Dark mode) */
-    --team-red: 0 85% 60%;
-    --team-yellow: 45 100% 55%;
-    --team-blue: 210 100% 55%;
-    --team-green: 140 70% 50%;
-  }
+    p {
+        @apply leading-relaxed;
+    }
 }
 
-@layer base {
-  * {
-    @apply border-border;
-  }
+@layer components {
+    .container {
+        @apply mx-auto px-6 md:px-12 max-w-[1400px];
+        /* Wider container */
+    }
 
-  body {
-    @apply bg-background text-foreground;
-  }
+    .section {
+        @apply py-20 md:py-32;
+    }
+
+    /* Elegant Button Override */
+    .btn-elegant {
+        @apply rounded-full px-8 py-6 text-lg font-medium transition-all duration-300;
+    }
+}
+
+@layer utilities {
+    .text-balance {
+        text-wrap: balance;
+    }
+}
+
+/* Animations... (Keep existing ones) */
+@keyframes fade-in-up {
+    from {
+        opacity: 0;
+        transform: translateY(40px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-fade-in-up {
+    animation: fade-in-up 0.8s ease-out forwards;
+}
+
+/* Infinite Scroll Animations */
+@keyframes scroll-left {
+    from {
+        transform: translateX(0);
+    }
+
+    to {
+        transform: translateX(-50%);
+    }
+}
+
+@keyframes scroll-right {
+    from {
+        transform: translateX(-50%);
+    }
+
+    to {
+        transform: translateX(0);
+    }
+}
+
+.animate-scroll-left {
+    animation: scroll-left 40s linear infinite;
+}
+
+.animate-scroll-right {
+    animation: scroll-right 40s linear infinite;
+}
+
+.pause-on-hover:hover {
+    animation-play-state: paused;
 }

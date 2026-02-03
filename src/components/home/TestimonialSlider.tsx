@@ -1,87 +1,90 @@
-import { useState, useEffect } from "react";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { ChevronLeft, ChevronRight, Quote } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { mockTestimonials } from "@/data/mockData";
+import { Quote } from "lucide-react";
+
+const testimonials = [
+  {
+    name: "Sarah A.",
+    role: "Travel Enthusiast",
+    content: "The Cape Coast trip was absolutely magical. I went alone but left with 5 new best friends. The vibe was immaculate from start to finish.",
+    image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&fit=crop"
+  },
+  {
+    name: "Michael K.",
+    role: "Gamer",
+    content: "I've never been to a game night this organized and fun. The FIFA tournament was intense! Can't wait for the next one.",
+    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop"
+  },
+  {
+    name: "Jessica T.",
+    role: "Trivia Queen",
+    content: "Finally, a place where being a nerd is celebrated! The trivia night questions were challenging but so much fun.",
+    image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=400&fit=crop"
+  },
+  {
+    name: "David O.",
+    role: "Community Member",
+    content: "Games and Connect is exactly what Accra needed. A safe, fun space to just be yourself and meet genuine people.",
+    image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=400&fit=crop"
+  }
+];
 
 const TestimonialSlider = () => {
-  const [currentIndex, setCurrentIndex] = useState(0);
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % mockTestimonials.length);
-    }, 5000);
-    return () => clearInterval(timer);
-  }, []);
-
-  const goToPrevious = () => {
-    setCurrentIndex((prev) => (prev - 1 + mockTestimonials.length) % mockTestimonials.length);
-  };
-
-  const goToNext = () => {
-    setCurrentIndex((prev) => (prev + 1) % mockTestimonials.length);
-  };
-
-  const testimonial = mockTestimonials[currentIndex];
-
   return (
-    <section className="bg-muted/30 py-16">
-      <div className="container">
-        <div className="text-center">
-          <h2 className="text-3xl font-bold md:text-4xl">What People Say</h2>
-          <p className="mx-auto mt-4 max-w-xl text-muted-foreground">
-            Hear from our amazing community members about their experiences.
-          </p>
-        </div>
-
-        <div className="relative mx-auto mt-12 max-w-3xl">
-          <Card className="border-none bg-card shadow-lg">
-            <CardContent className="p-8 text-center">
-              <Quote className="mx-auto h-10 w-10 text-primary/20" />
-              <p className="mt-6 text-lg text-card-foreground md:text-xl">
-                "{testimonial.content}"
-              </p>
-              <div className="mt-8 flex flex-col items-center gap-3">
-                <Avatar className="h-16 w-16">
-                  <AvatarImage src={testimonial.avatar} alt={testimonial.name} />
-                  <AvatarFallback>{testimonial.name.charAt(0)}</AvatarFallback>
-                </Avatar>
-                <div>
-                  <p className="font-semibold">{testimonial.name}</p>
-                  <p className="text-sm text-muted-foreground">{testimonial.role}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Navigation */}
-          <div className="absolute -left-4 top-1/2 -translate-y-1/2 md:-left-12">
-            <Button variant="ghost" size="icon" onClick={goToPrevious} className="rounded-full">
-              <ChevronLeft className="h-6 w-6" />
-            </Button>
-          </div>
-          <div className="absolute -right-4 top-1/2 -translate-y-1/2 md:-right-12">
-            <Button variant="ghost" size="icon" onClick={goToNext} className="rounded-full">
-              <ChevronRight className="h-6 w-6" />
-            </Button>
-          </div>
-
-          {/* Dots */}
-          <div className="mt-6 flex justify-center gap-2">
-            {mockTestimonials.map((_, index) => (
-              <button
-                key={index}
-                onClick={() => setCurrentIndex(index)}
-                className={`h-2 w-2 rounded-full transition-colors ${
-                  index === currentIndex ? "bg-primary" : "bg-muted"
-                }`}
-              />
-            ))}
-          </div>
-        </div>
+    <div className="container">
+      <div className="text-center mb-16">
+        <h2 className="font-serif text-3xl md:text-5xl font-medium mb-4">Community Stories</h2>
+        <p className="text-muted-foreground max-w-xl mx-auto text-lg hover:text-primary transition-colors cursor-default">
+          Hear from the people who make our community special.
+        </p>
       </div>
-    </section>
+
+      <Carousel
+        opts={{
+          align: "start",
+          loop: true,
+        }}
+        className="w-full max-w-5xl mx-auto"
+      >
+        <CarouselContent className="-ml-2 md:-ml-4">
+          {testimonials.map((testimonial, index) => (
+            <CarouselItem key={index} className="pl-2 md:pl-4 md:basis-1/2 lg:basis-1/3">
+              <div className="p-1 h-full">
+                <Card className="h-full border-none shadow-none bg-muted/20 hover:bg-muted/40 transition-colors duration-300">
+                  <CardContent className="flex flex-col p-8 h-full">
+                    <Quote className="h-8 w-8 text-primary/20 mb-6" />
+                    <p className="text-muted-foreground flex-1 leading-relaxed mb-8 italic">
+                      "{testimonial.content}"
+                    </p>
+                    <div className="flex items-center gap-4 mt-auto">
+                      <Avatar className="h-10 w-10 border border-primary/10">
+                        <AvatarImage src={testimonial.image} alt={testimonial.name} />
+                        <AvatarFallback className="text-xs">{testimonial.name.charAt(0)}</AvatarFallback>
+                      </Avatar>
+                      <div>
+                        <p className="font-serif font-semibold text-foreground">{testimonial.name}</p>
+                        <p className="text-xs text-muted-foreground">{testimonial.role}</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </CarouselItem>
+          ))}
+        </CarouselContent>
+        <div className="flex justify-center gap-2 mt-8">
+          <CarouselPrevious className="static translate-y-0 mr-2 border-border/50 hover:bg-primary hover:text-white" />
+          <CarouselNext className="static translate-y-0 border-border/50 hover:bg-primary hover:text-white" />
+        </div>
+      </Carousel>
+    </div>
   );
 };
 

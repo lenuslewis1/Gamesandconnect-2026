@@ -1,90 +1,101 @@
 import Layout from "@/components/layout/Layout";
-import PageHeader from "@/components/layout/PageHeader";
+import { Button } from "@/components/ui/button";
+import { Users, Globe, Trophy, CheckCircle2, ArrowRight } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { mockTeamMembers } from "@/data/mockData";
-
-const timelineEvents = [
-  {
-    year: "2022",
-    title: "The Beginning",
-    description: "Games and Connect started with a small group of friends who wanted to bring fun, competitive games to Accra.",
-  },
-  {
-    year: "2023",
-    title: "Growth & Travel",
-    description: "We expanded to include travel experiences and launched our first Cape Coast trip with 50 participants.",
-  },
-  {
-    year: "2024",
-    title: "Nexus 9 Partnership",
-    description: "We partnered with Nexus 9 to create monthly Game Days with four competing teams.",
-  },
-  {
-    year: "2025",
-    title: "2,000+ Members",
-    description: "Our WhatsApp community grew to over 2,000 members, and we launched Trivia Friday.",
-  },
-];
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import TextMotion from "@/components/ui/TextMotion";
+import ScrollReveal from "@/components/ui/ScrollReveal";
 
 const About = () => {
   return (
     <Layout>
-      <PageHeader
-        title="About Us"
-        subtitle="Connecting young people through games, travel, and unforgettable experiences"
-      />
+      {/* Hero Section */}
+      <section className="relative h-[60vh] flex items-center justify-center overflow-hidden">
+        <div className="absolute inset-0 z-0">
+          <img
+            src="https://res.cloudinary.com/drkjnrvtu/image/upload/v1742488675/_MG_1679_ovnanp.jpg"
+            alt="About Hero"
+            className="h-full w-full object-cover"
+          />
+          <div className="absolute inset-0 bg-black/50" />
+        </div>
+        <div className="container relative z-10 text-center text-white">
+          <TextMotion
+            text="We are here to help you!"
+            variant="word"
+            className="font-serif text-5xl md:text-7xl font-medium mb-6 block"
+          />
+          <TextMotion
+            text="We're on a mission to cure loneliness by connecting young people through play, travel, and adventure."
+            variant="word"
+            delay={0.5}
+            stagger={0.03}
+            className="text-xl text-white/90 max-w-xl mx-auto font-light block"
+          />
+        </div>
+      </section>
 
-      {/* Mission Section */}
-      <section className="py-16">
+      {/* Stats Section */}
+      <section className="py-16 bg-[#FBF8F3]">
         <div className="container">
-          <div className="mx-auto max-w-3xl text-center">
-            <h2 className="text-3xl font-bold md:text-4xl">Our Mission</h2>
-            <p className="mt-6 text-lg text-muted-foreground leading-relaxed">
-              At Games and Connect, we believe that life is better when we play together. 
-              Our mission is to create spaces where young Ghanaians can step away from their 
-              screens, meet new people, compete in friendly games, and explore the beautiful 
-              landscapes of Ghana.
-            </p>
-            <p className="mt-4 text-lg text-muted-foreground leading-relaxed">
-              Whether you're a competitive gamer, an adventure seeker, or just looking for 
-              a fun way to spend your weekend, we've got something for you. Join us and 
-              become part of a growing community that values fun, friendship, and unforgettable 
-              experiences.
-            </p>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center divide-x divide-[#EBE5D9]">
+            {[
+              { label: "Community", value: "2k+" },
+              { label: "Events", value: "50+" },
+              { label: "Destinations", value: "15+" },
+              { label: "Happy Faces", value: "99%" },
+            ].map((stat, i) => (
+              <div key={i} className="p-4">
+                <h3 className="font-serif text-4xl font-bold text-[#745239] mb-2">{stat.value}</h3>
+                <p className="text-muted-foreground uppercase tracking-widest text-xs font-medium">{stat.label}</p>
+              </div>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* History Timeline */}
-      <section className="bg-muted/30 py-16">
+      {/* Values Section */}
+      <section className="py-24 bg-background">
         <div className="container">
-          <div className="text-center">
-            <h2 className="text-3xl font-bold md:text-4xl">Our Journey</h2>
-            <p className="mx-auto mt-4 max-w-xl text-muted-foreground">
-              From a small group of friends to Ghana's most vibrant youth community
-            </p>
-          </div>
+          <div className="grid lg:grid-cols-2 gap-16">
+            <div className="sticky top-24 h-fit">
+              <span className="text-primary font-medium tracking-widest text-sm uppercase block mb-4">Our Values</span>
+              <TextMotion text="Values we live by" variant="word" className="font-serif text-4xl md:text-5xl font-medium mb-6 leading-tight block" />
+              <p className="text-muted-foreground text-lg mb-8 leading-relaxed">
+                We believe in the power of human connection. Every event, trip, and game night is designed to break down barriers and create lasting friendships.
+              </p>
+              <Button className="rounded-full bg-[#745239] hover:bg-[#5e4230] text-white px-8 h-12">
+                Join our Community
+              </Button>
+            </div>
 
-          <div className="mx-auto mt-12 max-w-3xl">
-            <div className="relative">
-              {/* Timeline Line */}
-              <div className="absolute left-8 top-0 h-full w-0.5 bg-border md:left-1/2 md:-translate-x-1/2" />
-
-              {timelineEvents.map((event, index) => (
-                <div key={event.year} className={`relative mb-8 flex items-start gap-6 ${index % 2 === 0 ? "md:flex-row" : "md:flex-row-reverse"}`}>
-                  {/* Year Badge */}
-                  <div className="absolute left-0 flex h-16 w-16 items-center justify-center rounded-full bg-primary text-primary-foreground font-bold md:left-1/2 md:-translate-x-1/2">
-                    {event.year}
+            <div className="space-y-12">
+              {[
+                {
+                  title: "Diversity & Inclusion",
+                  desc: "We create spaces where everyone belongs, regardless of background or identity. Our community is a melting pot of cultures.",
+                  img: "https://res.cloudinary.com/drkjnrvtu/image/upload/v1746915393/_MG_2181_oohsbh.jpg"
+                },
+                {
+                  title: "Adventure & Play",
+                  desc: "Life is meant to be enjoyed. We prioritize fun, spontaneous adventures that get you out of your comfort zone.",
+                  img: "https://res.cloudinary.com/drkjnrvtu/image/upload/v1746915383/_MG_2106_epgam5.jpg"
+                },
+                {
+                  title: "Safety & Respect",
+                  desc: "We maintain a safe environment for all our members. Mutual respect is the cornerstone of our community guidelines.",
+                  img: "https://res.cloudinary.com/drkjnrvtu/image/upload/v1746918852/_MG_2336_mxnylu.jpg"
+                }
+              ].map((item, i) => (
+                <div key={i} className="group">
+                  <div className="aspect-[16/9] rounded-3xl overflow-hidden mb-6">
+                    <img src={item.img} alt={item.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
                   </div>
-
-                  {/* Content */}
-                  <Card className={`ml-24 flex-1 md:ml-0 ${index % 2 === 0 ? "md:mr-[calc(50%+2rem)]" : "md:ml-[calc(50%+2rem)]"}`}>
-                    <CardContent className="p-6">
-                      <h3 className="text-xl font-semibold">{event.title}</h3>
-                      <p className="mt-2 text-muted-foreground">{event.description}</p>
-                    </CardContent>
-                  </Card>
+                  <h3 className="font-serif text-2xl font-medium mb-3">{item.title}</h3>
+                  <p className="text-muted-foreground leading-relaxed">
+                    {item.desc}
+                  </p>
                 </div>
               ))}
             </div>
@@ -92,69 +103,121 @@ const About = () => {
         </div>
       </section>
 
-      {/* Team Section */}
-      <section className="py-16">
+      {/* Enhancing Experience Split */}
+      <section className="py-24 bg-[#FAF6F0]">
         <div className="container">
-          <div className="text-center">
-            <h2 className="text-3xl font-bold md:text-4xl">Meet the Team</h2>
-            <p className="mx-auto mt-4 max-w-xl text-muted-foreground">
-              The amazing people behind Games and Connect
-            </p>
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
+            <div className="order-2 lg:order-1">
+              <h2 className="font-serif text-4xl md:text-5xl font-medium mb-6">
+                Enhancing your <br /> experience
+              </h2>
+              <p className="text-muted-foreground text-lg mb-8 leading-relaxed">
+                From seamless booking to curated itineraries, we handle the details so you can focus on the vibes.
+              </p>
+              <ul className="space-y-4">
+                {["Curated Itineraries", "Professional Guides", "Verified Venues", "Secure Payments"].map((feat, i) => (
+                  <li key={i} className="flex items-center gap-3">
+                    <CheckCircle2 className="h-5 w-5 text-primary" />
+                    <span className="text-foreground/80">{feat}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="order-1 lg:order-2 relative">
+              <div className="aspect-square rounded-[3rem] overflow-hidden">
+                <img
+                  src="https://res.cloudinary.com/drkjnrvtu/image/upload/v1742488676/_MG_1656_yoiklo.jpg"
+                  alt="Experience"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <div className="absolute -bottom-6 -left-6 z-10 bg-white p-6 rounded-3xl shadow-xl max-w-xs">
+                <p className="font-serif text-lg italic">"The best weekend of my year. I made friends for life!"</p>
+              </div>
+            </div>
           </div>
+        </div>
+      </section>
 
-          <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
-            {mockTeamMembers.map((member) => (
-              <Card key={member.id} className="text-center transition-all hover:shadow-lg hover:-translate-y-1">
-                <CardContent className="p-6">
-                  <Avatar className="mx-auto h-24 w-24">
-                    <AvatarImage src={member.image} alt={member.name} />
-                    <AvatarFallback className="text-2xl">{member.name.charAt(0)}</AvatarFallback>
-                  </Avatar>
-                  <h3 className="mt-4 text-lg font-semibold">{member.name}</h3>
-                  <p className="text-sm text-primary">{member.role}</p>
-                  <p className="mt-3 text-sm text-muted-foreground">{member.bio}</p>
-                </CardContent>
-              </Card>
+      {/* Team Section */}
+      <section className="py-24 bg-background">
+        <div className="container text-center">
+          <span className="text-primary font-medium tracking-widest text-sm uppercase mb-4 block">Our Squad</span>
+          <h2 className="font-serif text-4xl md:text-5xl font-medium mb-16">Meet the Team</h2>
+
+          <div className="grid md:grid-cols-3 gap-8">
+            {[
+              { name: "Sarah Jones", role: "Founder & Lead", img: "https://res.cloudinary.com/drkjnrvtu/image/upload/v1746918906/_MG_2027_oblrvo.jpg" },
+              { name: "Mike Chen", role: "Head of Games", img: "https://res.cloudinary.com/drkjnrvtu/image/upload/v1742488675/_MG_1414_ij80mu.jpg" },
+              { name: "Amara Okeke", role: "Travel Coordinator", img: "https://res.cloudinary.com/drkjnrvtu/image/upload/v1742488675/_MG_1424_f0harp.jpg" }
+            ].map((member, i) => (
+              <div key={i} className="group text-center">
+                <div className="aspect-[3/4] rounded-full overflow-hidden mb-6 w-48 h-64 mx-auto border-4 border-[#FAF6F0] shadow-lg">
+                  <img src={member.img} alt={member.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                </div>
+                <h3 className="font-serif text-2xl font-medium mb-1">{member.name}</h3>
+                <p className="text-muted-foreground text-sm uppercase tracking-wider">{member.role}</p>
+              </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Values Section */}
-      <section className="bg-primary py-16 text-primary-foreground">
+      {/* Let's Talk / Contact Section */}
+      <section className="py-24 bg-[#FAF6F0]">
         <div className="container">
-          <div className="text-center">
-            <h2 className="text-3xl font-bold md:text-4xl">Our Values</h2>
+          <h2 className="font-serif text-4xl mb-12">Let's Talk</h2>
+          <div className="grid lg:grid-cols-2 gap-16">
+            {/* Form */}
+            <div className="bg-white p-8 md:p-12 rounded-[2rem] shadow-sm border border-[#EBE5D9]">
+              <form className="space-y-6">
+                <div className="grid sm:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Name</label>
+                    <Input className="bg-[#FAF6F0] border-none h-12 rounded-xl" placeholder="Your name" />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Email</label>
+                    <Input className="bg-[#FAF6F0] border-none h-12 rounded-xl" placeholder="hello@example.com" />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Message</label>
+                  <Textarea className="bg-[#FAF6F0] border-none rounded-xl min-h-[150px] resize-none" placeholder="How can we help?" />
+                </div>
+                <Button className="w-full h-12 rounded-full bg-[#745239] hover:bg-[#5e4230] text-white">
+                  Send Message
+                </Button>
+              </form>
+            </div>
+
+            {/* Image/Info */}
+            <div className="relative h-full min-h-[400px] rounded-[2rem] overflow-hidden">
+              <img
+                src="https://res.cloudinary.com/drkjnrvtu/image/upload/v1746915383/_MG_2106_epgam5.jpg"
+                alt="Contact"
+                className="absolute inset-0 w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-black/20" />
+              <div className="absolute bottom-8 left-8 text-white">
+                <p className="font-serif text-2xl mb-2">Visit our HQ</p>
+                <p className="opacity-90">East Legon, Accra <br /> Ghana</p>
+              </div>
+            </div>
           </div>
-          <div className="mt-12 grid gap-8 md:grid-cols-3">
-            <div className="text-center">
-              <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-primary-foreground/10">
-                <span className="text-3xl">🎮</span>
-              </div>
-              <h3 className="mt-4 text-xl font-semibold">Fun First</h3>
-              <p className="mt-2 text-primary-foreground/80">
-                We believe in creating experiences that bring joy and excitement to everyone.
-              </p>
-            </div>
-            <div className="text-center">
-              <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-primary-foreground/10">
-                <span className="text-3xl">🤝</span>
-              </div>
-              <h3 className="mt-4 text-xl font-semibold">Community</h3>
-              <p className="mt-2 text-primary-foreground/80">
-                Building genuine connections and friendships that last beyond our events.
-              </p>
-            </div>
-            <div className="text-center">
-              <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-primary-foreground/10">
-                <span className="text-3xl">🌍</span>
-              </div>
-              <h3 className="mt-4 text-xl font-semibold">Exploration</h3>
-              <p className="mt-2 text-primary-foreground/80">
-                Encouraging everyone to discover new places and step out of their comfort zone.
-              </p>
-            </div>
-          </div>
+        </div>
+      </section>
+
+      {/* Bottom CTA */}
+      <section className="py-20 bg-[#4A3B32] my-12 mx-6 md:mx-12 rounded-[3rem] text-[#FAF6F0] text-center relative overflow-hidden">
+        <div className="relative z-10 px-6">
+          <h2 className="font-serif text-4xl md:text-6xl font-medium mb-6">Join us today!</h2>
+          <p className="max-w-xl mx-auto text-lg opacity-80 mb-8 font-light">
+            Ready to start your adventure? Sign up now and become part of our growing family.
+          </p>
+          <Button className="bg-[#FAF6F0] text-[#4A3B32] hover:bg-white rounded-full px-8 h-12 text-lg">
+            Get Started
+          </Button>
         </div>
       </section>
     </Layout>
