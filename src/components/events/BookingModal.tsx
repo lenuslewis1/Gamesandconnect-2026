@@ -55,6 +55,29 @@ const NETWORKS = [
 const POLL_INTERVAL = 5000; // 5 seconds
 const MAX_POLL_TIME = 120000; // 2 minutes
 
+const normalizeStatus = (value?: string) => value?.toLowerCase().trim();
+
+const getPaymentResult = (payload: any) => {
+    const status =
+        normalizeStatus(payload?.status) ||
+        normalizeStatus(payload?.payment_status) ||
+        normalizeStatus(payload?.paymentStatus) ||
+        normalizeStatus(payload?.data?.status) ||
+        "";
+
+    const isConfirmed =
+        payload?.is_confirmed === true ||
+        payload?.is_confirmed === "true" ||
+        ["success", "successful", "confirmed", "paid", "completed"].includes(status);
+
+    const isFailed =
+        payload?.is_failed === true ||
+        payload?.is_failed === "true" ||
+        ["failed", "declined", "cancelled", "canceled", "error"].includes(status);
+
+    return { isConfirmed, isFailed, status };
+};
+
 interface BookingModalProps {
     isOpen: boolean;
     onClose: () => void;
@@ -177,7 +200,16 @@ const BookingModal = ({ isOpen, onClose, event }: BookingModalProps) => {
             const data = await response.json();
             console.log('Payment status:', data);
 
-            if (data.is_confirmed) {
+            if (!response.ok) {
+                stopPolling();
+                setPaymentMessage(data?.error || data?.message || `Payment verification failed (${response.status}).`);
+                setStep("failed");
+                return;
+            }
+
+            const { isConfirmed, isFailed } = getPaymentResult(data);
+
+            if (isConfirmed) {
                 // Payment confirmed!
                 stopPolling();
                 setPaymentMessage("Payment successful!");
@@ -186,7 +218,7 @@ const BookingModal = ({ isOpen, onClose, event }: BookingModalProps) => {
                     title: "Payment Confirmed! 🎉",
                     description: "Your booking has been confirmed.",
                 });
-            } else if (data.is_failed) {
+            } else if (isFailed) {
                 // Payment failed
                 stopPolling();
                 setPaymentMessage(data.message || "Payment was declined or failed.");
