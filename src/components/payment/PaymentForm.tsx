@@ -125,11 +125,14 @@ const PaymentForm = ({
 
             const totalAmount = amount * registrationData.participants;
 
+            const networkCode = networks.find((n) => n.id === selectedNetwork)?.code || selectedNetwork;
+
             // Step 2: Call pay Edge Function
             const response = await fetch(`${SUPABASE_URL}/functions/v1/pay`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
+                    Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
                 },
                 body: JSON.stringify({
                     event_id: eventId,
@@ -137,7 +140,7 @@ const PaymentForm = ({
                     account_number: formatAccountNumber(phoneNumber),
                     account_name: registrationData.name,
                     amount: totalAmount,
-                    network: selectedNetwork,
+                    network: networkCode,
                     narration: `${eventTitle} - ${registrationData.participants} ticket(s)`,
                 }),
             });
@@ -145,10 +148,20 @@ const PaymentForm = ({
             const data = await response.json();
             console.log('Payment response:', data);
 
+            if (!response.ok) {
+                throw new Error(data?.error || data?.message || `Payment initiation failed (${response.status}).`);
+            }
+
             if (data.success) {
+                const txRef = data.transaction_reference || data.transaction_id || data.collection_transaction_id;
+
+                if (!txRef) {
+                    throw new Error("Payment initiation did not return a transaction reference. Please try again.");
+                }
+
                 onPaymentInitiated({
                     registrationId: String(registration.id),
-                    transactionReference: data.transaction_reference || data.transaction_id || '',
+                    transactionReference: txRef,
                     collectionTransactionId: data.collection_transaction_id || '',
                 });
             } else {

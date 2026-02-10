@@ -6,53 +6,53 @@
 
 @layer base {
     :root {
-        /* Color Palette - Retreat Aesthetic (Beige, Brown, Earth) */
-        --background: 36 60% 97%;
-        /* #FBF8F3 - Warm Cream */
-        --foreground: 30 15% 25%;
-        /* #493E35 - Dark Brown text */
+        /* Color Palette - Warm Orange & Cream */
+        --background: 30 50% 98%;
+        /* #FDF8F4 - Warm Cream */
+        --foreground: 220 20% 18%;
+        /* #262D35 - Dark Charcoal */
 
-        --card: 36 60% 97%;
-        /* Same as bg for seamless look, or slightly lighter */
-        --card-foreground: 30 15% 25%;
+        --card: 30 50% 98%;
+        /* Same as bg for seamless look */
+        --card-foreground: 220 20% 18%;
 
-        --popover: 36 60% 99%;
-        --popover-foreground: 30 15% 25%;
+        --popover: 30 50% 99%;
+        --popover-foreground: 220 20% 18%;
 
-        --primary: 32 30% 35%;
-        /* #745239 - Rich Brown Button */
-        --primary-foreground: 36 60% 97%;
+        --primary: 18 99% 50%;
+        /* #fd4c01 - Vibrant Orange */
+        --primary-foreground: 0 0% 100%;
 
-        --secondary: 40 20% 90%;
-        /* Light Beige for secondary actions */
-        --secondary-foreground: 30 15% 25%;
+        --secondary: 30 25% 92%;
+        /* Soft warm neutral */
+        --secondary-foreground: 220 20% 18%;
 
-        --muted: 35 15% 92%;
-        --muted-foreground: 30 10% 45%;
+        --muted: 30 15% 94%;
+        --muted-foreground: 220 10% 45%;
 
-        --accent: 30 30% 85%;
-        /* Warm accent */
-        --accent-foreground: 30 15% 25%;
+        --accent: 18 85% 90%;
+        /* Light orange tint */
+        --accent-foreground: 220 20% 18%;
 
         --destructive: 0 65% 60%;
         --destructive-foreground: 0 0% 98%;
 
-        --border: 30 15% 85%;
-        --input: 30 15% 85%;
-        --ring: 32 30% 35%;
+        --border: 25 20% 88%;
+        --input: 25 20% 88%;
+        --ring: 18 99% 50%;
 
         --radius: 1.5rem;
         /* Softer, more rounded corners */
 
-        /* Shadows - Soft and Organic */
-        --shadow-2xs: 0 1px 2px 0 rgba(73, 62, 53, 0.05);
-        --shadow-xs: 0 1px 3px 0 rgba(73, 62, 53, 0.08);
-        --shadow-sm: 0 2px 6px -1px rgba(73, 62, 53, 0.1);
-        --shadow-md: 0 4px 12px -2px rgba(73, 62, 53, 0.12);
-        --shadow-lg: 0 8px 24px -4px rgba(73, 62, 53, 0.14);
-        --shadow-xl: 0 16px 48px -8px rgba(73, 62, 53, 0.16);
+        /* Shadows - Charcoal tint */
+        --shadow-2xs: 0 1px 2px 0 rgba(38, 45, 53, 0.05);
+        --shadow-xs: 0 1px 3px 0 rgba(38, 45, 53, 0.08);
+        --shadow-sm: 0 2px 6px -1px rgba(38, 45, 53, 0.1);
+        --shadow-md: 0 4px 12px -2px rgba(38, 45, 53, 0.12);
+        --shadow-lg: 0 8px 24px -4px rgba(38, 45, 53, 0.14);
+        --shadow-xl: 0 16px 48px -8px rgba(38, 45, 53, 0.16);
 
-        /* Team Colors - Earthy Tones */
+        /* Team Colors - Vibrant */
         --team-red: 0 40% 65%;
         --team-yellow: 40 60% 70%;
         --team-blue: 200 30% 60%;
@@ -70,23 +70,6 @@
         /* Cleaner modern sans for body */
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
-    }
-
-    /* Hide default cursor on desktop for custom cursor effect */
-    @media (hover: hover) and (pointer: fine) {
-        body {
-            cursor: none;
-        }
-
-        a,
-        button,
-        [role="button"],
-        .cursor-pointer,
-        input,
-        textarea,
-        select {
-            cursor: none !important;
-        }
     }
 
     h1,

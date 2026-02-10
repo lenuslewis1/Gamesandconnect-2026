@@ -228,8 +228,8 @@ const BookingModal = ({ isOpen, onClose, event }: BookingModalProps) => {
                 const elapsed = Date.now() - pollStartTimeRef.current;
                 if (elapsed >= MAX_POLL_TIME) {
                     stopPolling();
-                    setPaymentMessage("Payment verification timed out. Please check your phone for the payment prompt.");
-                    // Keep on waiting step but show timeout message
+                    setPaymentMessage("Payment was not confirmed. It may have been declined or the prompt expired. Please try again.");
+                    setStep("failed");
                 }
             }
         } catch (error) {
@@ -327,6 +327,8 @@ const BookingModal = ({ isOpen, onClose, event }: BookingModalProps) => {
                     ? registrationData.phone
                     : `+233${registrationData.phone}`;
 
+            const payAccountNumber = formattedPhone.replace(/\D/g, "");
+
             // Create registration
             const { data: registration, error: regError } = await supabase
                 .from('registrations')
@@ -362,7 +364,7 @@ const BookingModal = ({ isOpen, onClose, event }: BookingModalProps) => {
                 body: JSON.stringify({
                     event_id: event.id,
                     registration_id: registration.id,
-                    account_number: registrationData.phone,
+                    account_number: payAccountNumber,
                     account_name: registrationData.full_name,
                     amount: totalPrice,
                     network: selectedNetwork,
@@ -373,9 +375,30 @@ const BookingModal = ({ isOpen, onClose, event }: BookingModalProps) => {
             const data = await response.json();
             console.log('Payment response:', data);
 
+            if (!response.ok) {
+                throw new Error(data?.error || data?.message || `Payment initiation failed (${response.status}).`);
+            }
+
             if (data.success) {
                 // Save transaction reference for polling
-                const ref = data.transaction_reference || data.transaction_id || data.collection_transaction_id;
+                const ref =
+                    data.transaction_reference ||
+                    data.transactionReference ||
+                    data.transaction_id ||
+                    data.transactionId ||
+                    data.collection_transaction_id ||
+                    data.collectionTransactionId ||
+                    data.data?.transaction_reference ||
+                    data.data?.transactionReference ||
+                    data.data?.transaction_id ||
+                    data.data?.transactionId ||
+                    data.data?.collection_transaction_id ||
+                    data.data?.collectionTransactionId;
+
+                if (!ref) {
+                    throw new Error("Payment initiation did not return a transaction reference. Please try again.");
+                }
+
                 setTransactionRef(ref);
                 transactionRefRef.current = ref;
 
@@ -391,7 +414,7 @@ const BookingModal = ({ isOpen, onClose, event }: BookingModalProps) => {
                         status: 'pending',
                     });
 
-                // Move to waiting step and start polling
+                // Move to waiting step and start polling for callback confirmation
                 setStep("waiting");
                 startPolling();
 

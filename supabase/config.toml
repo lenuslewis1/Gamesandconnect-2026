@@ -326,8 +326,23 @@ inspector_port = 8083
 # The Deno major version to use.
 deno_version = 2
 
-# [edge_runtime.secrets]
-# secret_key = "env(SECRET_VALUE)"
+[edge_runtime.secrets]
+# Payment Gateway (DCM API)
+PAYMENT_API_URL = "env(PAYMENT_API_URL)"
+DCM_PARTNER_CODE = "env(DCM_PARTNER_CODE)"
+
+# Edge Function configurations
+[functions.pay]
+verify_jwt = false
+
+[functions.verify-payment]
+verify_jwt = false
+
+[functions.payment-callback]
+verify_jwt = false
+
+[functions.cloudinary-upload]
+verify_jwt = false
 
 [analytics]
 enabled = true

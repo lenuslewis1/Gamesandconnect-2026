@@ -37,9 +37,9 @@ const About = () => {
       </section>
 
       {/* Stats Section */}
-      <section className="py-16 bg-[#FBF8F3]">
+      <section className="py-16 bg-[#FFF7ED]">
         <div className="container">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center divide-x divide-[#EBE5D9]">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center divide-x divide-[#FDE8D0]">
             {[
               { label: "Community", value: "2k+" },
               { label: "Events", value: "50+" },
@@ -47,7 +47,7 @@ const About = () => {
               { label: "Happy Faces", value: "99%" },
             ].map((stat, i) => (
               <div key={i} className="p-4">
-                <h3 className="font-serif text-4xl font-bold text-[#745239] mb-2">{stat.value}</h3>
+                <h3 className="font-serif text-4xl font-bold text-[#fd4c01] mb-2">{stat.value}</h3>
                 <p className="text-muted-foreground uppercase tracking-widest text-xs font-medium">{stat.label}</p>
               </div>
             ))}
@@ -65,7 +65,7 @@ const About = () => {
               <p className="text-muted-foreground text-lg mb-8 leading-relaxed">
                 We believe in the power of human connection. Every event, trip, and game night is designed to break down barriers and create lasting friendships.
               </p>
-              <Button className="rounded-full bg-[#745239] hover:bg-[#5e4230] text-white px-8 h-12">
+              <Button className="rounded-full bg-[#fd4c01] hover:bg-[#c94101] text-white px-8 h-12">
                 Join our Community
               </Button>
             </div>
@@ -104,7 +104,7 @@ const About = () => {
       </section>
 
       {/* Enhancing Experience Split */}
-      <section className="py-24 bg-[#FAF6F0]">
+      <section className="py-24 bg-[#FFF7ED]">
         <div className="container">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             <div className="order-2 lg:order-1">
@@ -152,7 +152,7 @@ const About = () => {
               { name: "Amara Okeke", role: "Travel Coordinator", img: "https://res.cloudinary.com/drkjnrvtu/image/upload/v1742488675/_MG_1424_f0harp.jpg" }
             ].map((member, i) => (
               <div key={i} className="group text-center">
-                <div className="aspect-[3/4] rounded-full overflow-hidden mb-6 w-48 h-64 mx-auto border-4 border-[#FAF6F0] shadow-lg">
+                <div className="aspect-[3/4] rounded-full overflow-hidden mb-6 w-48 h-64 mx-auto border-4 border-[#FFF7ED] shadow-lg">
                   <img src={member.img} alt={member.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
                 </div>
                 <h3 className="font-serif text-2xl font-medium mb-1">{member.name}</h3>
@@ -164,28 +164,28 @@ const About = () => {
       </section>
 
       {/* Let's Talk / Contact Section */}
-      <section className="py-24 bg-[#FAF6F0]">
+      <section className="py-24 bg-[#FFF7ED]">
         <div className="container">
           <h2 className="font-serif text-4xl mb-12">Let's Talk</h2>
           <div className="grid lg:grid-cols-2 gap-16">
             {/* Form */}
-            <div className="bg-white p-8 md:p-12 rounded-[2rem] shadow-sm border border-[#EBE5D9]">
+            <div className="bg-white p-8 md:p-12 rounded-[2rem] shadow-sm border border-[#FDE8D0]">
               <form className="space-y-6">
                 <div className="grid sm:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <label className="text-sm font-medium">Name</label>
-                    <Input className="bg-[#FAF6F0] border-none h-12 rounded-xl" placeholder="Your name" />
+                    <Input className="bg-[#FFF7ED] border-none h-12 rounded-xl" placeholder="Your name" />
                   </div>
                   <div className="space-y-2">
                     <label className="text-sm font-medium">Email</label>
-                    <Input className="bg-[#FAF6F0] border-none h-12 rounded-xl" placeholder="hello@example.com" />
+                    <Input className="bg-[#FFF7ED] border-none h-12 rounded-xl" placeholder="hello@example.com" />
                   </div>
                 </div>
                 <div className="space-y-2">
                   <label className="text-sm font-medium">Message</label>
-                  <Textarea className="bg-[#FAF6F0] border-none rounded-xl min-h-[150px] resize-none" placeholder="How can we help?" />
+                  <Textarea className="bg-[#FFF7ED] border-none rounded-xl min-h-[150px] resize-none" placeholder="How can we help?" />
                 </div>
-                <Button className="w-full h-12 rounded-full bg-[#745239] hover:bg-[#5e4230] text-white">
+                <Button className="w-full h-12 rounded-full bg-[#fd4c01] hover:bg-[#c94101] text-white">
                   Send Message
                 </Button>
               </form>
@@ -209,13 +209,13 @@ const About = () => {
       </section>
 
       {/* Bottom CTA */}
-      <section className="py-20 bg-[#4A3B32] my-12 mx-6 md:mx-12 rounded-[3rem] text-[#FAF6F0] text-center relative overflow-hidden">
+      <section className="py-20 bg-[#fd4c01] my-12 mx-6 md:mx-12 rounded-[3rem] text-white text-center relative overflow-hidden">
         <div className="relative z-10 px-6">
           <h2 className="font-serif text-4xl md:text-6xl font-medium mb-6">Join us today!</h2>
           <p className="max-w-xl mx-auto text-lg opacity-80 mb-8 font-light">
             Ready to start your adventure? Sign up now and become part of our growing family.
           </p>
-          <Button className="bg-[#FAF6F0] text-[#4A3B32] hover:bg-white rounded-full px-8 h-12 text-lg">
+          <Button className="bg-white text-[#fd4c01] hover:bg-[#FFF7ED] rounded-full px-8 h-12 text-lg">
             Get Started
           </Button>
         </div>

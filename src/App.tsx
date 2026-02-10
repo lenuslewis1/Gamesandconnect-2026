@@ -28,7 +28,6 @@ import AdminLogin from "./pages/admin/Login";
 import AdminSignup from "./pages/admin/Signup";
 import AdminRoute from "./components/AdminRoute";
 import { AuthProvider } from "./components/AuthProvider";
-import CursorFollower from "./components/ui/CursorFollower";
 
 
 const queryClient = new QueryClient();
@@ -37,7 +36,6 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <AuthProvider>
       <TooltipProvider>
-        <CursorFollower />
         <Toaster />
         <Sonner />
         <BrowserRouter>

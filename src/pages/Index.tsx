@@ -54,7 +54,7 @@ const Index = () => {
                             { icon: Globe, label: "Destinations", value: "15+", desc: "Diverse locations across Ghana" },
                             { icon: Trophy, label: "Game Nights", value: "50+", desc: "Unforgettable evenings hosted" },
                         ].map((stat, i) => (
-                            <div key={i} className="bg-[#FAF6F0] p-8 rounded-3xl border border-[#EBE5D9] text-center hover:shadow-lg transition-all hover:-translate-y-1">
+                            <div key={i} className="bg-[#FFF7ED] p-8 rounded-3xl border border-[#FDE8D0] text-center hover:shadow-lg transition-all hover:-translate-y-1">
                                 <div className="h-14 w-14 mx-auto rounded-full bg-primary/10 flex items-center justify-center text-primary mb-6">
                                     <stat.icon className="h-7 w-7" />
                                 </div>
@@ -79,7 +79,7 @@ const Index = () => {
                                     className="h-full w-full object-cover"
                                 />
                             </div>
-                            <div className="absolute -bottom-10 -right-10 h-40 w-40 bg-[#F5E6D3] rounded-full blur-3xl -z-10" />
+                            <div className="absolute -bottom-10 -right-10 h-40 w-40 bg-[#FDBA74] rounded-full blur-3xl -z-10" />
                         </div>
 
                         <div className="space-y-8">
@@ -126,7 +126,7 @@ const Index = () => {
             </section>
 
             {/* Experience Categories */}
-            <section className="py-24 bg-[#FAF6F0]">
+            <section className="py-24 bg-[#FFF7ED]">
                 <div className="container">
                     <div className="text-center max-w-2xl mx-auto mb-16">
                         <Sparkles className="h-8 w-8 text-team-yellow mx-auto mb-4" />
@@ -245,7 +245,7 @@ const Index = () => {
                                                     <span className="font-bold text-foreground">
                                                         {priceNum === 0 ? "Free Entry" : `GH₵${priceNum}`}
                                                     </span>
-                                                    <Button className="rounded-full bg-[#FAF6F0] text-foreground hover:bg-primary hover:text-white border border-[#EBE5D9]" variant="ghost">
+                                                    <Button className="rounded-full bg-[#FFF7ED] text-foreground hover:bg-primary hover:text-white border border-[#FDE8D0]" variant="ghost">
                                                         View Details
                                                     </Button>
                                                 </div>
@@ -275,10 +275,10 @@ const Index = () => {
             <ScrollingGallery />
 
             {/* Games Collection Section (Auto-Scroll Marquee) */}
-            <section className="py-20 overflow-hidden bg-[#FBF8F3] border-y border-[#EBE5D9]">
+            <section className="py-20 overflow-hidden bg-[#FFF7ED] border-y border-[#FDE8D0]">
                 <div className="container mb-10 text-center">
                     <h2 className="font-serif text-3xl md:text-4xl font-medium mb-2">
-                        Our <span className="text-[#FF6B35]">Games Collection</span>
+                        Our <span className="text-[#fd4c01]">Games Collection</span>
                     </h2>
                     <p className="text-muted-foreground text-sm">
                         Explore our variety of exciting games for all skill levels
@@ -309,7 +309,7 @@ const Index = () => {
                         ]).map((game, i) => (
                             <div
                                 key={`game-${i}`}
-                                className="bg-white px-8 py-6 rounded-[2rem] border border-[#EBE5D9] flex items-center gap-4 group hover:shadow-lg transition-all duration-300 w-[280px] shrink-0 shadow-sm"
+                                className="bg-white px-8 py-6 rounded-[2rem] border border-[#FDE8D0] flex items-center gap-4 group hover:shadow-lg transition-all duration-300 w-[280px] shrink-0 shadow-sm"
                             >
                                 <span className="text-4xl group-hover:scale-110 transition-transform duration-300 shrink-0">
                                     {game.icon}
@@ -330,7 +330,7 @@ const Index = () => {
             <TestimonialSlider />
 
             {/* FAQ Section (Accordion Style from Reference) */}
-            <section className="py-24 bg-[#FAF6F0]">
+            <section className="py-24 bg-[#FFF7ED]">
                 <div className="container max-w-3xl mx-auto">
                     <div className="text-center mb-16">
                         <h2 className="font-serif text-4xl font-medium mb-4">Frequently Asked Questions</h2>
@@ -344,7 +344,7 @@ const Index = () => {
                             { q: "What happens at Game Days?", a: "We split into teams (Red, Blue, Green, Yellow) and compete in fun outdoor games like Tug of War, Sack Races, and more." },
                             { q: "Can I pay in installments?", a: "Yes, for all our major trips, we offer flexible installment plans to make it easy on your pocket." }
                         ].map((faq, i) => (
-                            <div key={i} className="bg-white rounded-2xl p-6 border border-[#EBE5D9] hover:shadow-md transition-all">
+                            <div key={i} className="bg-white rounded-2xl p-6 border border-[#FDE8D0] hover:shadow-md transition-all">
                                 <h3 className="font-serif text-lg font-medium mb-2">{faq.q}</h3>
                                 <p className="text-muted-foreground text-sm leading-relaxed">{faq.a}</p>
                             </div>
@@ -354,7 +354,7 @@ const Index = () => {
             </section>
 
             {/* Final CTA */}
-            <section className="py-32 relative overflow-hidden bg-[#745239] text-[#FAF6F0]">
+            <section className="py-32 relative overflow-hidden bg-[#fd4c01] text-white">
                 <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
                 <div className="container relative z-10 text-center">
                     <h2 className="font-serif text-5xl md:text-7xl font-medium mb-8">
@@ -364,7 +364,7 @@ const Index = () => {
                         Stop watching from the sidelines. The memories, the fun, and the friends are waiting for you.
                     </p>
                     <div className="flex flex-col sm:flex-row justify-center gap-4">
-                        <Button asChild size="lg" className="rounded-full h-16 px-10 text-xl bg-[#FAF6F0] text-[#745239] hover:bg-white border-none shadow-xl">
+                        <Button asChild size="lg" className="rounded-full h-16 px-10 text-xl bg-[#FFF7ED] text-[#fd4c01] hover:bg-white border-none shadow-xl">
                             <Link to="/events">Book an Experience</Link>
                         </Button>
                     </div>
