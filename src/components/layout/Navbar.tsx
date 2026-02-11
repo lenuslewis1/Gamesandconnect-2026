@@ -9,7 +9,6 @@ const navLinks = [
     { name: "About", path: "/about" },
     { name: "Events", path: "/events" },
     { name: "Game Day", path: "/game-day" },
-    { name: "Teams", path: "/teams" },
     { name: "Contact", path: "/contact" },
 ];
 
@@ -44,9 +43,9 @@ const Navbar = () => {
             <div className="container flex items-center justify-between">
                 <Link
                     to="/"
-                    className="text-2xl font-serif font-bold text-foreground tracking-tight hover:opacity-80 transition-opacity"
+                    className="hover:opacity-80 transition-opacity"
                 >
-                    Games & Connect
+                    <img src="/logo.png" alt="Games & Connect" className="h-16 w-auto" />
                 </Link>
 
                 {/* Desktop Navigation */}

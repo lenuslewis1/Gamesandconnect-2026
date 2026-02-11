@@ -38,7 +38,7 @@ const teams = [
 ];
 
 // Local storage key for team images
-const STORAGE_KEY = "vibes_ventures_team_images";
+const STORAGE_KEY = "games_and_connect_team_images";
 
 interface TeamImage {
     id: string;

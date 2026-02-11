@@ -6,11 +6,54 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "react-router-dom";
 import { Trophy, Users, Timer, X, ChevronLeft, ChevronRight } from "lucide-react";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+
 import ScrollReveal from "@/components/ui/ScrollReveal";
 import TextMotion from "@/components/ui/TextMotion";
 import { useGameDayScoreboards, useUpcomingGameDayEvent, useGameDayGallery } from "@/hooks/useSupabaseData";
 import { format } from "date-fns";
+
+const GallerySection = () => {
+    const { data: images = [] } = useGameDayGallery();
+
+    if (images.length === 0) return null;
+
+    return (
+        <section className="py-20 bg-muted/20">
+            <div className="container">
+                <ScrollReveal>
+                    <div className="flex flex-col md:flex-row items-end justify-between gap-4 mb-12">
+                        <div>
+                            <TextMotion text="Game Day Highlights" variant="word" className="text-3xl font-bold md:text-4xl font-serif mb-4" />
+                            <p className="text-muted-foreground">Captured moments from previous events</p>
+                        </div>
+                    </div>
+                </ScrollReveal>
+
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                    {images.slice(0, 8).map((image, index) => (
+                        <ScrollReveal key={image.id} delay={index * 0.05}>
+                            <div className="relative group aspect-square rounded-2xl overflow-hidden bg-muted">
+                                <img
+                                    src={image.image_url}
+                                    alt={image.caption || "Game Day moment"}
+                                    className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
+                                />
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
+                                    {image.caption && (
+                                        <p className="text-white font-medium text-sm line-clamp-2">{image.caption}</p>
+                                    )}
+                                    {image.event_date && (
+                                        <p className="text-white/70 text-xs mt-1">{format(new Date(image.event_date), 'MMM d, yyyy')}</p>
+                                    )}
+                                </div>
+                            </div>
+                        </ScrollReveal>
+                    ))}
+                </div>
+            </div>
+        </section>
+    );
+};
 
 const games = [
     { title: "Tug of War", type: "Strength", players: "All Team" },
@@ -22,36 +65,9 @@ const games = [
 const GameDay = () => {
     const { data: scoreboards = [], isLoading: loadingScoreboards } = useGameDayScoreboards();
     const { data: upcomingEvent } = useUpcomingGameDayEvent();
-    const { data: galleryImages = [], isLoading: loadingGallery } = useGameDayGallery();
-
-    const [selectedImage, setSelectedImage] = useState<string | null>(null);
-    const [selectedCategory, setSelectedCategory] = useState<string>("all");
-
-    // Get unique categories from gallery images
-    const categories = ["all", ...Array.from(new Set(galleryImages.map(img => img.category).filter(Boolean)))];
-
-    // Filter gallery images by category
-    const filteredGallery = selectedCategory === "all"
-        ? galleryImages
-        : galleryImages.filter(img => img.category === selectedCategory);
 
     // Calculate max points for leaderboard percentage
     const maxPoints = Math.max(...scoreboards.map(s => s.season_points), 1);
-
-    // Find current image index for navigation in lightbox
-    const currentImageIndex = selectedImage ? filteredGallery.findIndex(img => img.image_url === selectedImage) : -1;
-
-    const handleNextImage = () => {
-        if (currentImageIndex < filteredGallery.length - 1) {
-            setSelectedImage(filteredGallery[currentImageIndex + 1].image_url);
-        }
-    };
-
-    const handlePrevImage = () => {
-        if (currentImageIndex > 0) {
-            setSelectedImage(filteredGallery[currentImageIndex - 1].image_url);
-        }
-    };
 
     return (
         <Layout>
@@ -93,47 +109,69 @@ const GameDay = () => {
                 </section>
             )}
 
-            {/* The Teams */}
-            <section className="py-20">
-                <div className="container">
-                    <ScrollReveal>
-                        <div className="text-center mb-16">
-                            <TextMotion text="The Four Houses" variant="word" className="text-3xl font-bold md:text-5xl font-serif mb-4" />
-                            <p className="mx-auto max-w-xl text-muted-foreground text-lg">
-                                Pick your team, wear your colors, and fight for glory.
-                            </p>
-                        </div>
-                    </ScrollReveal>
 
-                    {loadingScoreboards ? (
-                        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-                            {[1, 2, 3, 4].map((i) => (
-                                <div key={i} className="h-64 bg-muted animate-pulse rounded-lg" />
-                            ))}
-                        </div>
-                    ) : (
-                        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+
+
+            {/* Leaderboard Section */}
+            {scoreboards.length > 0 && (
+                <section className="py-20 bg-background relative overflow-hidden">
+                    <div className="container relative z-10">
+                        <ScrollReveal>
+                            <div className="text-center mb-16">
+                                <Badge className="bg-primary text-primary-foreground mb-4">Current Standings</Badge>
+                                <TextMotion text="Season Leaderboard" variant="word" className="text-3xl font-bold md:text-4xl font-serif mb-4" />
+                                <p className="text-muted-foreground">Who will take the cup this season?</p>
+                            </div>
+                        </ScrollReveal>
+
+                        <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
                             {scoreboards.map((team, index) => (
-                                <ScrollReveal key={team.id} delay={index * 0.1} variant="scale-up">
-                                    <Card className="overflow-hidden border-none text-white transition-all hover:scale-105 hover:shadow-xl group h-full">
-                                        <div className={`h-full p-8 flex flex-col items-center text-center ${team.team_color}`}>
-                                            <div className="h-20 w-20 rounded-full bg-white/20 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500">
-                                                <Trophy className="h-10 w-10 text-white" />
-                                            </div>
-                                            <h3 className="text-2xl font-bold mb-2">{team.team_name}</h3>
-                                            <p className="text-white/80 mb-6">{team.description}</p>
-                                            <div className="mt-auto pt-6 border-t border-white/20 w-full">
-                                                <p className="text-3xl font-black">{team.wins}</p>
-                                                <p className="text-xs uppercase tracking-widest text-white/70">WINS</p>
-                                            </div>
-                                        </div>
-                                    </Card>
+                                <ScrollReveal key={team.id} delay={index * 0.1}>
+                                    <div className="relative group">
+                                        <div
+                                            className="absolute inset-0 -z-10 bg-gradient-to-br from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity rounded-xl blur-xl"
+                                            style={{ backgroundColor: team.team_color ? `${team.team_color}20` : '#cccccc20' }}
+                                        />
+                                        <Card className="relative overflow-hidden border-2 transition-all hover:-translate-y-1 hover:shadow-lg bg-card/50 backdrop-blur-sm group-hover:border-primary/50">
+                                            <div
+                                                className="absolute left-0 top-0 bottom-0 w-2"
+                                                style={{ backgroundColor: team.team_color || '#ccc' }}
+                                            />
+                                            <CardContent className="p-6 flex items-center gap-6">
+                                                <div
+                                                    className="h-16 w-16 rounded-full flex items-center justify-center text-2xl font-bold text-white shadow-lg shrink-0"
+                                                    style={{ backgroundColor: team.team_color || '#ccc' }}
+                                                >
+                                                    {index + 1}
+                                                </div>
+                                                <div className="flex-1 min-w-0">
+                                                    <div className="flex justify-between items-end mb-2">
+                                                        <h3 className="font-bold text-lg truncate pr-2">{team.team_name}</h3>
+                                                        <span className="text-2xl font-black font-serif whitespace-nowrap">{team.season_points} <span className="text-xs font-sans font-normal text-muted-foreground">pts</span></span>
+                                                    </div>
+                                                    <div className="relative h-3 w-full bg-muted rounded-full overflow-hidden">
+                                                        <div
+                                                            className="absolute top-0 left-0 h-full rounded-full transition-all duration-1000 ease-out"
+                                                            style={{
+                                                                width: `${(team.season_points / maxPoints) * 100}%`,
+                                                                backgroundColor: team.team_color || '#ccc'
+                                                            }}
+                                                        />
+                                                    </div>
+                                                    <div className="mt-2 flex justify-between text-xs text-muted-foreground">
+                                                        <span>{team.wins} Wins</span>
+                                                        <span className="truncate ml-2">{team.description || 'Contender'}</span>
+                                                    </div>
+                                                </div>
+                                            </CardContent>
+                                        </Card>
+                                    </div>
                                 </ScrollReveal>
                             ))}
                         </div>
-                    )}
-                </div>
-            </section>
+                    </div>
+                </section>
+            )}
 
             {/* How It Works */}
             <section className="py-20 bg-muted/40">
@@ -178,6 +216,7 @@ const GameDay = () => {
                 </div>
             </section>
 
+
             {/* Featured Games */}
             <section className="py-20">
                 <div className="container">
@@ -207,169 +246,9 @@ const GameDay = () => {
                 </div>
             </section>
 
-            {/* Game Day Gallery Section - NEW */}
-            {!loadingGallery && galleryImages.length > 0 && (
-                <section className="py-20 bg-muted/40">
-                    <div className="container">
-                        <ScrollReveal>
-                            <div className="text-center mb-12">
-                                <TextMotion text="Game Day Moments" variant="word" className="text-3xl font-bold md:text-4xl font-serif mb-4" />
-                                <p className="text-muted-foreground max-w-xl mx-auto">
-                                    Relive the excitement, laughter, and fierce competition from our game days
-                                </p>
-                            </div>
-                        </ScrollReveal>
+            {/* Gallery Section */}
+            <GallerySection />
 
-                        {/* Category Filter */}
-                        <ScrollReveal>
-                            <div className="flex flex-wrap justify-center gap-3 mb-12">
-                                {categories.map((category) => (
-                                    <Button
-                                        key={category}
-                                        variant={selectedCategory === category ? "default" : "outline"}
-                                        onClick={() => setSelectedCategory(category)}
-                                        className="rounded-full capitalize"
-                                    >
-                                        {category.replace(/_/g, ' ')}
-                                    </Button>
-                                ))}
-                            </div>
-                        </ScrollReveal>
-
-                        {/* Gallery Grid */}
-                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                            {filteredGallery.map((image, index) => (
-                                <ScrollReveal key={image.id} delay={index * 0.05} variant="scale-up">
-                                    <div
-                                        className="group relative aspect-square rounded-xl overflow-hidden cursor-pointer bg-muted shadow-lg hover:shadow-2xl transition-all duration-300"
-                                        onClick={() => setSelectedImage(image.image_url)}
-                                    >
-                                        <img
-                                            src={image.image_url}
-                                            alt={image.caption || "Game day moment"}
-                                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                                        />
-                                        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                            <div className="absolute bottom-0 left-0 right-0 p-4">
-                                                {image.caption && (
-                                                    <p className="text-white text-sm font-medium line-clamp-2">
-                                                        {image.caption}
-                                                    </p>
-                                                )}
-                                            </div>
-                                        </div>
-                                        {image.category && (
-                                            <div className="absolute top-3 left-3 px-3 py-1 bg-black/60 backdrop-blur-sm text-xs text-white rounded-full">
-                                                {image.category.replace(/_/g, ' ')}
-                                            </div>
-                                        )}
-                                    </div>
-                                </ScrollReveal>
-                            ))}
-                        </div>
-
-                        {/* Image Lightbox */}
-                        <Dialog open={!!selectedImage} onOpenChange={() => setSelectedImage(null)}>
-                            <DialogContent className="max-w-5xl p-0 bg-black/95 border-none">
-                                <div className="relative">
-                                    <button
-                                        onClick={() => setSelectedImage(null)}
-                                        className="absolute top-4 right-4 z-50 p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors"
-                                    >
-                                        <X className="h-6 w-6" />
-                                    </button>
-
-                                    {currentImageIndex > 0 && (
-                                        <button
-                                            onClick={handlePrevImage}
-                                            className="absolute left-4 top-1/2 -translate-y-1/2 z-50 p-3 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors"
-                                        >
-                                            <ChevronLeft className="h-6 w-6" />
-                                        </button>
-                                    )}
-
-                                    {currentImageIndex < filteredGallery.length - 1 && (
-                                        <button
-                                            onClick={handleNextImage}
-                                            className="absolute right-4 top-1/2 -translate-y-1/2 z-50 p-3 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors"
-                                        >
-                                            <ChevronRight className="h-6 w-6" />
-                                        </button>
-                                    )}
-
-                                    {selectedImage && (
-                                        <img
-                                            src={selectedImage}
-                                            alt="Game day moment"
-                                            className="w-full h-auto max-h-[85vh] object-contain"
-                                        />
-                                    )}
-
-                                    {selectedImage && filteredGallery[currentImageIndex]?.caption && (
-                                        <div className="p-6 text-white">
-                                            <p className="text-center text-lg">
-                                                {filteredGallery[currentImageIndex].caption}
-                                            </p>
-                                        </div>
-                                    )}
-                                </div>
-                            </DialogContent>
-                        </Dialog>
-                    </div>
-                </section>
-            )}
-
-            {/* Leaderboard */}
-            <section className="py-20 bg-background">
-                <div className="container">
-                    <ScrollReveal>
-                        <Card className="overflow-hidden border-2 bg-gradient-to-br from-gray-900 to-gray-800 text-white shadow-2xl">
-                            <div className="p-8 md:p-12 text-center">
-                                <Trophy className="h-16 w-16 mx-auto text-yellow-400 mb-6 animate-pulse" />
-                                <TextMotion text="Season Leaderboard" variant="word" className="text-3xl md:text-5xl font-serif font-bold mb-4" />
-                                <p className="text-gray-300 mb-12 max-w-lg mx-auto">
-                                    The battle for the annual championship trophy is heating up. Every game day counts!
-                                </p>
-
-                                {loadingScoreboards ? (
-                                    <div className="space-y-4 max-w-3xl mx-auto">
-                                        {[1, 2, 3, 4].map((i) => (
-                                            <div key={i} className="h-16 bg-white/5 rounded-xl animate-pulse" />
-                                        ))}
-                                    </div>
-                                ) : (
-                                    <div className="grid gap-4 max-w-3xl mx-auto">
-                                        {scoreboards.map((team, i) => {
-                                            const widthPercent = (team.season_points / maxPoints) * 100;
-                                            const colorMap: Record<string, string> = {
-                                                'bg-team-blue': 'bg-blue-500',
-                                                'bg-team-red': 'bg-red-500',
-                                                'bg-team-green': 'bg-green-500',
-                                                'bg-team-yellow': 'bg-yellow-500',
-                                            };
-                                            const barColor = colorMap[team.team_color] || 'bg-primary';
-
-                                            return (
-                                                <ScrollReveal key={team.id} delay={i * 0.1} width="100%">
-                                                    <div className="relative h-16 bg-white/5 rounded-xl overflow-hidden flex items-center px-6 group">
-                                                        <div
-                                                            className={`absolute top-0 left-0 bottom-0 ${barColor} opacity-20 transition-all duration-1000 group-hover:opacity-30`}
-                                                            style={{ width: `${widthPercent}%` }}
-                                                        ></div>
-                                                        <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-white/0 via-white/50 to-white/0"></div>
-                                                        <span className="font-bold text-lg relative z-10">{i + 1}. {team.team_name}</span>
-                                                        <span className="ml-auto font-mono text-xl font-bold relative z-10">{team.season_points} pts</span>
-                                                    </div>
-                                                </ScrollReveal>
-                                            );
-                                        })}
-                                    </div>
-                                )}
-                            </div>
-                        </Card>
-                    </ScrollReveal>
-                </div>
-            </section>
 
             {/* CTA */}
             <section className="py-24 bg-muted/30">

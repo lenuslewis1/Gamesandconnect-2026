@@ -68,7 +68,7 @@ const Index = () => {
             </section>
 
             {/* Introduction / Experience */}
-            <section className="py-24 overflow-hidden">
+            <section className="py-24 overflow-hidden bg-[#fd4c01] text-white">
                 <div className="container">
                     <div className="grid lg:grid-cols-2 gap-16 items-center">
                         <div className="relative">
@@ -83,40 +83,40 @@ const Index = () => {
                         </div>
 
                         <div className="space-y-8">
-                            <span className="text-primary font-medium tracking-widest text-sm uppercase">About Us</span>
-                            <h2 className="font-serif text-4xl md:text-5xl lg:text-6xl font-medium leading-[1.1]">
+                            <span className="text-white font-medium tracking-widest text-sm uppercase">About Us</span>
+                            <h2 className="font-serif text-4xl md:text-5xl lg:text-6xl font-medium leading-[1.1] text-white">
                                 Rediscover the joy of <br />
-                                <span className="italic text-primary/80">real connection</span>
+                                <span className="italic text-white/90">real connection</span>
                             </h2>
-                            <p className="text-xl text-muted-foreground leading-relaxed font-light">
+                            <p className="text-xl text-white/90 leading-relaxed font-light">
                                 In a digital world, we create spaces for authentic human connection.
                                 Whether it's through the adrenaline of a game night or the serenity of a
-                                weekend getaway, Vibes & Ventures is your passport to a more social life.
+                                weekend getaway, Games and Connect is your passport to a more social life.
                             </p>
 
                             <div className="pt-4 grid sm:grid-cols-2 gap-6">
                                 <div className="flex items-start gap-4">
-                                    <div className="mt-1 h-6 w-6 rounded-full bg-primary/20 flex items-center justify-center shrink-0">
-                                        <div className="h-2 w-2 rounded-full bg-primary" />
+                                    <div className="mt-1 h-6 w-6 rounded-full bg-white/20 flex items-center justify-center shrink-0">
+                                        <div className="h-2 w-2 rounded-full bg-white" />
                                     </div>
                                     <div>
-                                        <h4 className="font-serif text-xl font-medium mb-1">Curated Vibes</h4>
-                                        <p className="text-muted-foreground text-sm">Every event is carefully planned for maximum enjoyment.</p>
+                                        <h4 className="font-serif text-xl font-medium mb-1 text-white">Curated Vibes</h4>
+                                        <p className="text-white/80 text-sm">Every event is carefully planned for maximum enjoyment.</p>
                                     </div>
                                 </div>
                                 <div className="flex items-start gap-4">
-                                    <div className="mt-1 h-6 w-6 rounded-full bg-primary/20 flex items-center justify-center shrink-0">
-                                        <div className="h-2 w-2 rounded-full bg-primary" />
+                                    <div className="mt-1 h-6 w-6 rounded-full bg-white/20 flex items-center justify-center shrink-0">
+                                        <div className="h-2 w-2 rounded-full bg-white" />
                                     </div>
                                     <div>
-                                        <h4 className="font-serif text-xl font-medium mb-1">Safe Spaces</h4>
-                                        <p className="text-muted-foreground text-sm">Inclusive environments where everyone belongs.</p>
+                                        <h4 className="font-serif text-xl font-medium mb-1 text-white">Safe Spaces</h4>
+                                        <p className="text-white/80 text-sm">Inclusive environments where everyone belongs.</p>
                                     </div>
                                 </div>
                             </div>
 
                             <div className="pt-6">
-                                <Button variant="link" asChild className="p-0 text-lg text-primary hover:text-primary/80 underline-offset-4">
+                                <Button variant="link" asChild className="p-0 text-lg text-white hover:text-white/80 underline-offset-4">
                                     <Link to="/about">Read our full story <ArrowRight className="ml-2 h-4 w-4" /></Link>
                                 </Button>
                             </div>

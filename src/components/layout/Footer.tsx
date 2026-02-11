@@ -5,13 +5,13 @@ import { Input } from "@/components/ui/input";
 
 const Footer = () => {
     return (
-        <footer className="bg-[#1E293B] text-[#FFF7ED] pt-24 pb-12 border-t border-[#334155]">
+        <footer className="bg-black text-[#FFF7ED] pt-24 pb-12 border-t border-[#334155]">
             <div className="container">
                 <div className="grid gap-16 md:grid-cols-2 lg:grid-cols-4 mb-20">
                     {/* Brand Column */}
                     <div className="space-y-8">
-                        <Link to="/" className="text-3xl font-serif font-medium tracking-tight">
-                            Games & Connect
+                        <Link to="/" className="inline-block hover:opacity-80 transition-opacity">
+                            <img src="/logo.png" alt="Games & Connect" className="h-20 w-auto" />
                         </Link>
                         <p className="text-white/70 leading-relaxed font-light text-lg max-w-xs">
                             Curating spaces for genuine connection, adventure, and play in Ghana.
@@ -94,7 +94,7 @@ const Footer = () => {
                 </div>
 
                 <div className="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-white/40 text-sm">
-                    <p>&copy; {new Date().getFullYear()} Vibes & Ventures. Made with love in Accra.</p>
+                    <p>&copy; {new Date().getFullYear()} Games and Connect. Made with love in Accra.</p>
                     <p>Designed for Connection.</p>
                 </div>
             </div>

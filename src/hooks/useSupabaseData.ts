@@ -228,9 +228,11 @@ export function useUpcomingGameDayEvent() {
                 .from('game_day_events')
                 .select('*')
                 .eq('is_upcoming', true)
-                .single();
+                .order('event_date', { ascending: true }) // Get the nearest upcoming event
+                .limit(1)
+                .maybeSingle();
 
-            if (error && error.code !== 'PGRST116') throw error; // PGRST116 = no rows returned
+            if (error) throw error;
             return data as DbGameDayEvent | null;
         },
     });

@@ -139,7 +139,7 @@ const Contact = () => {
                             <div className="grid gap-6">
                                 {[
                                     { icon: Mail, title: "Email Us", desc: "For general support and inquiries", value: "hello@gamesandconnect.com", link: "mailto:hello@gamesandconnect.com" },
-                                    { icon: Phone, title: "Call Us", desc: "Mon-Fri from 8am to 5pm", value: "+233 20 123 4567", link: "tel:+233201234567" },
+                                    { icon: Phone, title: "Call Us", desc: "Mon-Fri from 8am to 5pm", value: "+233 50 589 1665", link: "tel:+233505891665" },
                                     { icon: MapPin, title: "Visit Us", desc: "East Legon, Accra\nGhana", value: "", link: null }
                                 ].map((item, index) => (
                                     <ScrollReveal key={index} delay={0.2 + (index * 0.1)} variant="slide-in-right">

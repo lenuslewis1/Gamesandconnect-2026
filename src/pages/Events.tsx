@@ -54,7 +54,7 @@ const Events = () => {
     return (
         <Layout>
             <PageHeader
-                title="Vibes & Ventures Events"
+                title="Games and Connect Events"
                 subtitle="Join us for games, parties, trivia nights, and travel adventures"
             />
 

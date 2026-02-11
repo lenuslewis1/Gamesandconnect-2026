@@ -1,5 +1,7 @@
-import { useRef, useEffect } from "react";
+import { useState } from "react";
 import { useGalleryImages } from "@/hooks/useSupabaseData";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { X } from "lucide-react";
 
 const defaultRow1 = [
     "https://res.cloudinary.com/drkjnrvtu/image/upload/v1742488675/_MG_1344_y4iq2a.jpg",
@@ -35,6 +37,7 @@ const defaultRow2 = [
 
 const ScrollingGallery = () => {
     const { data: dbImages = [] } = useGalleryImages();
+    const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
     // Split DB images into two rows if they exist, otherwise use defaults
     const displayRow1 = dbImages.length > 0
@@ -58,39 +61,73 @@ const ScrollingGallery = () => {
                 </p>
             </div>
 
-            <div className="space-y-8">
-                {/* Row 1: Left Scroll */}
-                <div className="relative w-full overflow-hidden">
-                    <div className="flex gap-6 animate-scroll-left w-fit hover:pause-on-hover">
-                        {row1.map((src, i) => (
-                            <div key={`row1-${i}`} className="relative h-[250px] md:h-[350px] aspect-[4/3] rounded-[2rem] overflow-hidden shrink-0 select-none shadow-sm">
-                                <img
-                                    src={src}
-                                    alt="Gallery"
-                                    className="h-full w-full object-cover pointer-events-none"
-                                    loading="lazy"
-                                />
-                            </div>
-                        ))}
+            <Dialog open={!!selectedImage} onOpenChange={() => setSelectedImage(null)}>
+                <div className="space-y-8">
+                    {/* Row 1: Left Scroll */}
+                    <div className="relative w-full overflow-hidden">
+                        <div className="flex gap-6 animate-scroll-left w-fit hover:pause-on-hover">
+                            {row1.map((src, i) => (
+                                <DialogTrigger key={`row1-${i}`} asChild>
+                                    <div
+                                        className="relative h-[250px] md:h-[350px] aspect-[4/3] rounded-[2rem] overflow-hidden shrink-0 select-none shadow-sm cursor-pointer transition-transform hover:scale-[1.02]"
+                                        onClick={() => setSelectedImage(src)}
+                                    >
+                                        <img
+                                            src={src}
+                                            alt="Gallery"
+                                            className="h-full w-full object-cover pointer-events-none"
+                                            loading="lazy"
+                                        />
+                                    </div>
+                                </DialogTrigger>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Row 2: Right Scroll */}
+                    <div className="relative w-full overflow-hidden">
+                        <div className="flex gap-6 animate-scroll-right w-fit hover:pause-on-hover" style={{ transform: 'translateX(-50%)' }}>
+                            {row2.map((src, i) => (
+                                <DialogTrigger key={`row2-${i}`} asChild>
+                                    <div
+                                        className="relative h-[250px] md:h-[350px] aspect-[4/3] rounded-[2rem] overflow-hidden shrink-0 select-none shadow-sm cursor-pointer transition-transform hover:scale-[1.02]"
+                                        onClick={() => setSelectedImage(src)}
+                                    >
+                                        <img
+                                            src={src}
+                                            alt="Gallery"
+                                            className="h-full w-full object-cover pointer-events-none"
+                                            loading="lazy"
+                                        />
+                                    </div>
+                                </DialogTrigger>
+                            ))}
+                        </div>
                     </div>
                 </div>
 
-                {/* Row 2: Right Scroll */}
-                <div className="relative w-full overflow-hidden">
-                    <div className="flex gap-6 animate-scroll-right w-fit hover:pause-on-hover" style={{ transform: 'translateX(-50%)' }}>
-                        {row2.map((src, i) => (
-                            <div key={`row2-${i}`} className="relative h-[250px] md:h-[350px] aspect-[4/3] rounded-[2rem] overflow-hidden shrink-0 select-none shadow-sm">
+                <DialogContent className="max-w-5xl border-none bg-transparent p-0 shadow-2xl focus:outline-none">
+                    <div className="relative overflow-hidden rounded-2xl bg-black/95">
+                        <button
+                            onClick={() => setSelectedImage(null)}
+                            className="absolute right-4 top-4 z-50 rounded-full bg-black/50 p-2 text-white transition-colors hover:bg-white hover:text-black backdrop-blur-sm ring-1 ring-white/10"
+                        >
+                            <X className="h-5 w-5" />
+                            <span className="sr-only">Close</span>
+                        </button>
+
+                        <div className="relative aspect-[16/10] md:aspect-[16/9] w-full bg-black flex items-center justify-center">
+                            {selectedImage && (
                                 <img
-                                    src={src}
-                                    alt="Gallery"
-                                    className="h-full w-full object-cover pointer-events-none"
-                                    loading="lazy"
+                                    src={selectedImage}
+                                    alt="Gallery Image"
+                                    className="h-full w-auto max-w-full object-contain"
                                 />
-                            </div>
-                        ))}
+                            )}
+                        </div>
                     </div>
-                </div>
-            </div>
+                </DialogContent>
+            </Dialog>
         </section>
     );
 };

@@ -139,29 +139,7 @@ const About = () => {
         </div>
       </section>
 
-      {/* Team Section */}
-      <section className="py-24 bg-background">
-        <div className="container text-center">
-          <span className="text-primary font-medium tracking-widest text-sm uppercase mb-4 block">Our Squad</span>
-          <h2 className="font-serif text-4xl md:text-5xl font-medium mb-16">Meet the Team</h2>
 
-          <div className="grid md:grid-cols-3 gap-8">
-            {[
-              { name: "Sarah Jones", role: "Founder & Lead", img: "https://res.cloudinary.com/drkjnrvtu/image/upload/v1746918906/_MG_2027_oblrvo.jpg" },
-              { name: "Mike Chen", role: "Head of Games", img: "https://res.cloudinary.com/drkjnrvtu/image/upload/v1742488675/_MG_1414_ij80mu.jpg" },
-              { name: "Amara Okeke", role: "Travel Coordinator", img: "https://res.cloudinary.com/drkjnrvtu/image/upload/v1742488675/_MG_1424_f0harp.jpg" }
-            ].map((member, i) => (
-              <div key={i} className="group text-center">
-                <div className="aspect-[3/4] rounded-full overflow-hidden mb-6 w-48 h-64 mx-auto border-4 border-[#FFF7ED] shadow-lg">
-                  <img src={member.img} alt={member.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
-                </div>
-                <h3 className="font-serif text-2xl font-medium mb-1">{member.name}</h3>
-                <p className="text-muted-foreground text-sm uppercase tracking-wider">{member.role}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
 
       {/* Let's Talk / Contact Section */}
       <section className="py-24 bg-[#FFF7ED]">
