@@ -183,7 +183,7 @@ const BookingModal = ({ isOpen, onClose, event }: BookingModalProps) => {
         try {
             setPollCount(prev => prev + 1);
             pollCountRef.current += 1;
-            console.log(`Polling payment status (attempt ${pollCountRef.current})...`);
+            // console.log(`Polling payment status (attempt ${pollCountRef.current})...`);
 
             const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/verify-payment`, {
                 method: 'POST',
@@ -198,7 +198,7 @@ const BookingModal = ({ isOpen, onClose, event }: BookingModalProps) => {
             });
 
             const data = await response.json();
-            console.log('Payment status:', data);
+            // console.log('Payment status:', data);
 
             if (!response.ok) {
                 stopPolling();
@@ -373,7 +373,7 @@ const BookingModal = ({ isOpen, onClose, event }: BookingModalProps) => {
             });
 
             const data = await response.json();
-            console.log('Payment response:', data);
+            // console.log('Payment response:', data);
 
             if (!response.ok) {
                 throw new Error(data?.error || data?.message || `Payment initiation failed (${response.status}).`);
@@ -426,7 +426,7 @@ const BookingModal = ({ isOpen, onClose, event }: BookingModalProps) => {
                 throw new Error(data.error || "Payment initiation failed");
             }
         } catch (error: any) {
-            console.error("Payment error:", error);
+            console.error("Payment error:", error.message || "Unknown error");
             setStep("payment");
             toast({
                 variant: "destructive",

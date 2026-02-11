@@ -146,7 +146,7 @@ const PaymentForm = ({
             });
 
             const data = await response.json();
-            console.log('Payment response:', data);
+            // console.log('Payment response:', data);
 
             if (!response.ok) {
                 throw new Error(data?.error || data?.message || `Payment initiation failed (${response.status}).`);
@@ -170,7 +170,7 @@ const PaymentForm = ({
                 onError(errorMsg);
             }
         } catch (error) {
-            console.error("Payment error:", error);
+            console.error("Payment error:", error instanceof Error ? error.message : "Unknown error");
             onError(error instanceof Error ? error.message : "Network error. Please check your connection and try again.");
         } finally {
             setIsProcessing(false);
