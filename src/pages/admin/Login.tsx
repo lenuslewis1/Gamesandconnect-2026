@@ -19,7 +19,8 @@ const AdminLogin = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        if (!authLoading && user?.email === "gamesandconnectgh@gmail.com") {
+        const adminEmail = import.meta.env.VITE_ADMIN_EMAIL;
+        if (!authLoading && user?.email === adminEmail) {
             navigate("/admin");
         }
     }, [user, authLoading, navigate]);
@@ -36,7 +37,10 @@ const AdminLogin = () => {
 
             if (error) throw error;
 
-            if (email !== "gamesandconnectgh@gmail.com") {
+            if (error) throw error;
+
+            const adminEmail = import.meta.env.VITE_ADMIN_EMAIL;
+            if (email !== adminEmail) {
                 toast.error("You are not authorized to access the admin area.");
                 await supabase.auth.signOut();
                 return;

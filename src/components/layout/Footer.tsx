@@ -94,8 +94,13 @@ const Footer = () => {
                 </div>
 
                 <div className="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-white/40 text-sm">
-                    <p>&copy; {new Date().getFullYear()} Games and Connect. Made with love in Accra.</p>
-                    <p>Designed for Connection.</p>
+                    <div className="flex gap-4">
+                        <p>&copy; {new Date().getFullYear()} Games and Connect. Made with love in Accra.</p>
+                        <p>Designed for Connection.</p>
+                    </div>
+                    <Link to="/admin/login" className="text-white/20 hover:text-white/50 transition-colors text-xs">
+                        Admin Login
+                    </Link>
                 </div>
             </div>
         </footer>

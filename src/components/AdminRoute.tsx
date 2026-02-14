@@ -11,7 +11,8 @@ const AdminRoute = () => {
 
     useEffect(() => {
         if (!loading) {
-            if (user && user.email === "gamesandconnectgh@gmail.com") {
+            const adminEmail = import.meta.env.VITE_ADMIN_EMAIL;
+            if (user && user.email === adminEmail) {
                 setIsAuthorized(true);
             } else {
                 if (user) {
