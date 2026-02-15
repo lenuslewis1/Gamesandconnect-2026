@@ -98,7 +98,7 @@ const Footer = () => {
                         <p>&copy; {new Date().getFullYear()} Games and Connect. Made with love in Accra.</p>
                         <p>Designed for Connection.</p>
                     </div>
-                    <Link to="/admin/login" className="text-white/20 hover:text-white/50 transition-colors text-xs">
+                    <Link to="/admin/login" className="text-white/70 hover:text-white transition-colors text-xs font-medium">
                         Admin Login
                     </Link>
                 </div>
