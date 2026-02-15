@@ -16,7 +16,7 @@ import {
     Quote,
     Loader2
 } from "lucide-react";
-import { useEvent, useEvents, useTeamMembers, useTestimonials } from "@/hooks/useSupabaseData";
+import { useEvent, useEvents, useTestimonials } from "@/hooks/useSupabaseData";
 import BookingModal from "@/components/events/BookingModal";
 import ScrollReveal from "@/components/ui/ScrollReveal";
 
@@ -45,7 +45,7 @@ const EventDetail = () => {
 
     const { data: event, isLoading, error } = useEvent(id || "");
     const { data: allEvents = [] } = useEvents();
-    const { data: teamMembers = [] } = useTeamMembers();
+
     const { data: testimonials = [] } = useTestimonials();
 
     const relatedEvents = allEvents
@@ -211,33 +211,7 @@ const EventDetail = () => {
                 </div>
             </section>
 
-            {/* Team Section */}
-            <section className="py-20 bg-background">
-                <div className="container text-center">
-                    <h2 className="font-serif text-3xl md:text-4xl font-medium mb-4">Team on this event</h2>
-                    <p className="text-muted-foreground mb-12 max-w-lg mx-auto">
-                        Meet the amazing people who will make your experience unforgettable
-                    </p>
 
-                    <div className="flex flex-wrap justify-center gap-12">
-                        {teamMembers.slice(0, 3).map((member, i) => (
-                            <ScrollReveal key={member.id} delay={i * 0.1}>
-                                <div className="text-center group">
-                                    <div className="w-32 h-32 rounded-full overflow-hidden mx-auto mb-4 border-4 border-[#FFF7ED] shadow-lg group-hover:scale-105 transition-transform duration-300">
-                                        <img
-                                            src={member.image_url || "https://res.cloudinary.com/drkjnrvtu/image/upload/v1742488675/_MG_1414_ij80mu.jpg"}
-                                            alt={member.name}
-                                            className="w-full h-full object-cover"
-                                        />
-                                    </div>
-                                    <h3 className="font-serif text-xl font-medium">{member.name}</h3>
-                                    <p className="text-muted-foreground text-sm">{member.role}</p>
-                                </div>
-                            </ScrollReveal>
-                        ))}
-                    </div>
-                </div>
-            </section>
 
             {/* Testimonial Section */}
             <section className="py-20 bg-[#FFF7ED]">

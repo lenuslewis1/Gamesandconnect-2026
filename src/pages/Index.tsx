@@ -45,6 +45,79 @@ const Index = () => {
             <FloatingEdgeIcons />
             <Hero />
 
+            {/* Featured Events (Horizontal Scroll) */}
+            <section className="py-24">
+                <div className="container">
+                    <div className="flex justify-between items-end mb-12">
+                        <div>
+                            <h2 className="font-serif text-4xl font-medium mb-2">Upcoming Adventures</h2>
+                            <p className="text-muted-foreground">Don't miss out on what's happening next.</p>
+                        </div>
+                        <Button variant="outline" className="rounded-full hidden md:flex" asChild>
+                            <Link to="/events">View All Events</Link>
+                        </Button>
+                    </div>
+
+                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        {isLoading ? (
+                            <div className="col-span-full flex justify-center py-12">
+                                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                            </div>
+                        ) : featuredEvents.length > 0 ? (
+                            featuredEvents.map((event) => {
+                                const priceNum = parsePrice(event.price);
+                                return (
+                                    <Link key={event.id} to={`/events/${event.id}`} className="group block h-full">
+                                        <div className="group bg-card rounded-[2rem] border border-border overflow-hidden hover:shadow-xl transition-all duration-300 flex flex-col h-full">
+                                            <div className="aspect-[4/3] overflow-hidden relative">
+                                                <img
+                                                    src={event.image_url || "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=800"}
+                                                    alt={event.title}
+                                                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                                                />
+                                                <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-md px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide text-black">
+                                                    {formatDate(event.date)}
+                                                </div>
+                                            </div>
+                                            <div className="p-6 flex flex-col flex-1">
+                                                <div className="flex items-center gap-2 text-sm text-primary mb-3">
+                                                    <MapPin className="h-4 w-4" />
+                                                    <span>{event.location}</span>
+                                                </div>
+                                                <h3 className="font-serif text-2xl font-medium mb-3 group-hover:text-primary transition-colors line-clamp-2">
+                                                    {event.title}
+                                                </h3>
+                                                <p className="text-muted-foreground text-sm line-clamp-2 mb-6">
+                                                    {event.description}
+                                                </p>
+                                                <div className="mt-auto flex items-center justify-between">
+                                                    <span className="font-bold text-foreground">
+                                                        {priceNum === 0 ? "Free Entry" : `GH₵${priceNum}`}
+                                                    </span>
+                                                    <Button className="rounded-full bg-[#FFF7ED] text-foreground hover:bg-primary hover:text-white border border-[#FDE8D0]" variant="ghost">
+                                                        View Details
+                                                    </Button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </Link>
+                                );
+                            })
+                        ) : (
+                            <div className="col-span-full text-center py-12 bg-muted/20 rounded-2xl">
+                                <p className="text-muted-foreground">No upcoming events scheduled at the moment.</p>
+                            </div>
+                        )}
+                    </div>
+
+                    <div className="mt-8 text-center md:hidden">
+                        <Button variant="outline" className="rounded-full w-full" asChild>
+                            <Link to="/events">View All Events</Link>
+                        </Button>
+                    </div>
+                </div>
+            </section>
+
             {/* Stats / Trust Section */}
             <section className="py-20 bg-background relative z-10 -mt-10">
                 <div className="container">
@@ -196,78 +269,7 @@ const Index = () => {
 
 
 
-            {/* Featured Events (Horizontal Scroll) */}
-            <section className="py-24">
-                <div className="container">
-                    <div className="flex justify-between items-end mb-12">
-                        <div>
-                            <h2 className="font-serif text-4xl font-medium mb-2">Upcoming Adventures</h2>
-                            <p className="text-muted-foreground">Don't miss out on what's happening next.</p>
-                        </div>
-                        <Button variant="outline" className="rounded-full hidden md:flex" asChild>
-                            <Link to="/events">View All Events</Link>
-                        </Button>
-                    </div>
 
-                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                        {isLoading ? (
-                            <div className="col-span-full flex justify-center py-12">
-                                <Loader2 className="h-8 w-8 animate-spin text-primary" />
-                            </div>
-                        ) : featuredEvents.length > 0 ? (
-                            featuredEvents.map((event) => {
-                                const priceNum = parsePrice(event.price);
-                                return (
-                                    <Link key={event.id} to={`/events/${event.id}`} className="group block h-full">
-                                        <div className="group bg-card rounded-[2rem] border border-border overflow-hidden hover:shadow-xl transition-all duration-300 flex flex-col h-full">
-                                            <div className="aspect-[4/3] overflow-hidden relative">
-                                                <img
-                                                    src={event.image_url || "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=800"}
-                                                    alt={event.title}
-                                                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                                                />
-                                                <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-md px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide text-black">
-                                                    {formatDate(event.date)}
-                                                </div>
-                                            </div>
-                                            <div className="p-6 flex flex-col flex-1">
-                                                <div className="flex items-center gap-2 text-sm text-primary mb-3">
-                                                    <MapPin className="h-4 w-4" />
-                                                    <span>{event.location}</span>
-                                                </div>
-                                                <h3 className="font-serif text-2xl font-medium mb-3 group-hover:text-primary transition-colors line-clamp-2">
-                                                    {event.title}
-                                                </h3>
-                                                <p className="text-muted-foreground text-sm line-clamp-2 mb-6">
-                                                    {event.description}
-                                                </p>
-                                                <div className="mt-auto flex items-center justify-between">
-                                                    <span className="font-bold text-foreground">
-                                                        {priceNum === 0 ? "Free Entry" : `GH₵${priceNum}`}
-                                                    </span>
-                                                    <Button className="rounded-full bg-[#FFF7ED] text-foreground hover:bg-primary hover:text-white border border-[#FDE8D0]" variant="ghost">
-                                                        View Details
-                                                    </Button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </Link>
-                                );
-                            })
-                        ) : (
-                            <div className="col-span-full text-center py-12 bg-muted/20 rounded-2xl">
-                                <p className="text-muted-foreground">No upcoming events scheduled at the moment.</p>
-                            </div>
-                        )}
-                    </div>
-
-                    <div className="mt-8 text-center md:hidden">
-                        <Button variant="outline" className="rounded-full w-full" asChild>
-                            <Link to="/events">View All Events</Link>
-                        </Button>
-                    </div>
-                </div>
-            </section>
 
 
 

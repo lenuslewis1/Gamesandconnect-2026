@@ -174,9 +174,8 @@ const AdminLogin = () => {
                 </CardContent>
                 <CardFooter className="flex flex-col space-y-4">
                     {!isForgotPassword && (
-                        <div className="text-center text-sm">
-                            <span className="text-slate-500">Need access? </span>
-                            <Link to="/admin/signup" className="text-primary hover:underline font-medium">Contact support</Link>
+                        <div className="text-center text-sm pb-2">
+                            <span className="text-slate-500">Authorized access only.</span>
                         </div>
                     )}
                     <Link to="/" className="inline-flex items-center text-xs text-slate-500 hover:text-white transition-colors">
