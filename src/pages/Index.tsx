@@ -8,7 +8,31 @@ import ScrollingGallery from "@/components/home/ScrollingGallery";
 import { useEvents } from "@/hooks/useSupabaseData";
 import { Loader2 } from "lucide-react";
 import FloatingEdgeIcons from "@/components/home/FloatingEdgeIcons";
+import SEOHead from "@/components/seo/SEOHead";
+import { FAQSchema, BreadcrumbSchema } from "@/components/seo/StructuredData";
 
+const homeFAQs = [
+    {
+        question: "What is Games and Connect?",
+        answer: "Games and Connect is Ghana's leading social events community. We organise monthly squad games days, travel adventures, and team building experiences in Accra and across Ghana for young professionals and fun-loving adults."
+    },
+    {
+        question: "Where are Games and Connect events held?",
+        answer: "Our events take place across Accra including East Legon, Tema, and other vibrant locations. We also organise travel trips to destinations like Cape Coast, Akosombo, and other scenic spots across Ghana."
+    },
+    {
+        question: "How do I join a Games and Connect event?",
+        answer: "Browse our upcoming events page, select the event you want to attend, and register online. You can pay via mobile money. Join our WhatsApp community for early access to events and exclusive discounts."
+    },
+    {
+        question: "How much do Games and Connect events cost?",
+        answer: "Event prices vary from GH₵50 to GH₵500 depending on the activity. Squad games days are affordable starting from GH₵50, while travel adventures and premium experiences may cost more. Part payment plans are available."
+    },
+    {
+        question: "What types of events does Games and Connect organise?",
+        answer: "We organise squad games days with outdoor and indoor games, travel adventures to beautiful destinations across Ghana, corporate team building events, and social networking events for young professionals in Accra."
+    }
+];
 
 const Index = () => {
     const { data: events = [], isLoading } = useEvents();
@@ -42,6 +66,13 @@ const Index = () => {
 
     return (
         <Layout>
+            <SEOHead
+                title="Fun Events & Squad Games in Accra"
+                description="Join Ghana's leading social events community. Monthly squad games days, travel adventures, team building, and networking events in Accra. Book your next experience today!"
+                canonical="/"
+            />
+            <FAQSchema faqs={homeFAQs} />
+            <BreadcrumbSchema items={[{ name: "Home", url: "/" }]} />
             <FloatingEdgeIcons />
             <Hero />
 

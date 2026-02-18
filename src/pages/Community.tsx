@@ -18,6 +18,19 @@ import {
     Quote,
     ArrowRight
 } from "lucide-react";
+import SEOHead from "@/components/seo/SEOHead";
+import { FAQSchema, BreadcrumbSchema } from "@/components/seo/StructuredData";
+
+const communityFAQs = [
+    {
+        question: "How do I join the Games and Connect community?",
+        answer: "Join our WhatsApp community by clicking the join button on our website. It's free and gives you priority access to events, exclusive discounts, and a network of fun young people in Ghana."
+    },
+    {
+        question: "Is the Games and Connect community free?",
+        answer: "Yes! Joining the Games and Connect WhatsApp community is completely free. You get priority access to event registrations, exclusive member discounts, and weekly trivia competitions with cash prizes."
+    }
+];
 
 const benefits = [
     {
@@ -72,6 +85,13 @@ const Community = () => {
 
     return (
         <Layout>
+            <SEOHead
+                title="Join Ghana's Most Fun Community"
+                description="Be part of 2,000+ young Ghanaians who love games, travel, and social events. Join the Games and Connect WhatsApp community for priority event access and exclusive deals."
+                canonical="/community"
+            />
+            <FAQSchema faqs={communityFAQs} />
+            <BreadcrumbSchema items={[{ name: "Home", url: "/" }, { name: "Community", url: "/community" }]} />
             <PageHeader
                 title="Join The Inner Circle"
                 subtitle="Ghana's most vibrant community of travelers, gamers, and thrill-seekers"

@@ -1,6 +1,7 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 
 const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY');
+const ADMIN_EMAIL = 'gamesandconnectgh@gmail.com';
 
 const corsHeaders = {
     'Access-Control-Allow-Origin': '*',
@@ -176,6 +177,151 @@ function generateEmailHtml(data: EmailPayload): string {
 </html>`.trim();
 }
 
+function generateAdminEmailHtml(data: EmailPayload): string {
+    const formattedDate = data.event_date
+        ? new Date(data.event_date).toLocaleDateString('en-GB', {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+        })
+        : 'TBA';
+
+    const now = new Date().toLocaleString('en-GB', {
+        dateStyle: 'medium',
+        timeStyle: 'short',
+    });
+
+    return `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Registration Alert</title>
+</head>
+<body style="margin: 0; padding: 0; background-color: #f4f4f7; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color: #f4f4f7;">
+        <tr>
+            <td align="center" style="padding: 40px 20px;">
+                <table role="presentation" width="600" cellspacing="0" cellpadding="0" style="background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 24px rgba(0,0,0,0.08);">
+                    
+                    <!-- Header -->
+                    <tr>
+                        <td style="background: linear-gradient(135deg, #1a1a2e, #16213e); padding: 32px 40px; text-align: center;">
+                            <h1 style="margin: 0; color: #ffffff; font-size: 22px; font-weight: 700;">
+                                🔔 New Registration Received
+                            </h1>
+                            <p style="margin: 8px 0 0; color: rgba(255,255,255,0.7); font-size: 14px;">
+                                ${now}
+                            </p>
+                        </td>
+                    </tr>
+
+                    <!-- Registration Details -->
+                    <tr>
+                        <td style="padding: 32px 40px;">
+                            <h2 style="margin: 0 0 20px; color: #fd4c01; font-size: 18px; font-weight: 700;">
+                                ${data.event_title}
+                            </h2>
+
+                            <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color: #f8f9fa; border-radius: 12px; border: 1px solid #e9ecef;">
+                                <tr>
+                                    <td style="padding: 20px;">
+                                        <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+                                            <tr>
+                                                <td style="padding: 8px 0; color: #6c757d; font-size: 13px; width: 130px; vertical-align: top;">👤 Customer</td>
+                                                <td style="padding: 8px 0; color: #1a1a1a; font-size: 14px; font-weight: 600;">${data.customer_name}</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="padding: 8px 0; color: #6c757d; font-size: 13px; vertical-align: top;">✉️ Email</td>
+                                                <td style="padding: 8px 0; color: #1a1a1a; font-size: 14px;">${data.to}</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="padding: 8px 0; color: #6c757d; font-size: 13px; vertical-align: top;">📅 Event Date</td>
+                                                <td style="padding: 8px 0; color: #1a1a1a; font-size: 14px;">${formattedDate}</td>
+                                            </tr>
+                                            ${data.event_time ? `
+                                            <tr>
+                                                <td style="padding: 8px 0; color: #6c757d; font-size: 13px; vertical-align: top;">🕐 Time</td>
+                                                <td style="padding: 8px 0; color: #1a1a1a; font-size: 14px;">${data.event_time}</td>
+                                            </tr>` : ''}
+                                            <tr>
+                                                <td style="padding: 8px 0; color: #6c757d; font-size: 13px; vertical-align: top;">📍 Location</td>
+                                                <td style="padding: 8px 0; color: #1a1a1a; font-size: 14px;">${data.event_location}</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="padding: 8px 0; color: #6c757d; font-size: 13px; vertical-align: top;">🎟️ Ticket Type</td>
+                                                <td style="padding: 8px 0; color: #1a1a1a; font-size: 14px; font-weight: 600;">${data.ticket_tier}</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="padding: 8px 0; color: #6c757d; font-size: 13px; vertical-align: top;">🔢 Quantity</td>
+                                                <td style="padding: 8px 0; color: #1a1a1a; font-size: 14px; font-weight: 600;">${data.ticket_count}</td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+
+                    <!-- Amount & Reference -->
+                    <tr>
+                        <td style="padding: 0 40px 32px;">
+                            <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+                                <tr>
+                                    <td width="50%" style="padding-right: 8px;">
+                                        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color: #e8f5e9; border-radius: 12px; border: 1px solid #c8e6c9;">
+                                            <tr>
+                                                <td style="padding: 16px; text-align: center;">
+                                                    <p style="margin: 0 0 4px; color: #2e7d32; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; font-weight: 600;">Amount Paid</p>
+                                                    <p style="margin: 0; color: #1b5e20; font-size: 22px; font-weight: 700;">GH₵${data.total_amount}</p>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    <td width="50%" style="padding-left: 8px;">
+                                        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color: #e3f2fd; border-radius: 12px; border: 1px solid #bbdefb;">
+                                            <tr>
+                                                <td style="padding: 16px; text-align: center;">
+                                                    <p style="margin: 0 0 4px; color: #1565c0; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; font-weight: 600;">Booking Ref</p>
+                                                    <p style="margin: 0; color: #0d47a1; font-size: 18px; font-weight: 700;">#${data.booking_reference}</p>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+
+                    ${data.transaction_id ? `
+                    <!-- Transaction ID -->
+                    <tr>
+                        <td style="padding: 0 40px 24px;">
+                            <p style="margin: 0; color: #999; font-size: 12px; text-align: center;">
+                                Transaction ID: ${data.transaction_id}
+                            </p>
+                        </td>
+                    </tr>` : ''}
+
+                    <!-- Footer -->
+                    <tr>
+                        <td style="padding: 20px 40px; border-top: 1px solid #f0f0f0; text-align: center;">
+                            <p style="margin: 0; color: #aaa; font-size: 12px;">
+                                This is an automated notification from Games & Connect.
+                            </p>
+                        </td>
+                    </tr>
+
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>`.trim();
+}
+
 Deno.serve(async (req: Request) => {
     // Handle CORS preflight
     if (req.method === 'OPTIONS') {
@@ -204,7 +350,7 @@ Deno.serve(async (req: Request) => {
 
         const html = generateEmailHtml(payload);
 
-        // Send via Resend API
+        // 1. Send confirmation email to the registrant
         const res = await fetch('https://api.resend.com/emails', {
             method: 'POST',
             headers: {
@@ -222,17 +368,52 @@ Deno.serve(async (req: Request) => {
         const data = await res.json();
 
         if (!res.ok) {
-            console.error('Resend API error:', data);
+            console.error('Resend API error (customer email):', data);
             return new Response(
                 JSON.stringify({ error: 'Failed to send email', details: data }),
                 { status: res.status, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
             );
         }
 
-        console.log('Confirmation email sent successfully:', data);
+        console.log('Customer confirmation email sent successfully:', data);
+
+        // 2. Send notification email to admin (best-effort, non-blocking)
+        let adminEmailResult = null;
+        try {
+            const adminHtml = generateAdminEmailHtml(payload);
+
+            const adminRes = await fetch('https://api.resend.com/emails', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${RESEND_API_KEY}`,
+                },
+                body: JSON.stringify({
+                    from: 'Vibes Ventures <onboarding@resend.dev>',
+                    to: [ADMIN_EMAIL],
+                    subject: `🔔 New Registration: ${payload.customer_name} — ${payload.event_title}`,
+                    html: adminHtml,
+                }),
+            });
+
+            adminEmailResult = await adminRes.json();
+
+            if (!adminRes.ok) {
+                console.error('Resend API error (admin email):', adminEmailResult);
+            } else {
+                console.log('Admin notification email sent successfully:', adminEmailResult);
+            }
+        } catch (adminError) {
+            console.error('Error sending admin notification email (non-fatal):', adminError);
+        }
 
         return new Response(
-            JSON.stringify({ success: true, message: 'Confirmation email sent', data }),
+            JSON.stringify({
+                success: true,
+                message: 'Confirmation email sent',
+                data,
+                admin_email: adminEmailResult,
+            }),
             { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         );
 

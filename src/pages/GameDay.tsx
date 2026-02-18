@@ -11,6 +11,8 @@ import ScrollReveal from "@/components/ui/ScrollReveal";
 import TextMotion from "@/components/ui/TextMotion";
 import { useGameDayScoreboards, useUpcomingGameDayEvent, useGameDayGallery } from "@/hooks/useSupabaseData";
 import { format } from "date-fns";
+import SEOHead from "@/components/seo/SEOHead";
+import { FAQSchema, BreadcrumbSchema } from "@/components/seo/StructuredData";
 
 const GallerySection = () => {
     const { data: images = [] } = useGameDayGallery();
@@ -71,6 +73,17 @@ const GameDay = () => {
 
     return (
         <Layout>
+            <SEOHead
+                title="Squad Games Day in Accra — Monthly Fun Games Event"
+                description="Join the monthly Squad Games Day in Accra! Outdoor team games, fierce competition, and good vibes. Check the leaderboard, see upcoming dates, and register now."
+                canonical="/game-day"
+            />
+            <FAQSchema faqs={[
+                { question: "What is Squad Games Day?", answer: "Squad Games Day is a monthly outdoor games event in Accra organised by Games and Connect. Teams compete in fun physical and mental challenges for points on the season leaderboard." },
+                { question: "Where is Squad Games Day held?", answer: "Squad Games Day events are held at various outdoor venues across Accra, including East Legon and other vibrant locations. Each event may have a different venue." },
+                { question: "How do I register for Squad Games Day?", answer: "You can register for the next Squad Games Day directly on our website. Click the register button on the event page, choose your ticket tier, and pay via mobile money." }
+            ]} />
+            <BreadcrumbSchema items={[{ name: "Home", url: "/" }, { name: "Game Day", url: "/game-day" }]} />
             <PageHeader
                 title="Game Day"
                 subtitle="High energy, fierce competition, and endless vibes"

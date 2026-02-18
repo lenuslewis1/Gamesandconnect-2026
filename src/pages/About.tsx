@@ -6,10 +6,34 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import TextMotion from "@/components/ui/TextMotion";
 import ScrollReveal from "@/components/ui/ScrollReveal";
+import SEOHead from "@/components/seo/SEOHead";
+import { FAQSchema, BreadcrumbSchema } from "@/components/seo/StructuredData";
+
+const aboutFAQs = [
+  {
+    question: "Who founded Games and Connect?",
+    answer: "Games and Connect was founded in 2023 by a team of passionate young Ghanaians who wanted to create meaningful social experiences. Based in Accra, we've grown into Ghana's leading youth events community."
+  },
+  {
+    question: "What is the mission of Games and Connect?",
+    answer: "Our mission is to cure loneliness by connecting young people through play, travel, and adventure. We create safe, fun, and inclusive events where people can make real friendships and lasting memories in Ghana."
+  },
+  {
+    question: "How can I partner with Games and Connect?",
+    answer: "We welcome partnerships with brands, venues, and organisations in Ghana. Contact us at hello@gamesandconnect.com or use the form on our contact page to discuss sponsorship, collaboration, and corporate event opportunities."
+  }
+];
 
 const About = () => {
   return (
     <Layout>
+      <SEOHead
+        title="About Us — Social Events for Young People in Ghana"
+        description="Learn about Games and Connect, Ghana's leading youth events community. We connect young professionals through squad games, travel adventures, and team building in Accra."
+        canonical="/about"
+      />
+      <FAQSchema faqs={aboutFAQs} />
+      <BreadcrumbSchema items={[{ name: "Home", url: "/" }, { name: "About", url: "/about" }]} />
       {/* Hero Section */}
       <section className="relative h-[60vh] flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 z-0">

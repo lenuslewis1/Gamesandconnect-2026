@@ -22,6 +22,8 @@ interface Registration {
     event_id: number;
     number_of_participants: number;
     payment_status: string;
+    total_amount: number;
+    amount_paid: number;
     created_at: string;
 }
 
@@ -59,6 +61,8 @@ const EventRegistrations = () => {
             case 'success':
             case 'successful':
                 return <Badge className="bg-green-500">Paid</Badge>
+            case 'partial':
+                return <Badge className="bg-amber-500">Partial</Badge>
             case 'pending':
                 return <Badge variant="outline" className="text-yellow-600 border-yellow-600">Pending</Badge>
             default:
@@ -91,13 +95,16 @@ const EventRegistrations = () => {
                                 <TableHead>Name</TableHead>
                                 <TableHead>Email</TableHead>
                                 <TableHead>Participants</TableHead>
+                                <TableHead>Total</TableHead>
+                                <TableHead>Paid</TableHead>
+                                <TableHead>Balance</TableHead>
                                 <TableHead>Status</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
                             {registrations.length === 0 ? (
                                 <TableRow>
-                                    <TableCell colSpan={5} className="text-center">
+                                    <TableCell colSpan={8} className="text-center">
                                         No registrations found.
                                     </TableCell>
                                 </TableRow>
@@ -110,6 +117,13 @@ const EventRegistrations = () => {
                                         <TableCell className="font-medium">{reg.full_name}</TableCell>
                                         <TableCell>{reg.email}</TableCell>
                                         <TableCell>{reg.number_of_participants}</TableCell>
+                                        <TableCell>GH₵{Number(reg.total_amount || 0)}</TableCell>
+                                        <TableCell>GH₵{Number(reg.amount_paid || 0)}</TableCell>
+                                        <TableCell>
+                                            {Number(reg.total_amount || 0) - Number(reg.amount_paid || 0) > 0
+                                                ? `GH₵${Number(reg.total_amount || 0) - Number(reg.amount_paid || 0)}`
+                                                : '—'}
+                                        </TableCell>
                                         <TableCell>{getStatusBadge(reg.payment_status)}</TableCell>
                                     </TableRow>
                                 ))

@@ -19,16 +19,23 @@ Deno.serve(async (req: Request) => {
             account_number,
             account_name,
             amount,
+            total_amount,
+            payment_amount,
             network,
             narration
         } = await req.json();
+
+        // Use payment_amount if provided (part payment), otherwise fall back to amount
+        const actualPaymentAmount = payment_amount || amount;
+        const actualTotalAmount = total_amount || amount;
 
         console.log('Payment request:', {
             event_id,
             registration_id,
             account_number,
             account_name,
-            amount,
+            amount: actualPaymentAmount,
+            total_amount: actualTotalAmount,
             network,
             narration
         });
@@ -80,12 +87,11 @@ Deno.serve(async (req: Request) => {
         // { "accountNumber": "...", "amount": "...", "narration": "...", "network": "..." }
         const paymentPayload = {
             accountNumber: account_number,
-            amount: String(amount), // Ensuring string as per example "1"
+            amount: String(actualPaymentAmount), // Use the actual payment amount (may be partial)
             narration: narration || 'Event Payment',
             network: networkCode,
-            partnerCode: partnerCode, // Adding partner code just in case needed in body
-            callbackUrl: callbackUrl, // Passing callback URL
-            // Add metadata/extras if possible, or mapping relies on callback handling
+            partnerCode: partnerCode,
+            callbackUrl: callbackUrl,
         };
 
         console.log('Calling Payment API:', paymentApiUrl);
@@ -173,7 +179,7 @@ Deno.serve(async (req: Request) => {
                 dest_bank: networkCode,
                 account_number: account_number,
                 account_name: account_name || 'Customer',
-                amount: Number(amount),
+                amount: Number(actualPaymentAmount),
                 narration: narration || 'Event Payment',
                 status: initialStatus,
                 response: responseData,
@@ -185,13 +191,41 @@ Deno.serve(async (req: Request) => {
             console.log('Payment record stored successfully');
         }
 
-        // If payment is already completed, update registration too
+        // Update registration with total_amount and amount_paid
+        const isPartPayment = actualPaymentAmount < actualTotalAmount;
+        const regUpdate: Record<string, any> = {
+            total_amount: actualTotalAmount,
+        };
+
         if (initialStatus === 'completed') {
-            await supabase
-                .from('registrations')
-                .update({ payment_status: 'paid' })
-                .eq('id', registration_id);
+            // Payment already confirmed by gateway immediately
+            regUpdate.amount_paid = actualPaymentAmount;
+            regUpdate.payment_status = isPartPayment ? 'partial' : 'paid';
+        } else {
+            // Payment still pending gateway confirmation
+            // Don't update amount_paid yet — wait for callback
+            regUpdate.payment_status = 'pending';
         }
+
+        const { error: regError } = await supabase
+            .from('registrations')
+            .update(regUpdate)
+            .eq('id', registration_id);
+
+        if (regError) {
+            console.error('Error updating registration:', regError);
+        } else {
+            console.log('Registration updated:', regUpdate);
+        }
+
+        // Also update event_registrations if it exists
+        await supabase
+            .from('event_registrations')
+            .update({
+                total_amount: actualTotalAmount,
+                amount_paid: initialStatus === 'completed' ? actualPaymentAmount : 0,
+            })
+            .eq('id', registration_id);
 
         // Return success response with status info for frontend
         return new Response(

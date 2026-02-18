@@ -67,22 +67,28 @@ Deno.serve(async (req: Request) => {
             const registration = registrations && registrations.length > 0 ? registrations[0] : null;
             const regStatus = (registration?.payment_status || 'pending').toLowerCase().trim();
             const regConfirmed = ['completed', 'confirmed', 'success', 'successful', 'paid'].includes(regStatus);
+            const regPartial = regStatus === 'partial';
             const regFailed = ['failed', 'declined', 'cancelled', 'canceled', 'rejected', 'error'].includes(regStatus);
-            const responseStatus = regConfirmed ? 'confirmed' : regFailed ? 'failed' : 'pending';
+            const responseStatus = regConfirmed ? 'confirmed' : regPartial ? 'confirmed' : regFailed ? 'failed' : 'pending';
 
             return new Response(
                 JSON.stringify({
                     success: true,
                     registration_id,
                     status: responseStatus,
-                    is_confirmed: regConfirmed,
+                    is_confirmed: regConfirmed || regPartial,
                     is_failed: regFailed,
                     message: regConfirmed
                         ? 'Payment confirmed'
-                        : regFailed
-                            ? 'Payment failed'
-                            : 'Payment is still being processed',
+                        : regPartial
+                            ? 'Part payment confirmed'
+                            : regFailed
+                                ? 'Payment failed'
+                                : 'Payment is still being processed',
                     payment_status: regStatus,
+                    total_amount: Number(registration?.total_amount || 0),
+                    amount_paid: Number(registration?.amount_paid || 0),
+                    balance_remaining: Math.max(0, Number(registration?.total_amount || 0) - Number(registration?.amount_paid || 0)),
                     updated_at: registration?.updated_at,
                 }),
                 { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
@@ -147,29 +153,59 @@ Deno.serve(async (req: Request) => {
 
         console.log(`Payment status in DB: ${paymentStatus}, returning: ${responseStatus}, is_confirmed: ${isConfirmed}, is_failed: ${isFailed}`);
 
-        // If confirmed, also update the registration
+        // If confirmed, also update the registration with proper part-payment handling
         if (isConfirmed) {
+            // Fetch current registration to check part payment status
+            const { data: regData } = await supabase
+                .from('registrations')
+                .select('total_amount, amount_paid')
+                .eq('id', registration_id)
+                .single();
+
+            const totalAmount = Number(regData?.total_amount || 0);
+            const currentAmountPaid = Number(regData?.amount_paid || 0);
+            const newAmountPaid = currentAmountPaid > 0 ? currentAmountPaid : Number(payment.amount || 0);
+            const fullyPaid = totalAmount > 0 ? newAmountPaid >= totalAmount : true;
+
             await supabase
                 .from('registrations')
-                .update({ payment_status: 'paid' })
+                .update({
+                    payment_status: fullyPaid ? 'paid' : 'partial',
+                    amount_paid: newAmountPaid,
+                })
                 .eq('id', registration_id);
         }
+
+        // Fetch registration for amount data in response
+        const { data: regForResponse } = await supabase
+            .from('registrations')
+            .select('total_amount, amount_paid, payment_status')
+            .eq('id', registration_id)
+            .single();
+
+        const regTotalAmount = Number(regForResponse?.total_amount || 0);
+        const regAmountPaid = Number(regForResponse?.amount_paid || 0);
+        const regPaymentStatus = regForResponse?.payment_status || '';
+        const isPartialPayment = regPaymentStatus === 'partial';
 
         // Return the payment status
         return new Response(
             JSON.stringify({
                 success: true,
                 registration_id,
-                status: responseStatus,
-                is_confirmed: isConfirmed,
+                status: isPartialPayment ? 'confirmed' : responseStatus,
+                is_confirmed: isConfirmed || isPartialPayment,
                 is_failed: isFailed,
                 message: isConfirmed
-                    ? 'Payment confirmed'
+                    ? (isPartialPayment ? 'Part payment confirmed' : 'Payment confirmed')
                     : isFailed
                         ? 'Payment failed'
                         : 'Payment is still being processed',
-                payment_status: paymentStatus,
+                payment_status: isPartialPayment ? 'partial' : paymentStatus,
                 transaction_id: payment.transaction_id,
+                total_amount: regTotalAmount,
+                amount_paid: regAmountPaid,
+                balance_remaining: Math.max(0, regTotalAmount - regAmountPaid),
                 created_at: payment.created_at,
             }),
             { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }

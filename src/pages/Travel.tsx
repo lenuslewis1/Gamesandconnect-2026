@@ -17,6 +17,23 @@ import {
     Loader2,
     ArrowRight
 } from "lucide-react";
+import SEOHead from "@/components/seo/SEOHead";
+import { FAQSchema, BreadcrumbSchema } from "@/components/seo/StructuredData";
+
+const travelFAQs = [
+    {
+        question: "Where does Games and Connect travel to?",
+        answer: "We organise group trips to stunning destinations across Ghana including Cape Coast, Akosombo, Ada Foah, Aburi Mountains, and more. Each trip features curated experiences at must-visit locations."
+    },
+    {
+        question: "How much do travel trips cost?",
+        answer: "Trip prices vary by destination and duration, typically between GH₵300 and GH₵2,000. We offer flexible part-payment plans so you can secure your spot with a deposit and pay the rest in installments."
+    },
+    {
+        question: "What is included in a Games and Connect trip?",
+        answer: "Our travel packages include transportation, accommodation, planned activities, and professional photography. You just show up and enjoy the experience with a curated group of fun young people."
+    }
+];
 
 const whyTravel = [
     {
@@ -55,6 +72,13 @@ const Travel = () => {
 
     return (
         <Layout>
+            <SEOHead
+                title="Travel & Adventure Trips Across Ghana"
+                description="Explore Ghana's most beautiful destinations with Games and Connect. Group travel trips to Cape Coast, Akosombo, Ada Foah & more. Flexible payment plans available."
+                canonical="/travel"
+            />
+            <FAQSchema faqs={travelFAQs} />
+            <BreadcrumbSchema items={[{ name: "Home", url: "/" }, { name: "Travel", url: "/travel" }]} />
             <PageHeader
                 title="Travel Experiences"
                 subtitle="Explore Ghana's most beautiful destinations with friends you haven't met yet"

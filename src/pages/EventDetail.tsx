@@ -18,6 +18,8 @@ import {
 } from "lucide-react";
 import { useEvent, useEvents, useTestimonials } from "@/hooks/useSupabaseData";
 import BookingModal from "@/components/events/BookingModal";
+import SEOHead from "@/components/seo/SEOHead";
+import { EventSchema, FAQSchema, BreadcrumbSchema } from "@/components/seo/StructuredData";
 import ScrollReveal from "@/components/ui/ScrollReveal";
 
 // Helper to format date
@@ -91,6 +93,28 @@ const EventDetail = () => {
 
     return (
         <Layout>
+            <SEOHead
+                title={`${event.title} — Event in ${event.location}`}
+                description={event.description?.slice(0, 155) || `Join ${event.title} by Games and Connect in ${event.location}. Book your spot for this exciting event in Ghana!`}
+                canonical={`/events/${id}`}
+                ogImage={event.image_url || undefined}
+            />
+            <EventSchema
+                name={event.title}
+                description={event.description}
+                startDate={event.date}
+                location={event.location}
+                image={event.image_url || undefined}
+                price={event.price || undefined}
+                url={`https://gamesandconnect.com/events/${id}`}
+                timeRange={event.time_range}
+                capacity={event.capacity}
+            />
+            <BreadcrumbSchema items={[
+                { name: "Home", url: "/" },
+                { name: "Events", url: "/events" },
+                { name: event.title, url: `/events/${id}` }
+            ]} />
             {/* Hero Section */}
             <section className="relative h-[70vh] min-h-[500px] flex items-end overflow-hidden">
                 <div className="absolute inset-0 z-0">
@@ -211,7 +235,29 @@ const EventDetail = () => {
                 </div>
             </section>
 
+            {/* Event Flyer Section */}
+            {event.image_url && (
+                <section className="py-20 bg-background">
+                    <div className="container max-w-4xl">
+                        <ScrollReveal>
+                            <div className="text-center mb-10">
+                                <h2 className="font-serif text-3xl md:text-4xl font-medium mb-3">Event Flyer</h2>
+                                <p className="text-muted-foreground text-lg">Full details at a glance</p>
+                            </div>
+                        </ScrollReveal>
 
+                        <ScrollReveal>
+                            <div className="rounded-3xl overflow-hidden shadow-xl border border-[#FDE8D0] bg-white">
+                                <img
+                                    src={event.image_url}
+                                    alt={`${event.title} flyer`}
+                                    className="w-full h-auto object-contain transition-transform duration-500 hover:scale-[1.02]"
+                                />
+                            </div>
+                        </ScrollReveal>
+                    </div>
+                </section>
+            )}
 
             {/* Testimonial Section */}
             <section className="py-20 bg-[#FFF7ED]">

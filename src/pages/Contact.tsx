@@ -24,6 +24,8 @@ import {
     Twitter
 } from "lucide-react";
 import ScrollReveal from "@/components/ui/ScrollReveal";
+import SEOHead from "@/components/seo/SEOHead";
+import { BreadcrumbSchema } from "@/components/seo/StructuredData";
 
 const Contact = () => {
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -40,6 +42,12 @@ const Contact = () => {
 
     return (
         <Layout>
+            <SEOHead
+                title="Contact Us — Reach Games and Connect in Accra"
+                description="Get in touch with Games and Connect. Questions about events, team building, or partnerships in Ghana? Email, call, or send us a message. Based in Accra, Ghana."
+                canonical="/contact"
+            />
+            <BreadcrumbSchema items={[{ name: "Home", url: "/" }, { name: "Contact", url: "/contact" }]} />
             <PageHeader
                 title="Get in Touch"
                 subtitle="We'd love to hear from you. Questions, feedback, or just want to say hi?"

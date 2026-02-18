@@ -9,6 +9,8 @@ import { useEvents } from "@/hooks/useSupabaseData";
 import { Calendar, MapPin, Clock, Loader2, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import ScrollReveal from "@/components/ui/ScrollReveal";
+import SEOHead from "@/components/seo/SEOHead";
+import { BreadcrumbSchema } from "@/components/seo/StructuredData";
 
 const Events = () => {
     const { data: events = [], isLoading, error } = useEvents();
@@ -53,6 +55,12 @@ const Events = () => {
 
     return (
         <Layout>
+            <SEOHead
+                title="Upcoming Events & Things To Do in Accra"
+                description="Discover fun upcoming events in Accra, Ghana. Squad games, travel adventures, trivia nights, and social networking events from Games and Connect. Book your spot today!"
+                canonical="/events"
+            />
+            <BreadcrumbSchema items={[{ name: "Home", url: "/" }, { name: "Events", url: "/events" }]} />
             <PageHeader
                 title="Games and Connect Events"
                 subtitle="Join us for games, parties, trivia nights, and travel adventures"

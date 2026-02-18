@@ -114,15 +114,45 @@ Deno.serve(async (req: Request) => {
                 updated = true;
                 console.log(`Updated payment record(s):`, updatedPayments);
 
-                // Also update registrations table
+                // Update registrations table with accumulated amount_paid
                 for (const p of updatedPayments) {
                     if (p.registration_id) {
-                        const regStatus = isSuccess ? 'paid' : isFailed ? 'failed' : 'pending';
-                        await supabase
-                            .from('registrations')
-                            .update({ payment_status: regStatus })
-                            .eq('id', p.registration_id);
-                        console.log(`Updated registration ${p.registration_id} to ${regStatus}`);
+                        if (isSuccess) {
+                            // Fetch the payment amount and current registration
+                            const { data: paymentRecord } = await supabase
+                                .from('payments')
+                                .select('amount')
+                                .eq('id', p.id)
+                                .single();
+
+                            const { data: registration } = await supabase
+                                .from('registrations')
+                                .select('total_amount, amount_paid')
+                                .eq('id', p.registration_id)
+                                .single();
+
+                            const paymentAmount = paymentRecord?.amount || 0;
+                            const currentAmountPaid = Number(registration?.amount_paid || 0);
+                            const totalAmount = Number(registration?.total_amount || 0);
+                            const newAmountPaid = currentAmountPaid + Number(paymentAmount);
+                            const fullyPaid = totalAmount > 0 ? newAmountPaid >= totalAmount : true;
+
+                            await supabase
+                                .from('registrations')
+                                .update({
+                                    payment_status: fullyPaid ? 'paid' : 'partial',
+                                    amount_paid: newAmountPaid,
+                                })
+                                .eq('id', p.registration_id);
+                            console.log(`Updated registration ${p.registration_id}: amount_paid=${newAmountPaid}, status=${fullyPaid ? 'paid' : 'partial'}`);
+                        } else {
+                            const regStatus = isFailed ? 'pending' : 'pending';
+                            await supabase
+                                .from('registrations')
+                                .update({ payment_status: regStatus })
+                                .eq('id', p.registration_id);
+                            console.log(`Updated registration ${p.registration_id} to ${regStatus}`);
+                        }
                     }
                 }
             } else {
@@ -150,12 +180,42 @@ Deno.serve(async (req: Request) => {
                 updated = true;
             }
 
-            // Also update registrations table
-            const regStatus = isSuccess ? 'paid' : isFailed ? 'failed' : 'pending';
-            await supabase
-                .from('registrations')
-                .update({ payment_status: regStatus })
-                .eq('id', registrationId);
+            // Also update registrations table with accumulated amount_paid
+            if (isSuccess) {
+                const { data: paymentRecord } = await supabase
+                    .from('payments')
+                    .select('amount')
+                    .eq('registration_id', registrationId)
+                    .order('created_at', { ascending: false })
+                    .limit(1)
+                    .single();
+
+                const { data: registration } = await supabase
+                    .from('registrations')
+                    .select('total_amount, amount_paid')
+                    .eq('id', registrationId)
+                    .single();
+
+                const paymentAmount = paymentRecord?.amount || 0;
+                const currentAmountPaid = Number(registration?.amount_paid || 0);
+                const totalAmount = Number(registration?.total_amount || 0);
+                const newAmountPaid = currentAmountPaid + Number(paymentAmount);
+                const fullyPaid = totalAmount > 0 ? newAmountPaid >= totalAmount : true;
+
+                await supabase
+                    .from('registrations')
+                    .update({
+                        payment_status: fullyPaid ? 'paid' : 'partial',
+                        amount_paid: newAmountPaid,
+                    })
+                    .eq('id', registrationId);
+            } else {
+                const regStatus = isFailed ? 'pending' : 'pending';
+                await supabase
+                    .from('registrations')
+                    .update({ payment_status: regStatus })
+                    .eq('id', registrationId);
+            }
         }
 
         // Mark callback as processed

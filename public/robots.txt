@@ -1,14 +1,29 @@
-User-agent: Googlebot
+# robots.txt for Games and Connect
+# https://gamesandconnect.com
+
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /auth
+
+# Sitemap
+Sitemap: https://gamesandconnect.com/sitemap.xml
+
+# AI Crawlers — allowed to index content
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: GPTBot
+Allow: /
+
+User-agent: Google-Extended
 Allow: /
 
 User-agent: Bingbot
 Allow: /
 
-User-agent: Twitterbot
+User-agent: PerplexityBot
 Allow: /
 
-User-agent: facebookexternalhit
-Allow: /
-
-User-agent: *
+User-agent: ClaudeBot
 Allow: /

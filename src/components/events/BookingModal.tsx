@@ -111,6 +111,10 @@ const BookingModal = ({ isOpen, onClose, event }: BookingModalProps) => {
     const [selectedTierId, setSelectedTierId] = useState<number | null>(null);
     const [loadingTiers, setLoadingTiers] = useState(false);
 
+    // Part payment
+    const [paymentType, setPaymentType] = useState<"full" | "part">("full");
+    const [partPaymentAmount, setPartPaymentAmount] = useState<string>("");
+
     const form = useForm<FormValues>({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -171,6 +175,13 @@ const BookingModal = ({ isOpen, onClose, event }: BookingModalProps) => {
         ? selectedTier.price
         : parseFloat(event.price?.replace(/[^0-9.]/g, '') || "0");
     const totalPrice = unitPrice * (ticketCount || 0);
+
+    // Part payment calculations
+    const minPartPayment = Math.max(Math.ceil(totalPrice * 0.5), Math.min(10, totalPrice));
+    const parsedPartAmount = parseFloat(partPaymentAmount) || 0;
+    const payingAmount = paymentType === "full" ? totalPrice : parsedPartAmount;
+    const balanceRemaining = totalPrice - payingAmount;
+    const isPartAmountValid = paymentType === "full" || (parsedPartAmount >= minPartPayment && parsedPartAmount < totalPrice);
 
     // Poll for payment status
     const checkPaymentStatus = async () => {
@@ -288,6 +299,14 @@ const BookingModal = ({ isOpen, onClose, event }: BookingModalProps) => {
             }
         } else {
             // Paid event - proceed to payment
+            if (paymentType === "part" && !isPartAmountValid) {
+                toast({
+                    variant: "destructive",
+                    title: "Invalid Amount",
+                    description: `Part payment must be at least GH₵${minPartPayment} and less than the full total.`,
+                });
+                return;
+            }
             setStep("payment");
         }
     };
@@ -352,7 +371,8 @@ const BookingModal = ({ isOpen, onClose, event }: BookingModalProps) => {
             registrationIdRef.current = registration.id;
 
             const tierName = selectedTier ? selectedTier.name : 'Standard';
-            const narration = `${event.title} - ${tierName} x${registrationData.ticket_count}`;
+            const isPartPayment = paymentType === "part" && payingAmount < totalPrice;
+            const narration = `${event.title} - ${tierName} x${registrationData.ticket_count}${isPartPayment ? ' (Part Payment)' : ''}`;
 
             // Call pay Edge Function
             const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/pay`, {
@@ -366,7 +386,9 @@ const BookingModal = ({ isOpen, onClose, event }: BookingModalProps) => {
                     registration_id: registration.id,
                     account_number: payAccountNumber,
                     account_name: registrationData.full_name,
-                    amount: totalPrice,
+                    amount: payingAmount,
+                    total_amount: totalPrice,
+                    payment_amount: payingAmount,
                     network: selectedNetwork,
                     narration: narration,
                 }),
@@ -455,6 +477,8 @@ const BookingModal = ({ isOpen, onClose, event }: BookingModalProps) => {
         setPollCount(0);
         pollCountRef.current = 0;
         setSelectedTierId(ticketTiers[0]?.id || null);
+        setPaymentType("full");
+        setPartPaymentAmount("");
         form.reset();
         onClose();
     };
@@ -595,10 +619,74 @@ const BookingModal = ({ isOpen, onClose, event }: BookingModalProps) => {
                                         </div>
                                     </div>
 
+                                    {/* Payment Type Selection */}
+                                    {totalPrice > 0 && (
+                                        <div className="space-y-3">
+                                            <Label className="text-sm font-medium">Payment Option</Label>
+                                            <RadioGroup
+                                                value={paymentType}
+                                                onValueChange={(val) => {
+                                                    setPaymentType(val as "full" | "part");
+                                                    if (val === "full") setPartPaymentAmount("");
+                                                }}
+                                                className="grid grid-cols-2 gap-3"
+                                            >
+                                                <div>
+                                                    <RadioGroupItem value="full" id="pay-full" className="peer sr-only" />
+                                                    <Label
+                                                        htmlFor="pay-full"
+                                                        className="flex flex-col items-center gap-1 rounded-xl border-2 p-3 cursor-pointer transition-all text-center peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/5 border-border hover:border-primary/50"
+                                                    >
+                                                        <span className="font-medium text-sm">Full Payment</span>
+                                                        <span className="text-xs text-muted-foreground">GH₵{totalPrice}</span>
+                                                    </Label>
+                                                </div>
+                                                <div>
+                                                    <RadioGroupItem value="part" id="pay-part" className="peer sr-only" />
+                                                    <Label
+                                                        htmlFor="pay-part"
+                                                        className="flex flex-col items-center gap-1 rounded-xl border-2 p-3 cursor-pointer transition-all text-center peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/5 border-border hover:border-primary/50"
+                                                    >
+                                                        <span className="font-medium text-sm">Part Payment</span>
+                                                        <span className="text-xs text-muted-foreground">Pay a deposit now</span>
+                                                    </Label>
+                                                </div>
+                                            </RadioGroup>
+
+                                            {paymentType === "part" && (
+                                                <div className="space-y-2 animate-fade-in">
+                                                    <Label className="text-sm">Amount to pay now (min GH₵{minPartPayment})</Label>
+                                                    <Input
+                                                        type="number"
+                                                        min={minPartPayment}
+                                                        max={totalPrice - 1}
+                                                        step="0.01"
+                                                        placeholder={`e.g. ${minPartPayment}`}
+                                                        value={partPaymentAmount}
+                                                        onChange={(e) => setPartPaymentAmount(e.target.value)}
+                                                        className="text-lg"
+                                                    />
+                                                    {parsedPartAmount > 0 && parsedPartAmount < minPartPayment && (
+                                                        <p className="text-xs text-red-500">Minimum part payment is GH₵{minPartPayment}</p>
+                                                    )}
+                                                    {parsedPartAmount >= totalPrice && (
+                                                        <p className="text-xs text-red-500">Use "Full Payment" for the full amount</p>
+                                                    )}
+                                                    {isPartAmountValid && (
+                                                        <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 text-sm text-amber-800">
+                                                            <p>Paying <strong>GH₵{payingAmount}</strong> now</p>
+                                                            <p>Balance remaining: <strong>GH₵{balanceRemaining}</strong></p>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
+
                                     <Button
                                         type="submit"
                                         className="w-full h-12 rounded-full text-lg"
-                                        disabled={isLoading}
+                                        disabled={isLoading || (paymentType === "part" && !isPartAmountValid)}
                                     >
                                         {isLoading ? (
                                             <>
@@ -607,6 +695,8 @@ const BookingModal = ({ isOpen, onClose, event }: BookingModalProps) => {
                                             </>
                                         ) : totalPrice === 0 ? (
                                             "Confirm Registration"
+                                        ) : paymentType === "part" && isPartAmountValid ? (
+                                            `Continue — Pay GH₵${payingAmount}`
                                         ) : (
                                             "Continue to Payment"
                                         )}
@@ -635,8 +725,26 @@ const BookingModal = ({ isOpen, onClose, event }: BookingModalProps) => {
                                     <span>
                                         {selectedTier ? selectedTier.name : 'Ticket'} × {registrationData.ticket_count}
                                     </span>
-                                    <span className="font-bold text-foreground">GH₵{totalPrice}</span>
+                                    <span className="text-foreground">GH₵{totalPrice}</span>
                                 </div>
+                                {paymentType === "part" && (
+                                    <>
+                                        <div className="flex justify-between text-sm font-bold text-foreground border-t border-border pt-2">
+                                            <span>Paying Now</span>
+                                            <span className="text-primary">GH₵{payingAmount}</span>
+                                        </div>
+                                        <div className="flex justify-between text-xs text-muted-foreground">
+                                            <span>Balance Remaining</span>
+                                            <span>GH₵{balanceRemaining}</span>
+                                        </div>
+                                    </>
+                                )}
+                                {paymentType === "full" && (
+                                    <div className="flex justify-between text-sm font-bold text-foreground border-t border-border pt-2">
+                                        <span>Total</span>
+                                        <span className="text-primary">GH₵{totalPrice}</span>
+                                    </div>
+                                )}
                             </div>
 
                             {/* Network Selection */}
@@ -692,7 +800,7 @@ const BookingModal = ({ isOpen, onClose, event }: BookingModalProps) => {
                                     {isLoading ? (
                                         <Loader2 className="h-4 w-4 animate-spin" />
                                     ) : (
-                                        `Pay GH₵${totalPrice}`
+                                        `Pay GH₵${payingAmount}`
                                     )}
                                 </Button>
                             </div>
@@ -749,18 +857,34 @@ const BookingModal = ({ isOpen, onClose, event }: BookingModalProps) => {
                             <CheckCircle2 className="h-10 w-10 text-green-600" />
                         </div>
                         <h3 className="font-serif text-2xl font-medium mb-2">
-                            {totalPrice === 0 ? "Registration Complete!" : "Payment Successful!"}
+                            {totalPrice === 0
+                                ? "Registration Complete!"
+                                : paymentType === "part"
+                                    ? "Part Payment Successful!"
+                                    : "Payment Successful!"}
                         </h3>
                         <p className="text-muted-foreground mb-6">
                             {totalPrice === 0
                                 ? `You're registered for ${event.title}. See you there!`
-                                : `Your booking for ${event.title} has been confirmed. You'll receive a confirmation email shortly.`}
+                                : paymentType === "part"
+                                    ? `You've paid GH₵${payingAmount} towards your booking for ${event.title}.`
+                                    : `Your booking for ${event.title} has been confirmed. You'll receive a confirmation email shortly.`}
                         </p>
-                        <div className="bg-green-50 border border-green-200 rounded-xl p-4 mb-6">
+                        <div className="bg-green-50 border border-green-200 rounded-xl p-4 mb-6 space-y-1">
                             <p className="text-green-800 text-sm">
                                 <strong>Booking Reference:</strong> #{registrationId}
                             </p>
+                            {paymentType === "part" && (
+                                <p className="text-green-800 text-sm">
+                                    <strong>Balance Remaining:</strong> GH₵{balanceRemaining}
+                                </p>
+                            )}
                         </div>
+                        {paymentType === "part" && (
+                            <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-6 text-sm text-amber-800">
+                                Please complete the remaining balance of <strong>GH₵{balanceRemaining}</strong> before the event date.
+                            </div>
+                        )}
                         <Button onClick={handleClose} className="rounded-full px-8">
                             Done
                         </Button>
