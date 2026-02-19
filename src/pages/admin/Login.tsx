@@ -85,7 +85,7 @@ const AdminLogin = () => {
 
             <Card className="w-full max-w-md border-white/5 bg-white/5 backdrop-blur-xl shadow-2xl relative z-10 transition-all duration-500 hover:shadow-primary/10">
                 <CardHeader className="space-y-2 text-center">
-                    <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary">
+                    <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-[#4d7c0f]">
                         {isForgotPassword ? <KeyRound className="h-6 w-6" /> : <Lock className="h-6 w-6" />}
                     </div>
                     <CardTitle className="text-3xl font-bold tracking-tight text-white">
@@ -112,7 +112,7 @@ const AdminLogin = () => {
                                     className="bg-white/5 border-white/10 text-white placeholder:text-slate-500 focus:border-primary/50 focus:ring-primary/20 h-11"
                                 />
                             </div>
-                            <Button className="w-full h-11 bg-primary hover:bg-primary/90 text-white font-semibold transition-all" type="submit" disabled={loading}>
+                            <Button className="w-full h-11 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold transition-all" type="submit" disabled={loading}>
                                 {loading ? (
                                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                                 ) : (
@@ -148,7 +148,7 @@ const AdminLogin = () => {
                                     <button
                                         type="button"
                                         onClick={() => setIsForgotPassword(true)}
-                                        className="text-xs text-primary hover:underline"
+                                        className="text-xs text-[#4d7c0f] hover:underline"
                                     >
                                         Forgot password?
                                     </button>
@@ -162,7 +162,7 @@ const AdminLogin = () => {
                                     className="bg-white/5 border-white/10 text-white placeholder:text-slate-500 focus:border-primary/50 focus:ring-primary/20 h-11"
                                 />
                             </div>
-                            <Button className="w-full h-11 bg-primary hover:bg-primary/90 text-white font-semibold transition-all" type="submit" disabled={loading}>
+                            <Button className="w-full h-11 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold transition-all" type="submit" disabled={loading}>
                                 {loading ? (
                                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                                 ) : (

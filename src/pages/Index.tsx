@@ -67,7 +67,8 @@ const Index = () => {
     return (
         <Layout>
             <SEOHead
-                title="Fun Events & Squad Games in Accra"
+                title="Games and Connect: Travel, Play and Connect"
+                exactTitle={true}
                 description="Join Ghana's leading social events community. Monthly squad games days, travel adventures, team building, and networking events in Accra. Book your next experience today!"
                 canonical="/"
             />
@@ -92,7 +93,7 @@ const Index = () => {
                     <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                         {isLoading ? (
                             <div className="col-span-full flex justify-center py-12">
-                                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                                <Loader2 className="h-8 w-8 animate-spin text-[#4d7c0f]" />
                             </div>
                         ) : featuredEvents.length > 0 ? (
                             featuredEvents.map((event) => {
@@ -111,11 +112,11 @@ const Index = () => {
                                                 </div>
                                             </div>
                                             <div className="p-6 flex flex-col flex-1">
-                                                <div className="flex items-center gap-2 text-sm text-primary mb-3">
+                                                <div className="flex items-center gap-2 text-sm text-[#4d7c0f] mb-3">
                                                     <MapPin className="h-4 w-4" />
                                                     <span>{event.location}</span>
                                                 </div>
-                                                <h3 className="font-serif text-2xl font-medium mb-3 group-hover:text-primary transition-colors line-clamp-2">
+                                                <h3 className="font-serif text-2xl font-medium mb-3 group-hover:text-[#4d7c0f] transition-colors line-clamp-2">
                                                     {event.title}
                                                 </h3>
                                                 <p className="text-muted-foreground text-sm line-clamp-2 mb-6">
@@ -125,8 +126,8 @@ const Index = () => {
                                                     <span className="font-bold text-foreground">
                                                         {priceNum === 0 ? "Free Entry" : `GH₵${priceNum}`}
                                                     </span>
-                                                    <Button className="rounded-full bg-[#FFF7ED] text-foreground hover:bg-primary hover:text-white border border-[#FDE8D0]" variant="ghost">
-                                                        View Details
+                                                    <Button className="rounded-full bg-primary text-primary-foreground hover:bg-primary/90 border-none shadow-md font-medium px-6" variant="default">
+                                                        Book
                                                     </Button>
                                                 </div>
                                             </div>
@@ -158,8 +159,8 @@ const Index = () => {
                             { icon: Globe, label: "Destinations", value: "15+", desc: "Diverse locations across Ghana" },
                             { icon: Trophy, label: "Game Nights", value: "50+", desc: "Unforgettable evenings hosted" },
                         ].map((stat, i) => (
-                            <div key={i} className="bg-[#FFF7ED] p-8 rounded-3xl border border-[#FDE8D0] text-center hover:shadow-lg transition-all hover:-translate-y-1">
-                                <div className="h-14 w-14 mx-auto rounded-full bg-primary/10 flex items-center justify-center text-primary mb-6">
+                            <div key={i} className="bg-accent/30 p-8 rounded-3xl border border-accent text-center hover:shadow-lg transition-all hover:-translate-y-1">
+                                <div className="h-14 w-14 mx-auto rounded-full bg-primary/10 flex items-center justify-center text-[#4d7c0f] mb-6">
                                     <stat.icon className="h-7 w-7" />
                                 </div>
                                 <h3 className="font-serif text-4xl font-bold text-foreground mb-2">{stat.value}</h3>
@@ -172,7 +173,7 @@ const Index = () => {
             </section>
 
             {/* Introduction / Experience */}
-            <section className="py-24 overflow-hidden bg-[#fd4c01] text-white">
+            <section className="py-24 overflow-hidden bg-primary text-primary-foreground">
                 <div className="container">
                     <div className="grid lg:grid-cols-2 gap-16 items-center">
                         <div className="relative">
@@ -187,12 +188,12 @@ const Index = () => {
                         </div>
 
                         <div className="space-y-8">
-                            <span className="text-white font-medium tracking-widest text-sm uppercase">About Us</span>
-                            <h2 className="font-serif text-4xl md:text-5xl lg:text-6xl font-medium leading-[1.1] text-white">
+                            <span className="text-primary-foreground font-medium tracking-widest text-sm uppercase">About Us</span>
+                            <h2 className="font-serif text-4xl md:text-5xl lg:text-6xl font-medium leading-[1.1] text-primary-foreground">
                                 Rediscover the joy of <br />
-                                <span className="italic text-white/90">real connection</span>
+                                <span className="italic text-primary-foreground/90">real connection</span>
                             </h2>
-                            <p className="text-xl text-white/90 leading-relaxed font-light">
+                            <p className="text-xl text-primary-foreground/90 leading-relaxed font-light">
                                 In a digital world, we create spaces for authentic human connection.
                                 Whether it's through the adrenaline of a game night or the serenity of a
                                 weekend getaway, Games and Connect is your passport to a more social life.
@@ -200,27 +201,27 @@ const Index = () => {
 
                             <div className="pt-4 grid sm:grid-cols-2 gap-6">
                                 <div className="flex items-start gap-4">
-                                    <div className="mt-1 h-6 w-6 rounded-full bg-white/20 flex items-center justify-center shrink-0">
-                                        <div className="h-2 w-2 rounded-full bg-white" />
+                                    <div className="mt-1 h-6 w-6 rounded-full bg-primary-foreground/10 flex items-center justify-center shrink-0">
+                                        <div className="h-2 w-2 rounded-full bg-primary-foreground" />
                                     </div>
                                     <div>
-                                        <h4 className="font-serif text-xl font-medium mb-1 text-white">Curated Vibes</h4>
-                                        <p className="text-white/80 text-sm">Every event is carefully planned for maximum enjoyment.</p>
+                                        <h4 className="font-serif text-xl font-medium mb-1 text-primary-foreground">Curated Vibes</h4>
+                                        <p className="text-primary-foreground/80 text-sm">Every event is carefully planned for maximum enjoyment.</p>
                                     </div>
                                 </div>
                                 <div className="flex items-start gap-4">
-                                    <div className="mt-1 h-6 w-6 rounded-full bg-white/20 flex items-center justify-center shrink-0">
-                                        <div className="h-2 w-2 rounded-full bg-white" />
+                                    <div className="mt-1 h-6 w-6 rounded-full bg-primary-foreground/10 flex items-center justify-center shrink-0">
+                                        <div className="h-2 w-2 rounded-full bg-primary-foreground" />
                                     </div>
                                     <div>
-                                        <h4 className="font-serif text-xl font-medium mb-1 text-white">Safe Spaces</h4>
-                                        <p className="text-white/80 text-sm">Inclusive environments where everyone belongs.</p>
+                                        <h4 className="font-serif text-xl font-medium mb-1 text-primary-foreground">Safe Spaces</h4>
+                                        <p className="text-primary-foreground/80 text-sm">Inclusive environments where everyone belongs.</p>
                                     </div>
                                 </div>
                             </div>
 
                             <div className="pt-6">
-                                <Button variant="link" asChild className="p-0 text-lg text-white hover:text-white/80 underline-offset-4">
+                                <Button variant="link" asChild className="p-0 text-lg text-primary-foreground hover:text-primary-foreground/80 underline-offset-4">
                                     <Link to="/about">Read our full story <ArrowRight className="ml-2 h-4 w-4" /></Link>
                                 </Button>
                             </div>
@@ -230,7 +231,7 @@ const Index = () => {
             </section>
 
             {/* Experience Categories */}
-            <section className="py-24 bg-[#FFF7ED]">
+            <section className="py-24 bg-accent/30">
                 <div className="container">
                     <div className="text-center max-w-2xl mx-auto mb-16">
                         <Sparkles className="h-8 w-8 text-team-yellow mx-auto mb-4" />
@@ -308,10 +309,10 @@ const Index = () => {
             <ScrollingGallery />
 
             {/* Games Collection Section (Auto-Scroll Marquee) */}
-            <section className="py-20 overflow-hidden bg-[#FFF7ED] border-y border-[#FDE8D0]">
+            <section className="py-20 overflow-hidden bg-accent/30 border-y border-accent">
                 <div className="container mb-10 text-center">
                     <h2 className="font-serif text-3xl md:text-4xl font-medium mb-2">
-                        Our <span className="text-[#fd4c01]">Games Collection</span>
+                        Our <span className="text-[#4d7c0f]">Games Collection</span>
                     </h2>
                     <p className="text-muted-foreground text-sm">
                         Explore our variety of exciting games for all skill levels
@@ -342,7 +343,7 @@ const Index = () => {
                         ]).map((game, i) => (
                             <div
                                 key={`game-${i}`}
-                                className="bg-white px-8 py-6 rounded-[2rem] border border-[#FDE8D0] flex items-center gap-4 group hover:shadow-lg transition-all duration-300 w-[280px] shrink-0 shadow-sm"
+                                className="bg-white px-8 py-6 rounded-[2rem] border border-accent flex items-center gap-4 group hover:shadow-lg transition-all duration-300 w-[280px] shrink-0 shadow-sm"
                             >
                                 <span className="text-4xl group-hover:scale-110 transition-transform duration-300 shrink-0">
                                     {game.icon}
@@ -363,7 +364,7 @@ const Index = () => {
             <TestimonialSlider />
 
             {/* FAQ Section (Accordion Style from Reference) */}
-            <section className="py-24 bg-[#FFF7ED]">
+            <section className="py-24 bg-accent/30">
                 <div className="container max-w-3xl mx-auto">
                     <div className="text-center mb-16">
                         <h2 className="font-serif text-4xl font-medium mb-4">Frequently Asked Questions</h2>
@@ -377,7 +378,7 @@ const Index = () => {
                             { q: "What happens at Game Days?", a: "We split into teams (Red, Blue, Green, Yellow) and compete in fun outdoor games like Tug of War, Sack Races, and more." },
                             { q: "Can I pay in installments?", a: "Yes, for all our major trips, we offer flexible installment plans to make it easy on your pocket." }
                         ].map((faq, i) => (
-                            <div key={i} className="bg-white rounded-2xl p-6 border border-[#FDE8D0] hover:shadow-md transition-all">
+                            <div key={i} className="bg-white rounded-2xl p-6 border border-accent hover:shadow-md transition-all">
                                 <h3 className="font-serif text-lg font-medium mb-2">{faq.q}</h3>
                                 <p className="text-muted-foreground text-sm leading-relaxed">{faq.a}</p>
                             </div>
@@ -387,7 +388,7 @@ const Index = () => {
             </section>
 
             {/* Final CTA */}
-            <section className="py-32 relative overflow-hidden bg-[#fd4c01] text-white">
+            <section className="py-32 relative overflow-hidden bg-primary text-primary-foreground">
                 <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
                 <div className="container relative z-10 text-center">
                     <h2 className="font-serif text-5xl md:text-7xl font-medium mb-8">
@@ -397,7 +398,7 @@ const Index = () => {
                         Stop watching from the sidelines. The memories, the fun, and the friends are waiting for you.
                     </p>
                     <div className="flex flex-col sm:flex-row justify-center gap-4">
-                        <Button asChild size="lg" className="rounded-full h-16 px-10 text-xl bg-[#FFF7ED] text-[#fd4c01] hover:bg-white border-none shadow-xl">
+                        <Button asChild size="lg" className="rounded-full h-16 px-10 text-xl bg-primary-foreground text-primary hover:bg-primary-foreground/90 border-none shadow-xl">
                             <Link to="/events">Book an Experience</Link>
                         </Button>
                     </div>

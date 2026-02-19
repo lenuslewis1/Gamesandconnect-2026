@@ -61,7 +61,7 @@ const TeamBuilding = () => {
             <BreadcrumbSchema items={[{ name: "Home", url: "/" }, { name: "Team Building", url: "/team-building" }]} />
 
             {/* Hero */}
-            <section className="relative py-32 bg-gradient-to-br from-[#fd4c01] to-[#e04400] text-white overflow-hidden">
+            <section className="relative py-32 bg-gradient-to-br from-[#daee51] to-[#c4d943] text-white overflow-hidden">
                 <div className="absolute inset-0 bg-black/20" />
                 <div className="container relative z-10 text-center">
                     <ScrollReveal>
@@ -73,7 +73,7 @@ const TeamBuilding = () => {
                             Unite your team through play. Games and Connect designs unforgettable corporate team building experiences in Accra and across Ghana.
                         </p>
                         <div className="flex gap-4 justify-center flex-wrap">
-                            <Button asChild size="lg" className="bg-white text-[#fd4c01] hover:bg-white/90 rounded-full h-14 px-8">
+                            <Button asChild size="lg" className="bg-white text-[#4d7c0f] hover:bg-white/90 rounded-full h-14 px-8">
                                 <Link to="/contact">Get a Free Quote</Link>
                             </Button>
                             <Button asChild size="lg" variant="outline" className="border-white text-white hover:bg-white/10 rounded-full h-14 px-8">
@@ -85,7 +85,7 @@ const TeamBuilding = () => {
             </section>
 
             {/* Summary Snippet */}
-            <section className="py-16 bg-[#FFF7ED]">
+            <section className="py-16 bg-accent/30">
                 <div className="container max-w-3xl text-center">
                     <ScrollReveal>
                         <p className="text-lg text-muted-foreground leading-relaxed">
@@ -109,7 +109,7 @@ const TeamBuilding = () => {
                                 <Card className="text-center h-full border-none shadow-lg hover:shadow-xl transition-shadow">
                                     <CardContent className="pt-8 pb-6">
                                         <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
-                                            <benefit.icon className="h-7 w-7 text-primary" />
+                                            <benefit.icon className="h-7 w-7 text-[#4d7c0f]" />
                                         </div>
                                         <h3 className="font-serif text-xl font-medium mb-2">{benefit.title}</h3>
                                         <p className="text-muted-foreground text-sm">{benefit.description}</p>
@@ -122,7 +122,7 @@ const TeamBuilding = () => {
             </section>
 
             {/* How It Works */}
-            <section className="py-24 bg-[#FFF7ED]">
+            <section className="py-24 bg-accent/30">
                 <div className="container max-w-4xl">
                     <ScrollReveal>
                         <h2 className="font-serif text-4xl font-medium text-center mb-16">
@@ -138,7 +138,7 @@ const TeamBuilding = () => {
                         ].map((item, i) => (
                             <ScrollReveal key={i} delay={i * 0.1}>
                                 <div className="flex gap-6 items-start">
-                                    <div className="w-12 h-12 rounded-full bg-primary text-white flex items-center justify-center font-bold text-lg shrink-0">
+                                    <div className="w-12 h-12 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold text-lg shrink-0">
                                         {item.step}
                                     </div>
                                     <div>
@@ -174,14 +174,14 @@ const TeamBuilding = () => {
             </section>
 
             {/* CTA */}
-            <section className="py-24 bg-primary text-white">
+            <section className="py-24 bg-primary text-primary-foreground">
                 <div className="container text-center">
                     <ScrollReveal>
                         <h2 className="font-serif text-4xl font-medium mb-4">Ready to Build Your Team?</h2>
                         <p className="text-white/80 text-lg mb-8 max-w-xl mx-auto">
                             Let's plan an unforgettable team building experience for your company. Contact us today for a free consultation and custom quote.
                         </p>
-                        <Button asChild size="lg" className="bg-white text-primary hover:bg-white/90 rounded-full h-14 px-8">
+                        <Button asChild size="lg" className="bg-white text-[#4d7c0f] hover:bg-white/90 rounded-full h-14 px-8">
                             <Link to="/contact">
                                 Contact Us <ArrowRight className="ml-2 h-5 w-5" />
                             </Link>

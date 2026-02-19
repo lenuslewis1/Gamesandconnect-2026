@@ -115,7 +115,7 @@ const Community = () => {
                     <div className="grid gap-8 md:grid-cols-3 max-w-4xl mx-auto">
                         {communityStats.map((stat) => (
                             <div key={stat.label} className="text-center group">
-                                <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-primary/5 text-primary group-hover:bg-primary group-hover:text-white transition-colors duration-300 mb-4">
+                                <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-primary/5 text-[#4d7c0f] group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-300 mb-4">
                                     <stat.icon className="h-7 w-7" />
                                 </div>
                                 <p className="text-4xl font-bold text-foreground mb-2">
@@ -146,7 +146,7 @@ const Community = () => {
                                 key={benefit.title}
                                 className="bg-background rounded-2xl p-8 border border-border/50 hover:shadow-lg transition-all duration-300"
                             >
-                                <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary mb-6">
+                                <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center text-[#4d7c0f] mb-6">
                                     <benefit.icon className="h-6 w-6" />
                                 </div>
                                 <h3 className="text-xl font-serif font-medium mb-3">{benefit.title}</h3>
@@ -173,7 +173,7 @@ const Community = () => {
 
                     {isLoadingTestimonials && (
                         <div className="flex justify-center py-12">
-                            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                            <Loader2 className="h-8 w-8 animate-spin text-[#4d7c0f]" />
                         </div>
                     )}
 
@@ -185,7 +185,7 @@ const Community = () => {
                                     className="border-none bg-muted/30 shadow-none hover:bg-muted/50 transition-colors"
                                 >
                                     <CardContent className="p-8 flex flex-col h-full">
-                                        <Quote className="h-8 w-8 text-primary/20 mb-6" />
+                                        <Quote className="h-8 w-8 text-[#4d7c0f]/20 mb-6" />
                                         <p className="text-muted-foreground italic leading-relaxed mb-6 flex-1">
                                             "{testimonial.content}"
                                         </p>
@@ -195,7 +195,7 @@ const Community = () => {
                                                     src={testimonial.avatar_url || undefined}
                                                     alt={testimonial.name}
                                                 />
-                                                <AvatarFallback className="bg-primary/10 text-primary">
+                                                <AvatarFallback className="bg-primary/10 text-[#4d7c0f]">
                                                     {testimonial.name.charAt(0)}
                                                 </AvatarFallback>
                                             </Avatar>

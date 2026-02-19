@@ -81,7 +81,7 @@ const OutdoorAdventures = () => {
             </section>
 
             {/* Summary */}
-            <section className="py-16 bg-[#FFF7ED]">
+            <section className="py-16 bg-accent/30">
                 <div className="container max-w-3xl text-center">
                     <ScrollReveal>
                         <p className="text-lg text-muted-foreground leading-relaxed">
@@ -118,7 +118,7 @@ const OutdoorAdventures = () => {
             </section>
 
             {/* What's Included */}
-            <section className="py-24 bg-[#FFF7ED]">
+            <section className="py-24 bg-accent/30">
                 <div className="container max-w-4xl">
                     <ScrollReveal>
                         <h2 className="font-serif text-4xl font-medium text-center mb-12">

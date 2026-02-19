@@ -37,7 +37,7 @@ const BlogArticle = () => {
             ]} />
 
             {/* Article Header */}
-            <section className="py-16 bg-[#FFF7ED]">
+            <section className="py-16 bg-accent/30">
                 <div className="container max-w-3xl">
                     <ScrollReveal>
                         <Link to="/blog" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-8">
@@ -71,7 +71,7 @@ const BlogArticle = () => {
             <section className="py-16">
                 <div className="container max-w-3xl">
                     <ScrollReveal>
-                        <article className="prose prose-lg max-w-none prose-headings:font-serif prose-headings:font-medium prose-a:text-primary prose-strong:text-foreground">
+                        <article className="prose prose-lg max-w-none prose-headings:font-serif prose-headings:font-medium prose-a:text-[#4d7c0f] prose-strong:text-foreground">
                             <ReactMarkdown>{article.content}</ReactMarkdown>
                         </article>
                     </ScrollReveal>
@@ -93,7 +93,7 @@ const BlogArticle = () => {
 
             {/* Related Articles */}
             {relatedArticles.length > 0 && (
-                <section className="py-16 bg-[#FFF7ED]">
+                <section className="py-16 bg-accent/30">
                     <div className="container max-w-3xl">
                         <h2 className="font-serif text-2xl font-medium mb-8">More from the Blog</h2>
                         <div className="grid md:grid-cols-2 gap-6">
@@ -103,13 +103,13 @@ const BlogArticle = () => {
                                         <Badge variant="secondary" className="mb-2 text-xs">
                                             {related.category}
                                         </Badge>
-                                        <h3 className="font-serif text-lg font-medium mb-2 group-hover:text-primary transition-colors line-clamp-2">
+                                        <h3 className="font-serif text-lg font-medium mb-2 group-hover:text-[#4d7c0f] transition-colors line-clamp-2">
                                             {related.title}
                                         </h3>
                                         <p className="text-muted-foreground text-sm line-clamp-2 mb-3">
                                             {related.description}
                                         </p>
-                                        <span className="inline-flex items-center gap-1 text-primary text-sm font-medium">
+                                        <span className="inline-flex items-center gap-1 text-[#4d7c0f] text-sm font-medium">
                                             Read Article <ArrowRight className="h-3 w-3" />
                                         </span>
                                     </div>

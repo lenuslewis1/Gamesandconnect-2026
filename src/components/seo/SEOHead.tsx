@@ -9,6 +9,7 @@ interface SEOHeadProps {
     twitterCard?: 'summary' | 'summary_large_image';
     noindex?: boolean;
     children?: React.ReactNode;
+    exactTitle?: boolean;
 }
 
 const SITE_NAME = 'Games and Connect';
@@ -24,8 +25,9 @@ const SEOHead = ({
     twitterCard = 'summary_large_image',
     noindex = false,
     children,
+    exactTitle = false,
 }: SEOHeadProps) => {
-    const fullTitle = `${title} | ${SITE_NAME}`;
+    const fullTitle = exactTitle ? title : `${title} | ${SITE_NAME}`;
     const canonicalUrl = canonical ? `${SITE_URL}${canonical}` : undefined;
 
     return (

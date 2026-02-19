@@ -114,7 +114,7 @@ const ScoreboardsTab = () => {
     if (isLoading) {
         return (
             <div className="flex items-center justify-center py-24">
-                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                <Loader2 className="h-8 w-8 animate-spin text-[#4d7c0f]" />
             </div>
         );
     }
@@ -385,7 +385,7 @@ const GalleryTab = () => {
 
                 {isLoading ? (
                     <div className="flex items-center justify-center py-24">
-                        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                        <Loader2 className="h-8 w-8 animate-spin text-[#4d7c0f]" />
                     </div>
                 ) : filteredImages.length === 0 ? (
                     <div className="text-center py-24 bg-muted/20 rounded-2xl border-2 border-dashed">
@@ -607,7 +607,7 @@ const EventsTab = () => {
             <CardContent className="p-6">
                 {isLoading ? (
                     <div className="flex items-center justify-center py-24">
-                        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                        <Loader2 className="h-8 w-8 animate-spin text-[#4d7c0f]" />
                     </div>
                 ) : events.length === 0 ? (
                     <div className="text-center py-24 bg-muted/20 rounded-2xl border-2 border-dashed">

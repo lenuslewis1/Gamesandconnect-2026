@@ -73,7 +73,7 @@ const EventRegistrations = () => {
     if (loading) {
         return (
             <div className="flex h-96 items-center justify-center">
-                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                <Loader2 className="h-8 w-8 animate-spin text-[#4d7c0f]" />
             </div>
         );
     }

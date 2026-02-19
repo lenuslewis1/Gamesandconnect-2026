@@ -55,9 +55,9 @@ const Navbar = () => {
                             key={link.path}
                             to={link.path}
                             className={cn(
-                                "text-sm font-medium transition-colors hover:text-primary relative after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-0 after:bg-primary after:transition-all hover:after:w-full",
+                                "text-sm font-medium transition-colors hover:text-[#4d7c0f] relative after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-0 after:bg-primary after:transition-all hover:after:w-full",
                                 location.pathname === link.path
-                                    ? "text-primary after:w-full"
+                                    ? "text-[#4d7c0f] after:w-full"
                                     : "text-muted-foreground"
                             )}
                         >
@@ -90,7 +90,7 @@ const Navbar = () => {
                                 className={cn(
                                     "text-lg font-medium py-2 border-b border-border/50 transition-colors",
                                     location.pathname === link.path
-                                        ? "text-primary"
+                                        ? "text-[#4d7c0f]"
                                         : "text-muted-foreground"
                                 )}
                             >

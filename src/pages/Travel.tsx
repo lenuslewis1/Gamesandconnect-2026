@@ -83,7 +83,7 @@ const Travel = () => {
                 title="Travel Experiences"
                 subtitle="Explore Ghana's most beautiful destinations with friends you haven't met yet"
             >
-                <div className="mt-8 flex justify-center gap-2 text-primary font-medium bg-primary/5 w-fit mx-auto px-6 py-2 rounded-full">
+                <div className="mt-8 flex justify-center gap-2 text-[#4d7c0f] font-medium bg-primary/5 w-fit mx-auto px-6 py-2 rounded-full">
                     <Plane className="h-5 w-5" />
                     <span>Next Adventure Loading...</span>
                 </div>
@@ -104,7 +104,7 @@ const Travel = () => {
                     <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
                         {whyTravel.map((item, i) => (
                             <div key={i} className="text-center group p-6 rounded-2xl transition-colors hover:bg-muted/30">
-                                <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-primary/5 text-primary group-hover:bg-primary group-hover:text-white transition-colors duration-300 mb-6">
+                                <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-primary/5 text-[#4d7c0f] group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-300 mb-6">
                                     <item.icon className="h-8 w-8" />
                                 </div>
                                 <h3 className="font-serif text-xl font-medium mb-3">{item.title}</h3>
@@ -131,7 +131,7 @@ const Travel = () => {
 
                     {isLoading && (
                         <div className="flex justify-center py-24">
-                            <Loader2 className="h-10 w-10 animate-spin text-primary" />
+                            <Loader2 className="h-10 w-10 animate-spin text-[#4d7c0f]" />
                         </div>
                     )}
 
@@ -176,12 +176,12 @@ const Travel = () => {
 
                                             <div className="flex items-center gap-6 text-sm text-foreground/80 font-medium mb-8 p-4 bg-muted/30 rounded-xl">
                                                 <div className="flex items-center gap-2">
-                                                    <Calendar className="h-4 w-4 text-primary" />
+                                                    <Calendar className="h-4 w-4 text-[#4d7c0f]" />
                                                     <span>{formatDate(trip.date)}</span>
                                                 </div>
                                                 <div className="h-4 w-px bg-border" />
                                                 <div className="flex items-center gap-2">
-                                                    <Clock className="h-4 w-4 text-primary" />
+                                                    <Clock className="h-4 w-4 text-[#4d7c0f]" />
                                                     <span>{trip.duration}</span>
                                                 </div>
                                             </div>
@@ -192,12 +192,12 @@ const Travel = () => {
                                                     <ul className="space-y-2">
                                                         {itinerary.slice(0, 3).map((item, index) => (
                                                             <li key={index} className="flex items-start gap-3 text-sm text-muted-foreground">
-                                                                <CheckCircle2 className="mt-0.5 h-4 w-4 text-primary shrink-0" />
+                                                                <CheckCircle2 className="mt-0.5 h-4 w-4 text-[#4d7c0f] shrink-0" />
                                                                 <span>{item}</span>
                                                             </li>
                                                         ))}
                                                         {itinerary.length > 3 && (
-                                                            <li className="text-xs text-primary font-medium pl-7">
+                                                            <li className="text-xs text-[#4d7c0f] font-medium pl-7">
                                                                 + {itinerary.length - 3} more activities
                                                             </li>
                                                         )}
@@ -209,7 +209,7 @@ const Travel = () => {
                                                 <div>
                                                     <p className="text-sm text-muted-foreground">Starting from</p>
                                                     <div className="flex items-baseline gap-2">
-                                                        <span className="text-3xl font-bold text-primary">GH₵{trip.price}</span>
+                                                        <span className="text-3xl font-bold text-[#4d7c0f]">GH₵{trip.price}</span>
                                                     </div>
                                                     {trip.installment_price && (
                                                         <p className="text-xs text-muted-foreground mt-1 bg-muted px-2 py-0.5 rounded-full w-fit">
@@ -261,7 +261,7 @@ const Travel = () => {
                         ].map((destination) => (
                             <span
                                 key={destination}
-                                className="px-5 py-2.5 rounded-full bg-muted/30 border border-border/50 text-foreground/80 text-sm md:text-base hover:bg-primary/5 hover:border-primary/20 hover:text-primary transition-all cursor-default"
+                                className="px-5 py-2.5 rounded-full bg-muted/30 border border-border/50 text-foreground/80 text-sm md:text-base hover:bg-primary/5 hover:border-primary/20 hover:text-[#4d7c0f] transition-all cursor-default"
                             >
                                 📍 {destination}
                             </span>

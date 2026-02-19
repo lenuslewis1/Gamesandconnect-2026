@@ -62,10 +62,10 @@ const GamesDayAccra = () => {
 
             {/* Hero */}
             <section className="relative py-32 bg-gradient-to-br from-[#1a1a2e] to-[#16213e] text-white overflow-hidden">
-                <div className="absolute inset-0 opacity-20" style={{ backgroundImage: 'radial-gradient(circle at 25% 50%, #fd4c01 0%, transparent 50%)' }} />
+                <div className="absolute inset-0 opacity-20" style={{ backgroundImage: 'radial-gradient(circle at 25% 50%, #daee51 0%, transparent 50%)' }} />
                 <div className="container relative z-10 text-center">
                     <ScrollReveal>
-                        <p className="text-[#fd4c01] uppercase tracking-wider text-sm font-bold mb-4">🎮 Monthly in Accra</p>
+                        <p className="text-[#4d7c0f] uppercase tracking-wider text-sm font-bold mb-4">🎮 Monthly in Accra</p>
                         <h1 className="font-serif text-5xl md:text-7xl font-medium mb-6">
                             Squad Games Day in Accra
                         </h1>
@@ -73,7 +73,7 @@ const GamesDayAccra = () => {
                             The most exciting monthly games event in Accra. Compete, connect, and conquer with Ghana's most fun community.
                         </p>
                         <div className="flex gap-4 justify-center flex-wrap">
-                            <Button asChild size="lg" className="bg-[#fd4c01] hover:bg-[#e04400] rounded-full h-14 px-8">
+                            <Button asChild size="lg" className="bg-primary hover:bg-primary/90 rounded-full h-14 px-8">
                                 <Link to="/game-day">See Next Event</Link>
                             </Button>
                             <Button asChild size="lg" variant="outline" className="border-white/30 text-white hover:bg-white/10 rounded-full h-14 px-8">
@@ -85,7 +85,7 @@ const GamesDayAccra = () => {
             </section>
 
             {/* Summary Snippet */}
-            <section className="py-16 bg-[#FFF7ED]">
+            <section className="py-16 bg-accent/30">
                 <div className="container max-w-3xl text-center">
                     <ScrollReveal>
                         <p className="text-lg text-muted-foreground leading-relaxed">
@@ -109,7 +109,7 @@ const GamesDayAccra = () => {
                                 <Card className="text-center h-full border-none shadow-lg hover:shadow-xl transition-shadow">
                                     <CardContent className="pt-8 pb-6">
                                         <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
-                                            <item.icon className="h-7 w-7 text-primary" />
+                                            <item.icon className="h-7 w-7 text-[#4d7c0f]" />
                                         </div>
                                         <h3 className="font-serif text-xl font-medium mb-2">{item.title}</h3>
                                         <p className="text-muted-foreground text-sm">{item.description}</p>
@@ -122,7 +122,7 @@ const GamesDayAccra = () => {
             </section>
 
             {/* What to Expect */}
-            <section className="py-24 bg-[#FFF7ED]">
+            <section className="py-24 bg-accent/30">
                 <div className="container max-w-4xl">
                     <ScrollReveal>
                         <h2 className="font-serif text-4xl font-medium text-center mb-12">
@@ -179,7 +179,7 @@ const GamesDayAccra = () => {
                         <p className="text-white/70 text-lg mb-8 max-w-xl mx-auto">
                             Don't miss the next Games Day in Accra. Register now and experience the most fun event for young people in Ghana.
                         </p>
-                        <Button asChild size="lg" className="bg-[#fd4c01] hover:bg-[#e04400] rounded-full h-14 px-8">
+                        <Button asChild size="lg" className="bg-primary hover:bg-primary/90 rounded-full h-14 px-8">
                             <Link to="/game-day">
                                 Register Now <ArrowRight className="ml-2 h-5 w-5" />
                             </Link>

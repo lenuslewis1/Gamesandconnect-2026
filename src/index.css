@@ -19,9 +19,9 @@
         --popover: 30 50% 99%;
         --popover-foreground: 220 20% 18%;
 
-        --primary: 18 99% 50%;
-        /* #fd4c01 - Vibrant Orange */
-        --primary-foreground: 0 0% 100%;
+        --primary: 72 82% 63%;
+        /* #daee51 - Lime Green */
+        --primary-foreground: 340 9% 13%;
 
         --secondary: 30 25% 92%;
         /* Soft warm neutral */
@@ -30,8 +30,8 @@
         --muted: 30 15% 94%;
         --muted-foreground: 220 10% 45%;
 
-        --accent: 18 85% 90%;
-        /* Light orange tint */
+        --accent: 72 60% 90%;
+        /* Light lime tint */
         --accent-foreground: 220 20% 18%;
 
         --destructive: 0 65% 60%;
@@ -39,7 +39,7 @@
 
         --border: 25 20% 88%;
         --input: 25 20% 88%;
-        --ring: 18 99% 50%;
+        --ring: 72 82% 63%;
 
         --radius: 1.5rem;
         /* Softer, more rounded corners */

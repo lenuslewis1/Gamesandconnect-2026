@@ -41,7 +41,7 @@ const TestimonialSlider = () => {
     <div className="container">
       <div className="text-center mb-16">
         <h2 className="font-serif text-3xl md:text-5xl font-medium mb-4">Community Stories</h2>
-        <p className="text-muted-foreground max-w-xl mx-auto text-lg hover:text-primary transition-colors cursor-default">
+        <p className="text-muted-foreground max-w-xl mx-auto text-lg hover:text-[#4d7c0f] transition-colors cursor-default">
           Hear from the people who make our community special.
         </p>
       </div>
@@ -59,7 +59,7 @@ const TestimonialSlider = () => {
               <div className="p-1 h-full">
                 <Card className="h-full border-none shadow-none bg-muted/20 hover:bg-muted/40 transition-colors duration-300">
                   <CardContent className="flex flex-col p-8 h-full">
-                    <Quote className="h-8 w-8 text-primary/20 mb-6" />
+                    <Quote className="h-8 w-8 text-[#4d7c0f]/20 mb-6" />
                     <p className="text-muted-foreground flex-1 leading-relaxed mb-8 italic">
                       "{testimonial.content}"
                     </p>
@@ -80,8 +80,8 @@ const TestimonialSlider = () => {
           ))}
         </CarouselContent>
         <div className="flex justify-center gap-2 mt-8">
-          <CarouselPrevious className="static translate-y-0 mr-2 border-border/50 hover:bg-primary hover:text-white" />
-          <CarouselNext className="static translate-y-0 border-border/50 hover:bg-primary hover:text-white" />
+          <CarouselPrevious className="static translate-y-0 mr-2 border-border/50 hover:bg-primary hover:text-primary-foreground" />
+          <CarouselNext className="static translate-y-0 border-border/50 hover:bg-primary hover:text-primary-foreground" />
         </div>
       </Carousel>
     </div>

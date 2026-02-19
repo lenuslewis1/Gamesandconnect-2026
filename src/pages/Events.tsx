@@ -74,7 +74,7 @@ const Events = () => {
                     {/* Loading State */}
                     {isLoading && (
                         <div className="flex justify-center py-20">
-                            <Loader2 className="h-10 w-10 animate-spin text-primary" />
+                            <Loader2 className="h-10 w-10 animate-spin text-[#4d7c0f]" />
                         </div>
                     )}
 
@@ -126,14 +126,14 @@ const Events = () => {
                                                             <span>{event.time_range}</span>
                                                         </div>
                                                     </div>
-                                                    <h3 className="font-serif text-2xl font-medium mb-3 group-hover:text-primary transition-colors line-clamp-2">
+                                                    <h3 className="font-serif text-2xl font-medium mb-3 group-hover:text-[#4d7c0f] transition-colors line-clamp-2">
                                                         {event.title}
                                                     </h3>
                                                     <p className="text-sm text-muted-foreground line-clamp-3 mb-4 leading-relaxed">
                                                         {event.description}
                                                     </p>
                                                     <div className="flex items-center gap-1.5 text-sm text-muted-foreground mt-auto">
-                                                        <MapPin className="h-4 w-4 text-primary" />
+                                                        <MapPin className="h-4 w-4 text-[#4d7c0f]" />
                                                         <span>{event.location}</span>
                                                     </div>
                                                 </CardContent>
@@ -141,8 +141,8 @@ const Events = () => {
                                                     <span className="text-lg font-bold text-foreground">
                                                         {priceNum === 0 ? "Free Entry" : `GH₵${priceNum}`}
                                                     </span>
-                                                    <span className="text-sm font-medium text-primary flex items-center group-hover:translate-x-1 transition-transform">
-                                                        {isPast ? "View Story" : "View Details"} <ArrowRight className="ml-1 h-3.5 w-3.5" />
+                                                    <span className="inline-flex items-center justify-center rounded-full bg-primary text-primary-foreground px-4 py-2 text-sm font-medium transition-transform group-hover:scale-105 shadow-sm">
+                                                        {isPast ? "View Story" : "Book"} <ArrowRight className="ml-1 h-3.5 w-3.5" />
                                                     </span>
                                                 </CardFooter>
                                             </Card>

@@ -153,14 +153,14 @@ const Contact = () => {
                                     <ScrollReveal key={index} delay={0.2 + (index * 0.1)} variant="slide-in-right">
                                         <Card className="border-border/50 bg-muted/20 shadow-none hover:bg-muted/40 transition-colors">
                                             <CardContent className="p-6 flex items-start gap-4">
-                                                <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-primary shrink-0">
+                                                <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-[#4d7c0f] shrink-0">
                                                     <item.icon className="h-5 w-5" />
                                                 </div>
                                                 <div>
                                                     <h3 className="font-medium mb-1">{item.title}</h3>
                                                     <p className="text-muted-foreground text-sm mb-2 whitespace-pre-line">{item.desc}</p>
                                                     {item.link && (
-                                                        <a href={item.link} className="text-primary hover:underline font-medium">
+                                                        <a href={item.link} className="text-[#4d7c0f] hover:underline font-medium">
                                                             {item.value}
                                                         </a>
                                                     )}
@@ -176,13 +176,13 @@ const Contact = () => {
                                 <div>
                                     <h3 className="font-serif text-2xl font-medium mb-6">Connect with us</h3>
                                     <div className="flex gap-4">
-                                        <a href="#" className="h-12 w-12 rounded-full border border-border flex items-center justify-center text-muted-foreground hover:bg-primary hover:text-white hover:border-primary transition-all duration-300">
+                                        <a href="#" className="h-12 w-12 rounded-full border border-border flex items-center justify-center text-muted-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all duration-300">
                                             <Instagram className="h-5 w-5" />
                                         </a>
-                                        <a href="#" className="h-12 w-12 rounded-full border border-border flex items-center justify-center text-muted-foreground hover:bg-primary hover:text-white hover:border-primary transition-all duration-300">
+                                        <a href="#" className="h-12 w-12 rounded-full border border-border flex items-center justify-center text-muted-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all duration-300">
                                             <Twitter className="h-5 w-5" />
                                         </a>
-                                        <a href="#" className="h-12 w-12 rounded-full border border-border flex items-center justify-center text-muted-foreground hover:bg-primary hover:text-white hover:border-primary transition-all duration-300">
+                                        <a href="#" className="h-12 w-12 rounded-full border border-border flex items-center justify-center text-muted-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all duration-300">
                                             <MessageCircle className="h-5 w-5" />
                                         </a>
                                     </div>

@@ -62,17 +62,17 @@ const CorporateEvents = () => {
 
             {/* Hero */}
             <section className="relative py-32 bg-gradient-to-br from-[#0f172a] to-[#1e293b] text-white overflow-hidden">
-                <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(circle at 75% 25%, #fd4c01 0%, transparent 60%)' }} />
+                <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(circle at 75% 25%, #daee51 0%, transparent 60%)' }} />
                 <div className="container relative z-10 text-center">
                     <ScrollReveal>
-                        <p className="text-[#fd4c01] uppercase tracking-wider text-sm font-bold mb-4">Corporate Solutions</p>
+                        <p className="text-[#4d7c0f] uppercase tracking-wider text-sm font-bold mb-4">Corporate Solutions</p>
                         <h1 className="font-serif text-5xl md:text-7xl font-medium mb-6">
                             Corporate Events in Ghana
                         </h1>
                         <p className="text-xl text-white/80 max-w-2xl mx-auto mb-8">
                             From interbank games to company retreats, Games and Connect delivers professional corporate event experiences that your team will never forget.
                         </p>
-                        <Button asChild size="lg" className="bg-[#fd4c01] hover:bg-[#e04400] rounded-full h-14 px-8">
+                        <Button asChild size="lg" className="bg-primary hover:bg-primary/90 rounded-full h-14 px-8">
                             <Link to="/contact">Request a Quote</Link>
                         </Button>
                     </ScrollReveal>
@@ -80,7 +80,7 @@ const CorporateEvents = () => {
             </section>
 
             {/* Summary */}
-            <section className="py-16 bg-[#FFF7ED]">
+            <section className="py-16 bg-accent/30">
                 <div className="container max-w-3xl text-center">
                     <ScrollReveal>
                         <p className="text-lg text-muted-foreground leading-relaxed">
@@ -104,14 +104,14 @@ const CorporateEvents = () => {
                                 <Card className="h-full border-none shadow-lg hover:shadow-xl transition-shadow">
                                     <CardContent className="pt-8 pb-6">
                                         <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center mb-4">
-                                            <pkg.icon className="h-7 w-7 text-primary" />
+                                            <pkg.icon className="h-7 w-7 text-[#4d7c0f]" />
                                         </div>
                                         <h3 className="font-serif text-2xl font-medium mb-2">{pkg.title}</h3>
                                         <p className="text-muted-foreground mb-4">{pkg.description}</p>
                                         <ul className="space-y-2">
                                             {pkg.features.map((feature, j) => (
                                                 <li key={j} className="flex items-center gap-2 text-sm text-muted-foreground">
-                                                    <Shield className="h-4 w-4 text-primary shrink-0" />
+                                                    <Shield className="h-4 w-4 text-[#4d7c0f] shrink-0" />
                                                     {feature}
                                                 </li>
                                             ))}
@@ -125,7 +125,7 @@ const CorporateEvents = () => {
             </section>
 
             {/* FAQ */}
-            <section className="py-24 bg-[#FFF7ED]">
+            <section className="py-24 bg-accent/30">
                 <div className="container max-w-3xl">
                     <ScrollReveal>
                         <h2 className="font-serif text-4xl font-medium text-center mb-12">
@@ -153,7 +153,7 @@ const CorporateEvents = () => {
                         <p className="text-white/70 text-lg mb-8 max-w-xl mx-auto">
                             Contact us today for a free consultation and customised quote for your next corporate event in Ghana.
                         </p>
-                        <Button asChild size="lg" className="bg-[#fd4c01] hover:bg-[#e04400] rounded-full h-14 px-8">
+                        <Button asChild size="lg" className="bg-primary hover:bg-primary/90 rounded-full h-14 px-8">
                             <Link to="/contact">
                                 Get Started <ArrowRight className="ml-2 h-5 w-5" />
                             </Link>

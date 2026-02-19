@@ -207,7 +207,7 @@ const PaymentForm = ({
                             </div>
                             <div className="border-t pt-2 mt-2 flex justify-between font-bold">
                                 <span>Total</span>
-                                <span className="text-primary">GH₵{totalAmount}</span>
+                                <span className="text-[#4d7c0f]">GH₵{totalAmount}</span>
                             </div>
                         </div>
                     </div>

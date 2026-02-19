@@ -49,7 +49,7 @@ const WhatIsGamesAndConnect = () => {
             ]} />
 
             {/* Hero */}
-            <section className="py-24 bg-[#FFF7ED]">
+            <section className="py-24 bg-accent/30">
                 <div className="container max-w-4xl text-center">
                     <ScrollReveal>
                         <h1 className="font-serif text-5xl md:text-6xl font-medium mb-6">
@@ -79,7 +79,7 @@ const WhatIsGamesAndConnect = () => {
             </section>
 
             {/* What We Do */}
-            <section className="py-24 bg-[#FFF7ED]">
+            <section className="py-24 bg-accent/30">
                 <div className="container max-w-4xl">
                     <ScrollReveal>
                         <h2 className="font-serif text-4xl font-medium text-center mb-16">
@@ -119,10 +119,10 @@ const WhatIsGamesAndConnect = () => {
                         ].map((item, i) => (
                             <ScrollReveal key={i} delay={i * 0.1}>
                                 <div className="bg-white p-8 rounded-2xl shadow-sm h-full">
-                                    <item.icon className="h-10 w-10 text-primary mb-4" />
+                                    <item.icon className="h-10 w-10 text-[#4d7c0f] mb-4" />
                                     <h3 className="font-serif text-2xl font-medium mb-2">{item.title}</h3>
                                     <p className="text-muted-foreground mb-4">{item.description}</p>
-                                    <Link to={item.link} className="text-primary font-medium hover:underline inline-flex items-center gap-1">
+                                    <Link to={item.link} className="text-[#4d7c0f] font-medium hover:underline inline-flex items-center gap-1">
                                         {item.linkText} <ArrowRight className="h-4 w-4" />
                                     </Link>
                                 </div>
@@ -165,7 +165,7 @@ const WhatIsGamesAndConnect = () => {
             </section>
 
             {/* FAQ */}
-            <section className="py-24 bg-[#FFF7ED]">
+            <section className="py-24 bg-accent/30">
                 <div className="container max-w-3xl">
                     <ScrollReveal>
                         <h2 className="font-serif text-4xl font-medium text-center mb-12">

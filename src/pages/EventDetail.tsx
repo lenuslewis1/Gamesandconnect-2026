@@ -64,7 +64,7 @@ const EventDetail = () => {
         return (
             <Layout>
                 <div className="min-h-[70vh] flex items-center justify-center">
-                    <Loader2 className="h-10 w-10 animate-spin text-primary" />
+                    <Loader2 className="h-10 w-10 animate-spin text-[#4d7c0f]" />
                 </div>
             </Layout>
         );
@@ -147,7 +147,7 @@ const EventDetail = () => {
             </section>
 
             {/* About & Booking Section */}
-            <section className="py-20 bg-[#FFF7ED]">
+            <section className="py-20 bg-accent/30">
                 <div className="container">
                     <div className="grid lg:grid-cols-3 gap-16">
                         {/* Left: About Content */}
@@ -171,8 +171,8 @@ const EventDetail = () => {
                                         "Safe and secure environment"
                                     ].map((item, i) => (
                                         <ScrollReveal key={i} delay={i * 0.1}>
-                                            <div className="flex items-center gap-3 p-4 bg-white rounded-xl border border-[#FDE8D0]">
-                                                <CheckCircle2 className="h-5 w-5 text-primary shrink-0" />
+                                            <div className="flex items-center gap-3 p-4 bg-white rounded-xl border border-accent">
+                                                <CheckCircle2 className="h-5 w-5 text-[#4d7c0f] shrink-0" />
                                                 <span className="text-foreground/80">{item}</span>
                                             </div>
                                         </ScrollReveal>
@@ -183,29 +183,29 @@ const EventDetail = () => {
 
                         {/* Right: Booking Card */}
                         <div className="lg:col-span-1">
-                            <Card className="sticky top-24 border-[#FDE8D0] shadow-lg rounded-3xl overflow-hidden">
+                            <Card className="sticky top-24 border-accent shadow-lg rounded-3xl overflow-hidden">
                                 <CardContent className="p-8 space-y-6">
-                                    <div className="text-center pb-6 border-b border-[#FDE8D0]">
+                                    <div className="text-center pb-6 border-b border-accent">
                                         <p className="text-muted-foreground text-sm mb-1">Starting from</p>
-                                        <p className="font-serif text-4xl font-bold text-primary">GH₵{event.price}</p>
+                                        <p className="font-serif text-4xl font-bold text-[#4d7c0f]">GH₵{event.price}</p>
                                         <p className="text-muted-foreground text-sm">per person</p>
                                     </div>
 
                                     <div className="space-y-4">
                                         <div className="flex items-center gap-3 text-sm">
-                                            <Calendar className="h-5 w-5 text-primary" />
+                                            <Calendar className="h-5 w-5 text-[#4d7c0f]" />
                                             <span>{formatDate(event.date)}</span>
                                         </div>
                                         <div className="flex items-center gap-3 text-sm">
-                                            <Clock className="h-5 w-5 text-primary" />
+                                            <Clock className="h-5 w-5 text-[#4d7c0f]" />
                                             <span>{event.time_range}</span>
                                         </div>
                                         <div className="flex items-center gap-3 text-sm">
-                                            <MapPin className="h-5 w-5 text-primary" />
+                                            <MapPin className="h-5 w-5 text-[#4d7c0f]" />
                                             <span>{event.location}</span>
                                         </div>
                                         <div className="flex items-center gap-3 text-sm">
-                                            <Users className="h-5 w-5 text-primary" />
+                                            <Users className="h-5 w-5 text-[#4d7c0f]" />
                                             <span>Capacity: {event.capacity} people</span>
                                         </div>
                                     </div>
@@ -247,7 +247,7 @@ const EventDetail = () => {
                         </ScrollReveal>
 
                         <ScrollReveal>
-                            <div className="rounded-3xl overflow-hidden shadow-xl border border-[#FDE8D0] bg-white">
+                            <div className="rounded-3xl overflow-hidden shadow-xl border border-accent bg-white">
                                 <img
                                     src={event.image_url}
                                     alt={`${event.title} flyer`}
@@ -260,13 +260,13 @@ const EventDetail = () => {
             )}
 
             {/* Testimonial Section */}
-            <section className="py-20 bg-[#FFF7ED]">
+            <section className="py-20 bg-accent/30">
                 <div className="container max-w-4xl text-center">
                     <h2 className="font-serif text-3xl font-medium mb-12">Don't just take our word for it</h2>
 
                     <ScrollReveal>
-                        <div className="relative bg-white rounded-3xl p-8 md:p-12 shadow-sm border border-[#FDE8D0]">
-                            <Quote className="absolute -top-4 left-8 h-8 w-8 text-primary/30" />
+                        <div className="relative bg-white rounded-3xl p-8 md:p-12 shadow-sm border border-accent">
+                            <Quote className="absolute -top-4 left-8 h-8 w-8 text-[#4d7c0f]/30" />
                             <p className="font-serif text-2xl md:text-3xl leading-relaxed mb-8 italic text-foreground/80">
                                 "{featuredTestimonial.content}"
                             </p>
@@ -303,14 +303,14 @@ const EventDetail = () => {
                         ].map((faq, i) => (
                             <ScrollReveal key={i} delay={i * 0.1}>
                                 <div
-                                    className="bg-[#FFF7ED] rounded-2xl border border-[#FDE8D0] overflow-hidden"
+                                    className="bg-accent/30 rounded-2xl border border-accent overflow-hidden"
                                 >
                                     <button
                                         onClick={() => setOpenFaq(openFaq === i ? null : i)}
-                                        className="w-full flex items-center justify-between p-6 text-left hover:bg-[#FFF7ED] transition-colors"
+                                        className="w-full flex items-center justify-between p-6 text-left hover:bg-accent/30 transition-colors"
                                     >
                                         <span className="font-serif text-lg font-medium">{faq.q}</span>
-                                        <ChevronDown className={`h-5 w-5 text-primary transition-transform duration-300 ${openFaq === i ? 'rotate-180' : ''}`} />
+                                        <ChevronDown className={`h-5 w-5 text-[#4d7c0f] transition-transform duration-300 ${openFaq === i ? 'rotate-180' : ''}`} />
                                     </button>
                                     {openFaq === i && (
                                         <div className="px-6 pb-6 animate-fade-in">
@@ -325,7 +325,7 @@ const EventDetail = () => {
             </section>
 
             {/* Related Events */}
-            <section className="py-20 bg-[#FFF7ED]">
+            <section className="py-20 bg-accent/30">
                 <div className="container">
                     <div className="flex items-end justify-between mb-12">
                         <div>
@@ -342,7 +342,7 @@ const EventDetail = () => {
                             <ScrollReveal key={related.id} delay={i * 0.1}>
                                 <Link
                                     to={`/events/${related.id}`}
-                                    className="group block bg-white rounded-3xl overflow-hidden border border-[#FDE8D0] hover:shadow-xl transition-all duration-300 h-full"
+                                    className="group block bg-white rounded-3xl overflow-hidden border border-accent hover:shadow-xl transition-all duration-300 h-full"
                                 >
                                     <div className="grid md:grid-cols-2 h-full">
                                         <div className="aspect-[4/3] md:aspect-auto overflow-hidden">
@@ -353,10 +353,10 @@ const EventDetail = () => {
                                             />
                                         </div>
                                         <div className="p-6 flex flex-col justify-center">
-                                            <Badge variant="outline" className="w-fit mb-3 border-primary/20 text-primary">
+                                            <Badge variant="outline" className="w-fit mb-3 border-primary/20 text-[#4d7c0f]">
                                                 {formatDate(related.date)}
                                             </Badge>
-                                            <h3 className="font-serif text-2xl font-medium mb-2 group-hover:text-primary transition-colors">
+                                            <h3 className="font-serif text-2xl font-medium mb-2 group-hover:text-[#4d7c0f] transition-colors">
                                                 {related.title}
                                             </h3>
                                             <p className="text-muted-foreground text-sm flex items-center gap-2">
@@ -379,7 +379,7 @@ const EventDetail = () => {
             </section>
 
             {/* Bottom CTA */}
-            <section className="py-20 bg-[#fd4c01] text-white text-center">
+            <section className="py-20 bg-primary text-primary-foreground text-center">
                 <div className="container">
                     <ScrollReveal>
                         <h2 className="font-serif text-4xl md:text-5xl font-medium mb-6">Ready to join us?</h2>
@@ -389,7 +389,7 @@ const EventDetail = () => {
                         <Button
                             onClick={() => setIsBookingModalOpen(true)}
                             size="lg"
-                            className={`rounded-full h-14 px-10 text-lg ${isPastEvent ? "bg-white/20 text-white/50 cursor-not-allowed" : "bg-white text-[#fd4c01] hover:bg-[#FFF7ED]"}`}
+                            className={`rounded-full h-14 px-10 text-lg ${isPastEvent ? "bg-white/20 text-white/50 cursor-not-allowed" : "bg-white text-[#4d7c0f] hover:bg-accent/30"}`}
                             disabled={isPastEvent}
                         >
                             {isPastEvent ? "Event Completed" : "Book Your Spot"}

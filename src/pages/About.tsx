@@ -61,9 +61,9 @@ const About = () => {
       </section>
 
       {/* Stats Section */}
-      <section className="py-16 bg-[#FFF7ED]">
+      <section className="py-16 bg-accent/30">
         <div className="container">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center divide-x divide-[#FDE8D0]">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center divide-x divide-[#e2e8c0]">
             {[
               { label: "Community", value: "2k+" },
               { label: "Events", value: "50+" },
@@ -71,7 +71,7 @@ const About = () => {
               { label: "Happy Faces", value: "99%" },
             ].map((stat, i) => (
               <div key={i} className="p-4">
-                <h3 className="font-serif text-4xl font-bold text-[#fd4c01] mb-2">{stat.value}</h3>
+                <h3 className="font-serif text-4xl font-bold text-[#4d7c0f] mb-2">{stat.value}</h3>
                 <p className="text-muted-foreground uppercase tracking-widest text-xs font-medium">{stat.label}</p>
               </div>
             ))}
@@ -84,12 +84,12 @@ const About = () => {
         <div className="container">
           <div className="grid lg:grid-cols-2 gap-16">
             <div className="sticky top-24 h-fit">
-              <span className="text-primary font-medium tracking-widest text-sm uppercase block mb-4">Our Values</span>
+              <span className="text-[#4d7c0f] font-medium tracking-widest text-sm uppercase block mb-4">Our Values</span>
               <TextMotion text="Values we live by" variant="word" className="font-serif text-4xl md:text-5xl font-medium mb-6 leading-tight block" />
               <p className="text-muted-foreground text-lg mb-8 leading-relaxed">
                 We believe in the power of human connection. Every event, trip, and game night is designed to break down barriers and create lasting friendships.
               </p>
-              <Button className="rounded-full bg-[#fd4c01] hover:bg-[#c94101] text-white px-8 h-12">
+              <Button className="rounded-full bg-primary hover:bg-primary/90 text-primary-foreground px-8 h-12">
                 Join our Community
               </Button>
             </div>
@@ -128,7 +128,7 @@ const About = () => {
       </section>
 
       {/* Enhancing Experience Split */}
-      <section className="py-24 bg-[#FFF7ED]">
+      <section className="py-24 bg-accent/30">
         <div className="container">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             <div className="order-2 lg:order-1">
@@ -141,7 +141,7 @@ const About = () => {
               <ul className="space-y-4">
                 {["Curated Itineraries", "Professional Guides", "Verified Venues", "Secure Payments"].map((feat, i) => (
                   <li key={i} className="flex items-center gap-3">
-                    <CheckCircle2 className="h-5 w-5 text-primary" />
+                    <CheckCircle2 className="h-5 w-5 text-[#4d7c0f]" />
                     <span className="text-foreground/80">{feat}</span>
                   </li>
                 ))}
@@ -166,28 +166,28 @@ const About = () => {
 
 
       {/* Let's Talk / Contact Section */}
-      <section className="py-24 bg-[#FFF7ED]">
+      <section className="py-24 bg-accent/30">
         <div className="container">
           <h2 className="font-serif text-4xl mb-12">Let's Talk</h2>
           <div className="grid lg:grid-cols-2 gap-16">
             {/* Form */}
-            <div className="bg-white p-8 md:p-12 rounded-[2rem] shadow-sm border border-[#FDE8D0]">
+            <div className="bg-white p-8 md:p-12 rounded-[2rem] shadow-sm border border-accent">
               <form className="space-y-6">
                 <div className="grid sm:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <label className="text-sm font-medium">Name</label>
-                    <Input className="bg-[#FFF7ED] border-none h-12 rounded-xl" placeholder="Your name" />
+                    <Input className="bg-accent/30 border-none h-12 rounded-xl" placeholder="Your name" />
                   </div>
                   <div className="space-y-2">
                     <label className="text-sm font-medium">Email</label>
-                    <Input className="bg-[#FFF7ED] border-none h-12 rounded-xl" placeholder="hello@example.com" />
+                    <Input className="bg-accent/30 border-none h-12 rounded-xl" placeholder="hello@example.com" />
                   </div>
                 </div>
                 <div className="space-y-2">
                   <label className="text-sm font-medium">Message</label>
-                  <Textarea className="bg-[#FFF7ED] border-none rounded-xl min-h-[150px] resize-none" placeholder="How can we help?" />
+                  <Textarea className="bg-accent/30 border-none rounded-xl min-h-[150px] resize-none" placeholder="How can we help?" />
                 </div>
-                <Button className="w-full h-12 rounded-full bg-[#fd4c01] hover:bg-[#c94101] text-white">
+                <Button className="w-full h-12 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground">
                   Send Message
                 </Button>
               </form>
@@ -211,13 +211,13 @@ const About = () => {
       </section>
 
       {/* Bottom CTA */}
-      <section className="py-20 bg-[#fd4c01] my-12 mx-6 md:mx-12 rounded-[3rem] text-white text-center relative overflow-hidden">
+      <section className="py-20 bg-primary my-12 mx-6 md:mx-12 rounded-[3rem] text-white text-center relative overflow-hidden">
         <div className="relative z-10 px-6">
           <h2 className="font-serif text-4xl md:text-6xl font-medium mb-6">Join us today!</h2>
           <p className="max-w-xl mx-auto text-lg opacity-80 mb-8 font-light">
             Ready to start your adventure? Sign up now and become part of our growing family.
           </p>
-          <Button className="bg-white text-[#fd4c01] hover:bg-[#FFF7ED] rounded-full px-8 h-12 text-lg">
+          <Button className="bg-white text-[#4d7c0f] hover:bg-accent/30 rounded-full px-8 h-12 text-lg">
             Get Started
           </Button>
         </div>

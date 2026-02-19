@@ -113,7 +113,7 @@ const GameDay = () => {
                                         </div>
                                     </div>
                                 </div>
-                                <Button size="lg" className="w-full md:w-auto bg-white text-primary hover:bg-white/90 font-bold px-8 rounded-full shadow-lg" asChild>
+                                <Button size="lg" className="w-full md:w-auto bg-white text-[#4d7c0f] hover:bg-white/90 font-bold px-8 rounded-full shadow-lg" asChild>
                                     <Link to={upcomingEvent.registration_link || "/events"}>Register Now</Link>
                                 </Button>
                             </div>
@@ -246,7 +246,7 @@ const GameDay = () => {
                                 <Card className="hover:shadow-md transition-all group border-muted bg-muted/20">
                                     <CardContent className="p-6">
                                         <Badge variant="outline" className="mb-4 bg-background">{game.type}</Badge>
-                                        <h3 className="text-xl font-bold mb-2 group-hover:text-primary transition-colors">{game.title}</h3>
+                                        <h3 className="text-xl font-bold mb-2 group-hover:text-[#4d7c0f] transition-colors">{game.title}</h3>
                                         <div className="flex items-center text-sm text-muted-foreground">
                                             <Users className="h-4 w-4 mr-2" />
                                             {game.players}

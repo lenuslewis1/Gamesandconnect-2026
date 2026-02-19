@@ -26,7 +26,7 @@ const AdminRoute = () => {
     if (loading || isAuthorized === null) {
         return (
             <div className="flex h-screen w-full items-center justify-center bg-[#0a0a0b]">
-                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                <Loader2 className="h-8 w-8 animate-spin text-[#4d7c0f]" />
             </div>
         );
     }

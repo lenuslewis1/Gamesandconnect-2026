@@ -498,7 +498,7 @@ const BookingModal = ({ isOpen, onClose, event }: BookingModalProps) => {
 
                         {loadingTiers ? (
                             <div className="py-8 flex justify-center">
-                                <Loader2 className="h-6 w-6 animate-spin text-primary" />
+                                <Loader2 className="h-6 w-6 animate-spin text-[#4d7c0f]" />
                             </div>
                         ) : (
                             <Form {...form}>
@@ -581,7 +581,7 @@ const BookingModal = ({ isOpen, onClose, event }: BookingModalProps) => {
                                                                     )}
                                                                 </div>
                                                             </div>
-                                                            <span className="font-bold text-primary">GH₵{tier.price}</span>
+                                                            <span className="font-bold text-[#4d7c0f]">GH₵{tier.price}</span>
                                                         </Label>
                                                     </div>
                                                 ))}
@@ -731,7 +731,7 @@ const BookingModal = ({ isOpen, onClose, event }: BookingModalProps) => {
                                     <>
                                         <div className="flex justify-between text-sm font-bold text-foreground border-t border-border pt-2">
                                             <span>Paying Now</span>
-                                            <span className="text-primary">GH₵{payingAmount}</span>
+                                            <span className="text-[#4d7c0f]">GH₵{payingAmount}</span>
                                         </div>
                                         <div className="flex justify-between text-xs text-muted-foreground">
                                             <span>Balance Remaining</span>
@@ -742,7 +742,7 @@ const BookingModal = ({ isOpen, onClose, event }: BookingModalProps) => {
                                 {paymentType === "full" && (
                                     <div className="flex justify-between text-sm font-bold text-foreground border-t border-border pt-2">
                                         <span>Total</span>
-                                        <span className="text-primary">GH₵{totalPrice}</span>
+                                        <span className="text-[#4d7c0f]">GH₵{totalPrice}</span>
                                     </div>
                                 )}
                             </div>
@@ -776,7 +776,7 @@ const BookingModal = ({ isOpen, onClose, event }: BookingModalProps) => {
 
                             {/* Phone Number Display */}
                             <div className="flex items-center gap-3 p-4 bg-muted/30 rounded-xl">
-                                <Smartphone className="h-5 w-5 text-primary" />
+                                <Smartphone className="h-5 w-5 text-[#4d7c0f]" />
                                 <div>
                                     <p className="text-sm text-muted-foreground">Payment will be sent to</p>
                                     <p className="font-medium">{registrationData.phone}</p>
@@ -811,7 +811,7 @@ const BookingModal = ({ isOpen, onClose, event }: BookingModalProps) => {
                 {/* Step: Processing */}
                 {step === "processing" && (
                     <div className="py-12 text-center">
-                        <Loader2 className="h-12 w-12 animate-spin text-primary mx-auto mb-4" />
+                        <Loader2 className="h-12 w-12 animate-spin text-[#4d7c0f] mx-auto mb-4" />
                         <h3 className="font-serif text-xl font-medium mb-2">Initiating Payment</h3>
                         <p className="text-muted-foreground">
                             Please wait while we connect to your mobile money...
@@ -825,7 +825,7 @@ const BookingModal = ({ isOpen, onClose, event }: BookingModalProps) => {
                         <div className="relative mx-auto mb-6 w-20 h-20">
                             <div className="absolute inset-0 rounded-full border-4 border-primary/20"></div>
                             <div className="absolute inset-0 rounded-full border-4 border-t-primary animate-spin"></div>
-                            <Smartphone className="absolute inset-0 m-auto h-8 w-8 text-primary" />
+                            <Smartphone className="absolute inset-0 m-auto h-8 w-8 text-[#4d7c0f]" />
                         </div>
                         <h3 className="font-serif text-2xl font-medium mb-2">Approve Payment</h3>
                         <p className="text-muted-foreground mb-4">

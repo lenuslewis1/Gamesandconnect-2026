@@ -74,7 +74,7 @@ const AdminSidebar = () => {
     return (
         <div className="flex h-screen w-64 flex-col border-r bg-background">
             <div className="p-6">
-                <h2 className="text-2xl font-bold tracking-tight text-primary">Admin</h2>
+                <h2 className="text-2xl font-bold tracking-tight text-[#4d7c0f]">Admin</h2>
                 <p className="text-sm text-muted-foreground">Manage your platform</p>
             </div>
             <div className="flex-1 overflow-auto py-4">
@@ -88,9 +88,9 @@ const AdminSidebar = () => {
                                 key={index}
                                 to={item.href}
                                 className={cn(
-                                    "flex items-center gap-3 rounded-lg px-3 py-2 transition-all hover:text-primary",
+                                    "flex items-center gap-3 rounded-lg px-3 py-2 transition-all hover:text-[#4d7c0f]",
                                     isActive
-                                        ? "bg-muted text-primary"
+                                        ? "bg-muted text-[#4d7c0f]"
                                         : "text-muted-foreground"
                                 )}
                             >

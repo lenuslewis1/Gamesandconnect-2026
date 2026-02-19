@@ -90,21 +90,21 @@ const Trivia = () => {
 
                     <div className="grid gap-6 md:grid-cols-3 max-w-4xl mx-auto">
                         <div className="flex flex-col items-center p-8 bg-muted/20 rounded-2xl border border-border/50">
-                            <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-4">
+                            <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center text-[#4d7c0f] mb-4">
                                 <Users className="h-6 w-6" />
                             </div>
                             <span className="text-3xl font-bold mb-1">500+</span>
                             <span className="text-muted-foreground">Weekly Players</span>
                         </div>
                         <div className="flex flex-col items-center p-8 bg-muted/20 rounded-2xl border border-border/50">
-                            <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-4">
+                            <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center text-[#4d7c0f] mb-4">
                                 <Gift className="h-6 w-6" />
                             </div>
                             <span className="text-3xl font-bold mb-1">GH₵200+</span>
                             <span className="text-muted-foreground">Weekly Prizes</span>
                         </div>
                         <div className="flex flex-col items-center p-8 bg-muted/20 rounded-2xl border border-border/50">
-                            <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-4">
+                            <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center text-[#4d7c0f] mb-4">
                                 <Star className="h-6 w-6" />
                             </div>
                             <span className="text-3xl font-bold mb-1">Free</span>
@@ -127,7 +127,7 @@ const Trivia = () => {
                     <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
                         {howToPlay.map((item, i) => (
                             <div key={item.step} className="bg-background rounded-2xl p-8 border border-border/50 hover:shadow-lg transition-all duration-300">
-                                <div className="h-14 w-14 rounded-xl bg-primary/5 flex items-center justify-center text-primary mb-6">
+                                <div className="h-14 w-14 rounded-xl bg-primary/5 flex items-center justify-center text-[#4d7c0f] mb-6">
                                     <item.icon className="h-7 w-7" />
                                 </div>
                                 <div className="text-xs font-bold text-muted-foreground tracking-widest uppercase mb-2">
@@ -175,7 +175,7 @@ const Trivia = () => {
                                 </div>
                                 <Badge className="mb-4 bg-[#FFD700]/20 text-[#B8860B] hover:bg-[#FFD700]/30 border-none">Champion</Badge>
                                 <h3 className="font-serif text-2xl font-bold mb-2">1st Place</h3>
-                                <p className="text-5xl font-bold text-primary mb-4">GH₵100</p>
+                                <p className="text-5xl font-bold text-[#4d7c0f] mb-4">GH₵100</p>
                                 <p className="text-sm text-muted-foreground font-medium">
                                     + Exclusive Merch & Bragging Rights
                                 </p>
@@ -230,7 +230,7 @@ const Trivia = () => {
             {/* CTA */}
             <section className="py-24">
                 <div className="container text-center">
-                    <div className="inline-flex items-center justify-center h-16 w-16 rounded-full bg-primary/10 text-primary mb-8">
+                    <div className="inline-flex items-center justify-center h-16 w-16 rounded-full bg-primary/10 text-[#4d7c0f] mb-8">
                         <Brain className="h-8 w-8" />
                     </div>
                     <h2 className="font-serif text-3xl md:text-5xl font-medium mb-6">

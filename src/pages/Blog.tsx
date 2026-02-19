@@ -56,7 +56,7 @@ const Blog = () => {
                                                     {article.readTime}
                                                 </span>
                                             </div>
-                                            <span className="inline-flex items-center gap-1 text-primary text-sm font-medium mt-4">
+                                            <span className="inline-flex items-center gap-1 text-[#4d7c0f] text-sm font-medium mt-4">
                                                 Read Article <ArrowRight className="h-3 w-3" />
                                             </span>
                                         </CardContent>
