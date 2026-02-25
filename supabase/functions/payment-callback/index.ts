@@ -250,12 +250,14 @@ Deno.serve(async (req: Request) => {
                         .single();
 
                     if (registration) {
-                        // Fetch event details
+                        // Fetch event details - fix time -> time_range
                         const { data: event } = await supabase
                             .from('events')
-                            .select('title, date, time, location')
+                            .select('title, date, time_range, location')
                             .eq('id', registration.event_id)
                             .single();
+
+                        console.log('Fetched event details:', event);
 
                         // Fetch payment details for total amount
                         const { data: payment } = await supabase
@@ -266,7 +268,7 @@ Deno.serve(async (req: Request) => {
                             .limit(1)
                             .single();
 
-                        // Try to get ticket tier info
+                        // Try to get ticket tier info from the registration's ticket_tier_id
                         let ticketTierName = 'Standard';
                         if (registration.ticket_tier_id) {
                             const { data: tier } = await supabase
@@ -275,6 +277,8 @@ Deno.serve(async (req: Request) => {
                                 .eq('id', registration.ticket_tier_id)
                                 .single();
                             if (tier) ticketTierName = tier.name;
+                        } else {
+                            console.log('No ticket_tier_id found in registration, defaulting to Standard');
                         }
 
                         const emailPayload = {
@@ -282,7 +286,7 @@ Deno.serve(async (req: Request) => {
                             customer_name: registration.full_name,
                             event_title: event?.title || 'Event',
                             event_date: event?.date || '',
-                            event_time: event?.time || '',
+                            event_time: event?.time_range || '', // Map time_range to event_time
                             event_location: event?.location || 'TBA',
                             ticket_count: registration.number_of_participants || 1,
                             ticket_tier: ticketTierName,

@@ -164,7 +164,7 @@ function generateEmailHtml(data: EmailPayload): string {
                             </p>
                             <p style="margin: 0; color: #999; font-size: 13px; line-height: 1.5;">
                                 If you have any questions, feel free to reach out to us.<br>
-                                — The Vibes Ventures Team
+                                — The Games and Connect Team
                             </p>
                         </td>
                     </tr>
@@ -358,7 +358,7 @@ Deno.serve(async (req: Request) => {
                 'Authorization': `Bearer ${RESEND_API_KEY}`,
             },
             body: JSON.stringify({
-                from: 'Vibes Ventures <onboarding@resend.dev>',
+                from: 'Games and Connect <onboarding@resend.dev>',
                 to: [payload.to],
                 subject: `🎟️ Booking Confirmed — ${payload.event_title}`,
                 html: html,
@@ -389,7 +389,7 @@ Deno.serve(async (req: Request) => {
                     'Authorization': `Bearer ${RESEND_API_KEY}`,
                 },
                 body: JSON.stringify({
-                    from: 'Vibes Ventures <onboarding@resend.dev>',
+                    from: 'Games and Connect <onboarding@resend.dev>',
                     to: [ADMIN_EMAIL],
                     subject: `🔔 New Registration: ${payload.customer_name} — ${payload.event_title}`,
                     html: adminHtml,

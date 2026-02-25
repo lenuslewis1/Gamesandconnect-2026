@@ -353,6 +353,7 @@ const BookingModal = ({ isOpen, onClose, event }: BookingModalProps) => {
                 .from('registrations')
                 .insert({
                     event_id: event.id,
+                    ticket_tier_id: selectedTierId, // Set the selected tier ID
                     full_name: registrationData.full_name,
                     email: registrationData.email,
                     phone_number: formattedPhone,

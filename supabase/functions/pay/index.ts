@@ -83,12 +83,13 @@ Deno.serve(async (req: Request) => {
         const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
         // Prepare DCM API request payload
-        // Structure based on user provided JSON:
-        // { "accountNumber": "...", "amount": "...", "narration": "...", "network": "..." }
+        // Normalize amount to 2 decimal places string just in case
+        const normalizedAmount = Number(actualPaymentAmount).toFixed(2);
+
         const paymentPayload = {
             accountNumber: account_number,
-            amount: String(actualPaymentAmount), // Use the actual payment amount (may be partial)
-            narration: narration || 'Event Payment',
+            amount: normalizedAmount, // Use the actual payment amount (may be partial)
+            narration: (narration || 'Event Payment').substring(0, 30).replace(/[^\w\s-]/g, ''),
             network: networkCode,
             partnerCode: partnerCode,
             callbackUrl: callbackUrl,
@@ -117,7 +118,7 @@ Deno.serve(async (req: Request) => {
             responseData = { raw: responseText };
         }
 
-        console.log('API Response:', responseData);
+        console.log('API Response:', JSON.stringify(responseData, null, 2));
 
         if (!apiResponse.ok) {
             console.error('Payment API error:', responseData);
@@ -140,31 +141,59 @@ Deno.serve(async (req: Request) => {
             responseData.transaction_id ||
             responseData.reference ||
             responseData.paymentId ||
-            responseData.data?.transactionId ||
-            responseData.data?.reference ||
             `TXN-${Date.now()}`;
 
         console.log('Transaction reference:', transactionReference);
 
         // Determine initial payment status from DCM response
-        // DCM may return success:true with data.collection.data.description = "Transaction initiated. Awaiting processing"
-        // which means it's still pending. Or it may return a final status.
         const collectionStatus = responseData.data?.collection?.data?.status?.toString() || '';
         const collectionDesc = responseData.data?.collection?.data?.description || '';
+        const collectionMsg = responseData.data?.collection?.message?.description || '';
         const topLevelStatus = (responseData.status || '').toString().toLowerCase();
+
+        console.log(`DCM response: collectionStatus=${collectionStatus}, collectionDesc=${collectionDesc}, collectionMsg=${collectionMsg}, topLevelStatus=${topLevelStatus}`);
+
+        // Check for DCM-specific failure inside HTTP 200 response
+        if (collectionStatus === '-200') {
+            const errorMsg = collectionMsg || collectionDesc || 'Payment collection failed. Please try again.';
+            console.error('DCM Collection Error:', errorMsg);
+
+            // Still store the payment record for debugging
+            await supabase.from('payments').insert({
+                registration_id: registration_id,
+                event_id: event_id || null,
+                transaction_id: transactionReference,
+                partner_code: partnerCode,
+                dest_bank: networkCode,
+                account_number: account_number,
+                account_name: account_name || 'Customer',
+                amount: Number(actualPaymentAmount),
+                narration: cleanNarration,
+                status: 'failed',
+                response: responseData,
+            });
+
+            return new Response(
+                JSON.stringify({
+                    success: false,
+                    error: `Gateway Error: ${errorMsg}`,
+                    details: {
+                        collection_status: collectionStatus,
+                        collection_description: collectionDesc,
+                        collection_message: collectionMsg,
+                    }
+                }),
+                { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+            );
+        }
 
         let initialStatus = 'pending';
 
-        // DCM's "Payment processed successfully" means the request was accepted (prompt sent to phone)
-        // It does NOT mean the user has approved. Always start as pending.
-        // Only mark as completed/failed based on explicit status values.
         if (['success', 'successful', 'completed', 'paid'].includes(topLevelStatus)) {
             initialStatus = 'completed';
         } else if (topLevelStatus === 'failed' && !responseData.success) {
-            // Only treat as failed if success is also false (true failure)
             initialStatus = 'failed';
         }
-        // All other cases (including success:true + status:'failed' DCM quirk) = pending
 
         console.log(`Initial payment status determined: ${initialStatus} (collection: ${collectionStatus}, topLevel: ${topLevelStatus})`);
 
@@ -180,7 +209,7 @@ Deno.serve(async (req: Request) => {
                 account_number: account_number,
                 account_name: account_name || 'Customer',
                 amount: Number(actualPaymentAmount),
-                narration: narration || 'Event Payment',
+                narration: cleanNarration,
                 status: initialStatus,
                 response: responseData,
             });
@@ -191,41 +220,35 @@ Deno.serve(async (req: Request) => {
             console.log('Payment record stored successfully');
         }
 
-        // Update registration with total_amount and amount_paid
+        // Update registration records with total_amount and status
         const isPartPayment = actualPaymentAmount < actualTotalAmount;
-        const regUpdate: Record<string, any> = {
-            total_amount: actualTotalAmount,
-        };
+        const amountPaidAtStart = initialStatus === 'completed' ? Number(actualPaymentAmount) : 0;
 
-        if (initialStatus === 'completed') {
-            // Payment already confirmed by gateway immediately
-            regUpdate.amount_paid = actualPaymentAmount;
-            regUpdate.payment_status = isPartPayment ? 'partial' : 'paid';
-        } else {
-            // Payment still pending gateway confirmation
-            // Don't update amount_paid yet — wait for callback
-            regUpdate.payment_status = 'pending';
-        }
-
+        // 1. Update registrations table
         const { error: regError } = await supabase
             .from('registrations')
-            .update(regUpdate)
+            .update({
+                total_amount: actualTotalAmount,
+                amount_paid: amountPaidAtStart,
+                payment_status: initialStatus === 'completed'
+                    ? (isPartPayment ? 'partial' : 'paid')
+                    : 'pending',
+            })
             .eq('id', registration_id);
 
-        if (regError) {
-            console.error('Error updating registration:', regError);
-        } else {
-            console.log('Registration updated:', regUpdate);
-        }
+        if (regError) console.error('Error updating registrations table:', regError);
 
-        // Also update event_registrations if it exists
-        await supabase
+        // 2. Update event_registrations table
+        const { error: eventRegError } = await supabase
             .from('event_registrations')
             .update({
                 total_amount: actualTotalAmount,
-                amount_paid: initialStatus === 'completed' ? actualPaymentAmount : 0,
+                amount_paid: amountPaidAtStart,
+                status: initialStatus === 'completed' ? 'confirmed' : 'pending',
             })
             .eq('id', registration_id);
+
+        if (eventRegError) console.error('Error updating event_registrations table:', eventRegError);
 
         // Return success response with status info for frontend
         return new Response(
