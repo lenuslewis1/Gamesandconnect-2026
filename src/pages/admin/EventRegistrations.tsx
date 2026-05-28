@@ -63,6 +63,8 @@ const EventRegistrations = () => {
                 return <Badge className="bg-green-500">Paid</Badge>
             case 'partial':
                 return <Badge className="bg-amber-500">Partial</Badge>
+            case 'pay_later':
+                return <Badge variant="outline" className="text-blue-600 border-blue-600">Pay Later</Badge>
             case 'pending':
                 return <Badge variant="outline" className="text-yellow-600 border-yellow-600">Pending</Badge>
             default:
