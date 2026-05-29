@@ -337,7 +337,7 @@ const BookingModal = ({ isOpen, onClose, event }: BookingModalProps) => {
                     location: 'Accra',
                     total_amount: totalPrice,
                     amount_paid: 0,
-                    payment_status: 'pay_later',
+                    payment_status: 'pending',
                 })
                 .select()
                 .single();
@@ -354,7 +354,7 @@ const BookingModal = ({ isOpen, onClose, event }: BookingModalProps) => {
                     email: values.email,
                     phone: values.phone,
                     ticket_count: values.ticket_count,
-                    status: 'pay_later',
+                    status: 'pending',
                 });
 
             if (eventRegError) {
@@ -550,7 +550,7 @@ const BookingModal = ({ isOpen, onClose, event }: BookingModalProps) => {
 
     return (
         <Dialog open={isOpen} onOpenChange={handleClose}>
-            <DialogContent className="sm:max-w-[480px]">
+            <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-[480px]">
                 {/* Step: Payment Choice */}
                 {step === "payment-choice" && (
                     <>
