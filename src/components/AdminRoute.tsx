@@ -4,6 +4,7 @@ import { useAuth } from "@/components/AuthProvider";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { useEffect, useState } from "react";
+import { isAllowedAdminEmail } from "@/lib/adminAccess";
 
 const AdminRoute = () => {
     const { user, loading } = useAuth();
@@ -11,8 +12,7 @@ const AdminRoute = () => {
 
     useEffect(() => {
         if (!loading) {
-            const adminEmail = import.meta.env.VITE_ADMIN_EMAIL;
-            if (user && user.email === adminEmail) {
+            if (user && isAllowedAdminEmail(user.email)) {
                 setIsAuthorized(true);
             } else {
                 if (user) {

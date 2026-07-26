@@ -110,6 +110,7 @@ const BookingModal = ({ isOpen, onClose, event }: BookingModalProps) => {
     const [ticketTiers, setTicketTiers] = useState<TicketTier[]>([]);
     const [selectedTierId, setSelectedTierId] = useState<number | null>(null);
     const [loadingTiers, setLoadingTiers] = useState(false);
+    const [pricingReady, setPricingReady] = useState(false);
 
     // Payment option
     const [paymentType, setPaymentType] = useState<"full" | "part" | "later">("full");
@@ -137,6 +138,8 @@ const BookingModal = ({ isOpen, onClose, event }: BookingModalProps) => {
     // Fetch ticket tiers when modal opens
     useEffect(() => {
         if (isOpen && event.id) {
+            setPricingReady(false);
+            setStep("payment-choice");
             fetchTicketTiers();
         }
     }, [isOpen, event.id]);
@@ -155,15 +158,21 @@ const BookingModal = ({ isOpen, onClose, event }: BookingModalProps) => {
             if (data && data.length > 0) {
                 setTicketTiers(data);
                 setSelectedTierId(data[0].id);
+                setStep(data.some((tier) => tier.price > 0) ? "payment-choice" : "details");
             } else {
                 setTicketTiers([]);
                 setSelectedTierId(null);
+                const legacyPrice = parseFloat(event.price?.replace(/[^0-9.]/g, '') || "0");
+                setStep(legacyPrice > 0 ? "payment-choice" : "details");
             }
         } catch (error) {
             console.error('Error fetching ticket tiers:', error);
             setTicketTiers([]);
+            const legacyPrice = parseFloat(event.price?.replace(/[^0-9.]/g, '') || "0");
+            setStep(legacyPrice > 0 ? "payment-choice" : "details");
         } finally {
             setLoadingTiers(false);
+            setPricingReady(true);
         }
     };
 
@@ -175,6 +184,7 @@ const BookingModal = ({ isOpen, onClose, event }: BookingModalProps) => {
         ? selectedTier.price
         : parseFloat(event.price?.replace(/[^0-9.]/g, '') || "0");
     const totalPrice = unitPrice * (ticketCount || 0);
+    const isFreeEvent = totalPrice === 0;
 
     const minPartPayment = Math.max(Math.ceil(totalPrice * 0.5), Math.min(10, totalPrice));
     const parsedPartAmount = parseFloat(partPaymentAmount) || 0;
@@ -561,6 +571,11 @@ const BookingModal = ({ isOpen, onClose, event }: BookingModalProps) => {
                             </DialogDescription>
                         </DialogHeader>
 
+                        {!pricingReady ? (
+                            <div className="py-8 flex justify-center">
+                                <Loader2 className="h-6 w-6 animate-spin text-[#4d7c0f]" />
+                            </div>
+                        ) : (
                         <div className="space-y-5 pt-4">
                             <RadioGroup
                                 value={paymentType}
@@ -603,6 +618,7 @@ const BookingModal = ({ isOpen, onClose, event }: BookingModalProps) => {
                                 Continue
                             </Button>
                         </div>
+                        )}
                     </>
                 )}
 
@@ -610,9 +626,11 @@ const BookingModal = ({ isOpen, onClose, event }: BookingModalProps) => {
                 {step === "details" && (
                     <>
                         <DialogHeader>
-                            <DialogTitle className="font-serif text-2xl">Book Your Spot</DialogTitle>
+                            <DialogTitle className="font-serif text-2xl">{isFreeEvent ? "Register for Your Spot" : "Book Your Spot"}</DialogTitle>
                             <DialogDescription>
-                                {paymentType === "later"
+                                {isFreeEvent
+                                    ? `Fill in your details to register for ${event.title}.`
+                                    : paymentType === "later"
                                     ? `Fill in your details to register for ${event.title}.`
                                     : paymentType === "part"
                                         ? `Fill in your details and choose how much you want to pay now for ${event.title}.`
@@ -705,7 +723,7 @@ const BookingModal = ({ isOpen, onClose, event }: BookingModalProps) => {
                                                                     )}
                                                                 </div>
                                                             </div>
-                                                            {paymentType !== "later" && (
+                                                            {!isFreeEvent && paymentType !== "later" && (
                                                                 <span className="font-bold text-[#4d7c0f]">GHS {tier.price}</span>
                                                             )}
                                                         </Label>
@@ -732,7 +750,7 @@ const BookingModal = ({ isOpen, onClose, event }: BookingModalProps) => {
                                         )}
                                     />
 
-                                    {paymentType !== "later" && (
+                                    {!isFreeEvent && paymentType !== "later" && (
                                         <div className="bg-muted/50 p-4 rounded-xl space-y-2">
                                             <div className="flex justify-between text-sm">
                                                 <span>
@@ -747,7 +765,7 @@ const BookingModal = ({ isOpen, onClose, event }: BookingModalProps) => {
                                         </div>
                                     )}
 
-                                    {totalPrice > 0 && (
+                                    {!isFreeEvent && (
                                         <div className="space-y-3">
                                             {paymentType === "part" && (
                                                 <div className="space-y-2 animate-fade-in">
@@ -784,15 +802,17 @@ const BookingModal = ({ isOpen, onClose, event }: BookingModalProps) => {
                                         </div>
                                     )}
 
-                                    <Button
-                                        type="button"
-                                        variant="outline"
-                                        className="w-full"
-                                        onClick={() => setStep("payment-choice")}
-                                    >
-                                        <ArrowLeft className="mr-2 h-4 w-4" />
-                                        Change Payment Option
-                                    </Button>
+                                    {!isFreeEvent && (
+                                        <Button
+                                            type="button"
+                                            variant="outline"
+                                            className="w-full"
+                                            onClick={() => setStep("payment-choice")}
+                                        >
+                                            <ArrowLeft className="mr-2 h-4 w-4" />
+                                            Change Payment Option
+                                        </Button>
+                                    )}
                                     <Button
                                         type="submit"
                                         className="w-full h-12 rounded-full text-lg"

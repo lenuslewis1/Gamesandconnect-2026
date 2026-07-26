@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { useNavigate, Link } from "react-router-dom";
 import { Loader2, Lock, ArrowLeft, KeyRound } from "lucide-react";
 import { useAuth } from "@/components/AuthProvider";
+import { isAllowedAdminEmail } from "@/lib/adminAccess";
 
 const AdminLogin = () => {
     const { user, loading: authLoading } = useAuth();
@@ -19,8 +20,7 @@ const AdminLogin = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        const adminEmail = import.meta.env.VITE_ADMIN_EMAIL;
-        if (!authLoading && user?.email === adminEmail) {
+        if (!authLoading && isAllowedAdminEmail(user?.email)) {
             navigate("/admin");
         }
     }, [user, authLoading, navigate]);
@@ -39,8 +39,7 @@ const AdminLogin = () => {
 
             if (error) throw error;
 
-            const adminEmail = import.meta.env.VITE_ADMIN_EMAIL;
-            if (email !== adminEmail) {
+            if (!isAllowedAdminEmail(email)) {
                 toast.error("You are not authorized to access the admin area.");
                 await supabase.auth.signOut();
                 return;
