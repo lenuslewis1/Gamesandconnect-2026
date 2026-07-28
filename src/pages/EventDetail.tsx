@@ -187,7 +187,7 @@ const EventDetail = () => {
                                 <CardContent className="p-8 space-y-6">
                                     <div className="text-center pb-6 border-b border-accent">
                                         <p className="text-muted-foreground text-sm mb-1">Starting from</p>
-                                        <p className="font-serif text-4xl font-bold text-[#4d7c0f]">GH₵{event.price}</p>
+                                        <p className="font-serif text-4xl font-bold text-[#4d7c0f]">{event.price}</p>
                                         <p className="text-muted-foreground text-sm">per person</p>
                                     </div>
 
