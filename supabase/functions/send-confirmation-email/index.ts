@@ -9,7 +9,8 @@ const ADMIN_SMS_PHONE = Deno.env.get('ADMIN_SMS_PHONE') || '+233505891665';
 
 const corsHeaders = {
     'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+    'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-region, x-supabase-api-version',
+    'Access-Control-Allow-Methods': 'POST, OPTIONS',
 };
 
 interface EmailPayload {
