@@ -331,6 +331,12 @@ deno_version = 2
 PAYMENT_API_URL = "env(PAYMENT_API_URL)"
 DCM_PARTNER_CODE = "env(DCM_PARTNER_CODE)"
 
+# Hubtel registration SMS
+HUBTEL_CLIENT_ID = "env(HUBTEL_CLIENT_ID)"
+HUBTEL_CLIENT_SECRET = "env(HUBTEL_CLIENT_SECRET)"
+HUBTEL_SENDER_ID = "env(HUBTEL_SENDER_ID)"
+ADMIN_SMS_PHONE = "env(ADMIN_SMS_PHONE)"
+
 # Edge Function configurations
 [functions.pay]
 verify_jwt = false
@@ -343,6 +349,9 @@ verify_jwt = false
 
 [functions.cloudinary-upload]
 verify_jwt = false
+
+[functions.send-confirmation-email]
+verify_jwt = true
 
 [analytics]
 enabled = true

@@ -2,6 +2,10 @@ import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 
 const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY');
 const ADMIN_EMAIL = 'gamesandconnectgh@gmail.com';
+const HUBTEL_CLIENT_ID = Deno.env.get('HUBTEL_CLIENT_ID');
+const HUBTEL_CLIENT_SECRET = Deno.env.get('HUBTEL_CLIENT_SECRET');
+const HUBTEL_SENDER_ID = Deno.env.get('HUBTEL_SENDER_ID') || 'SmartAscend';
+const ADMIN_SMS_PHONE = Deno.env.get('ADMIN_SMS_PHONE') || '+233505891665';
 
 const corsHeaders = {
     'Access-Control-Allow-Origin': '*',
@@ -10,6 +14,7 @@ const corsHeaders = {
 
 interface EmailPayload {
     to: string;
+    phone: string;
     customer_name: string;
     event_title: string;
     event_date: string;
@@ -20,6 +25,65 @@ interface EmailPayload {
     total_amount: number;
     booking_reference: string | number;
     transaction_id: string;
+    registration_status?: 'confirmed' | 'pending';
+}
+
+interface DeliveryResult {
+    success: boolean;
+    status?: number;
+    data?: unknown;
+    error?: string;
+}
+
+function normalizeGhanaPhone(phone: string): string {
+    const digits = phone.replace(/\D/g, '');
+
+    if (digits.startsWith('233') && digits.length === 12) return digits;
+    if (digits.startsWith('0') && digits.length === 10) return `233${digits.slice(1)}`;
+    if (digits.length === 9) return `233${digits}`;
+
+    throw new Error('Invalid Ghana phone number');
+}
+
+async function sendHubtelSms(to: string, content: string): Promise<DeliveryResult> {
+    if (!HUBTEL_CLIENT_ID || !HUBTEL_CLIENT_SECRET) {
+        return { success: false, error: 'Hubtel SMS service is not configured' };
+    }
+
+    try {
+        const params = new URLSearchParams({
+            clientsecret: HUBTEL_CLIENT_SECRET,
+            clientid: HUBTEL_CLIENT_ID,
+            from: HUBTEL_SENDER_ID,
+            to: normalizeGhanaPhone(to),
+            content,
+        });
+
+        const response = await fetch(`https://sms.hubtel.com/v1/messages/send?${params.toString()}`, {
+            method: 'GET',
+            headers: { Accept: 'application/json' },
+        });
+        const responseText = await response.text();
+        let responseData: unknown = responseText;
+
+        try {
+            responseData = JSON.parse(responseText);
+        } catch {
+            // Hubtel may return plain text for some errors.
+        }
+
+        return {
+            success: response.ok,
+            status: response.status,
+            data: responseData,
+            error: response.ok ? undefined : 'Hubtel rejected the SMS request',
+        };
+    } catch (error) {
+        return {
+            success: false,
+            error: error instanceof Error ? error.message : 'Hubtel SMS request failed',
+        };
+    }
 }
 
 function generateEmailHtml(data: EmailPayload): string {
@@ -329,92 +393,112 @@ Deno.serve(async (req: Request) => {
     }
 
     try {
-        if (!RESEND_API_KEY) {
-            console.error('RESEND_API_KEY is not set');
-            return new Response(
-                JSON.stringify({ error: 'Email service not configured' }),
-                { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-            );
-        }
-
         const payload: EmailPayload = await req.json();
-        console.log('Sending confirmation email to:', payload.to);
+        console.log('Sending registration notifications for booking:', payload.booking_reference);
 
         // Validate required fields
-        if (!payload.to || !payload.customer_name || !payload.event_title) {
+        if (!payload.to || !payload.phone || !payload.customer_name || !payload.event_title) {
             return new Response(
-                JSON.stringify({ error: 'Missing required fields: to, customer_name, event_title' }),
+                JSON.stringify({ error: 'Missing required fields: to, phone, customer_name, event_title' }),
                 { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
             );
         }
 
-        const html = generateEmailHtml(payload);
+        const isPending = payload.registration_status === 'pending';
+        const statusLabel = isPending ? 'Payment pending' : 'Confirmed';
+        const customerSms = isPending
+            ? `Hi ${payload.customer_name}, we received your registration for ${payload.event_title}. Payment is pending. Ref: ${payload.booking_reference}. Games and Connect.`
+            : `Hi ${payload.customer_name}, your registration for ${payload.event_title} is confirmed. Tickets: ${payload.ticket_count}. Ref: ${payload.booking_reference}. Games and Connect.`;
+        const adminSms = `New registration: ${payload.customer_name} for ${payload.event_title}. Tickets: ${payload.ticket_count}. Status: ${statusLabel}. Phone: ${payload.phone}. Ref: ${payload.booking_reference}.`;
 
-        // 1. Send confirmation email to the registrant
-        const res = await fetch('https://api.resend.com/emails', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${RESEND_API_KEY}`,
-            },
-            body: JSON.stringify({
-                from: 'Games and Connect <onboarding@resend.dev>',
-                to: [payload.to],
-                subject: `🎟️ Booking Confirmed — ${payload.event_title}`,
-                html: html,
-            }),
-        });
+        const [customerSmsResult, adminSmsResult] = await Promise.all([
+            sendHubtelSms(payload.phone, customerSms),
+            sendHubtelSms(ADMIN_SMS_PHONE, adminSms),
+        ]);
 
-        const data = await res.json();
-
-        if (!res.ok) {
-            console.error('Resend API error (customer email):', data);
-            return new Response(
-                JSON.stringify({ error: 'Failed to send email', details: data }),
-                { status: res.status, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-            );
+        if (!customerSmsResult.success) {
+            console.error('Customer SMS failed:', customerSmsResult);
+        }
+        if (!adminSmsResult.success) {
+            console.error('Admin SMS failed:', adminSmsResult);
         }
 
-        console.log('Customer confirmation email sent successfully:', data);
+        // Email remains best-effort and cannot block SMS delivery.
+        let customerEmailResult: DeliveryResult | null = null;
+        let adminEmailResult: DeliveryResult | null = null;
 
-        // 2. Send notification email to admin (best-effort, non-blocking)
-        let adminEmailResult = null;
-        try {
-            const adminHtml = generateAdminEmailHtml(payload);
+        if (RESEND_API_KEY) {
+            const sendEmail = async (
+                to: string,
+                subject: string,
+                html: string,
+            ): Promise<DeliveryResult> => {
+                try {
+                    const response = await fetch('https://api.resend.com/emails', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${RESEND_API_KEY}`,
+                        },
+                        body: JSON.stringify({
+                            from: 'Games and Connect <onboarding@resend.dev>',
+                            to: [to],
+                            subject,
+                            html,
+                        }),
+                    });
+                    const data = await response.json();
 
-            const adminRes = await fetch('https://api.resend.com/emails', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${RESEND_API_KEY}`,
-                },
-                body: JSON.stringify({
-                    from: 'Games and Connect <onboarding@resend.dev>',
-                    to: [ADMIN_EMAIL],
-                    subject: `🔔 New Registration: ${payload.customer_name} — ${payload.event_title}`,
-                    html: adminHtml,
-                }),
-            });
+                    return {
+                        success: response.ok,
+                        status: response.status,
+                        data,
+                        error: response.ok ? undefined : 'Email provider rejected the request',
+                    };
+                } catch (error) {
+                    return {
+                        success: false,
+                        error: error instanceof Error ? error.message : 'Email request failed',
+                    };
+                }
+            };
 
-            adminEmailResult = await adminRes.json();
-
-            if (!adminRes.ok) {
-                console.error('Resend API error (admin email):', adminEmailResult);
-            } else {
-                console.log('Admin notification email sent successfully:', adminEmailResult);
-            }
-        } catch (adminError) {
-            console.error('Error sending admin notification email (non-fatal):', adminError);
+            [customerEmailResult, adminEmailResult] = await Promise.all([
+                sendEmail(
+                    payload.to,
+                    `🎟️ Booking ${isPending ? 'Received' : 'Confirmed'} — ${payload.event_title}`,
+                    generateEmailHtml(payload),
+                ),
+                sendEmail(
+                    ADMIN_EMAIL,
+                    `🔔 New Registration: ${payload.customer_name} — ${payload.event_title}`,
+                    generateAdminEmailHtml(payload),
+                ),
+            ]);
         }
+
+        const smsSuccess = customerSmsResult.success && adminSmsResult.success;
 
         return new Response(
             JSON.stringify({
-                success: true,
-                message: 'Confirmation email sent',
-                data,
-                admin_email: adminEmailResult,
+                success: smsSuccess,
+                message: smsSuccess
+                    ? 'Customer and admin text messages sent'
+                    : 'Registration saved, but one or more text messages failed',
+                sms: {
+                    success: smsSuccess,
+                    customer: customerSmsResult,
+                    admin: adminSmsResult,
+                },
+                email: {
+                    customer: customerEmailResult,
+                    admin: adminEmailResult,
+                },
             }),
-            { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+            {
+                status: smsSuccess ? 200 : 502,
+                headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+            }
         );
 
     } catch (error) {

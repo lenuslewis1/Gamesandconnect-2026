@@ -283,6 +283,7 @@ Deno.serve(async (req: Request) => {
 
                         const emailPayload = {
                             to: registration.email,
+                            phone: registration.phone_number,
                             customer_name: registration.full_name,
                             event_title: event?.title || 'Event',
                             event_date: event?.date || '',
@@ -293,6 +294,7 @@ Deno.serve(async (req: Request) => {
                             total_amount: payment?.amount || 0,
                             booking_reference: regId,
                             transaction_id: payment?.transaction_id || transactionId || '',
+                            registration_status: 'confirmed',
                         };
 
                         console.log('Sending confirmation email:', JSON.stringify(emailPayload));

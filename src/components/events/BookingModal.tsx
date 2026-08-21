@@ -85,6 +85,9 @@ interface BookingModalProps {
         id: number;
         title: string;
         price: string | null;
+        date: string;
+        time_range: string;
+        location: string;
     };
 }
 
@@ -200,6 +203,37 @@ const BookingModal = ({ isOpen, onClose, event }: BookingModalProps) => {
                 : `+233${phone}`;
     };
 
+    const sendRegistrationNotifications = async (
+        values: FormValues,
+        bookingReference: string | number,
+        registrationStatus: "confirmed" | "pending",
+    ) => {
+        const { data, error } = await supabase.functions.invoke('send-confirmation-email', {
+            body: {
+                to: values.email,
+                phone: formatPhoneNumberForDb(values.phone),
+                customer_name: values.full_name,
+                event_title: event.title,
+                event_date: event.date,
+                event_time: event.time_range,
+                event_location: event.location,
+                ticket_count: values.ticket_count,
+                ticket_tier: selectedTier?.name || (totalPrice === 0 ? 'Free' : 'Standard'),
+                total_amount: totalPrice,
+                booking_reference: bookingReference,
+                transaction_id: '',
+                registration_status: registrationStatus,
+            },
+        });
+
+        if (error || data?.sms?.success !== true) {
+            console.error('Registration SMS notification failed:', error || data?.sms);
+            return false;
+        }
+
+        return true;
+    };
+
     // Poll for payment status
     const checkPaymentStatus = async () => {
         // Use refs to get current values inside interval
@@ -291,7 +325,7 @@ const BookingModal = ({ isOpen, onClose, event }: BookingModalProps) => {
             // Free event - just register
             setIsLoading(true);
             try {
-                const { error } = await supabase
+                const { data: registration, error } = await supabase
                     .from('event_registrations')
                     .insert({
                         event_id: event.id,
@@ -300,9 +334,24 @@ const BookingModal = ({ isOpen, onClose, event }: BookingModalProps) => {
                         phone: values.phone,
                         ticket_count: values.ticket_count,
                         status: 'confirmed',
-                    });
+                    })
+                    .select('id')
+                    .single();
 
                 if (error) throw error;
+
+                const smsSent = await sendRegistrationNotifications(
+                    values,
+                    registration.id,
+                    'confirmed',
+                );
+
+                if (!smsSent) {
+                    toast({
+                        title: "Registration Saved",
+                        description: "Your registration was saved, but the confirmation text could not be sent.",
+                    });
+                }
 
                 setStep("success");
             } catch (error: any) {
@@ -373,10 +422,19 @@ const BookingModal = ({ isOpen, onClose, event }: BookingModalProps) => {
 
             setRegistrationId(registration.id);
             registrationIdRef.current = registration.id;
+
+            const smsSent = await sendRegistrationNotifications(
+                values,
+                registration.id,
+                'pending',
+            );
+
             setStep("success");
             toast({
                 title: "Registration Saved",
-                description: "Your registration has been submitted.",
+                description: smsSent
+                    ? "Your registration has been submitted and a confirmation text was sent."
+                    : "Your registration was saved, but the confirmation text could not be sent.",
             });
         } catch (error: any) {
             toast({

@@ -406,7 +406,10 @@ const EventDetail = () => {
                 event={{
                     id: event.id,
                     title: event.title,
-                    price: event.price
+                    price: event.price,
+                    date: event.date,
+                    time_range: event.time_range,
+                    location: event.location,
                 }}
             />
         </Layout>
