@@ -1,5 +1,6 @@
 
 import { useEffect, useState, useRef } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import { uploadToCloudinary } from "@/lib/cloudinary";
 import {
@@ -86,6 +87,7 @@ const createDefaultTier = (): TicketTier => ({
 });
 
 const Events = () => {
+    const queryClient = useQueryClient();
     const [events, setEvents] = useState<Event[]>([]);
     const [loading, setLoading] = useState(true);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -93,6 +95,7 @@ const Events = () => {
     const [editingEventId, setEditingEventId] = useState<number | null>(null);
     const [formData, setFormData] = useState(initialFormState);
     const [ticketTiers, setTicketTiers] = useState<TicketTier[]>([createDefaultTier()]);
+    const [originalTierIds, setOriginalTierIds] = useState<number[]>([]);
     const [submitting, setSubmitting] = useState(false);
     const [imageFile, setImageFile] = useState<File | null>(null);
     const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -131,7 +134,10 @@ const Events = () => {
             console.error("Error fetching ticket tiers:", error);
             return [];
         }
-        return data || [];
+        return (data || []).map((tier) => ({
+            ...tier,
+            description: tier.description || "",
+        }));
     };
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -213,6 +219,7 @@ const Events = () => {
     const resetForm = () => {
         setFormData(initialFormState);
         setTicketTiers([createDefaultTier()]);
+        setOriginalTierIds([]);
         setIsEditing(false);
         setEditingEventId(null);
         setImageFile(null);
@@ -242,6 +249,7 @@ const Events = () => {
         const existingTiers = await fetchTicketTiers(event.id);
         if (existingTiers.length > 0) {
             setTicketTiers(existingTiers);
+            setOriginalTierIds(existingTiers.flatMap((tier) => tier.id === undefined ? [] : [tier.id]));
         } else {
             // Legacy event with just price - create tier from it
             const legacyPrice = parseFloat(event.price?.replace(/[^0-9.]/g, '') || "0");
@@ -279,18 +287,17 @@ const Events = () => {
 
             let eventId = editingEventId;
 
-            if (isEditing && editingEventId) {
-                const { error } = await supabase
+            if (isEditing && editingEventId !== null) {
+                const { data: updatedEvent, error } = await supabase
                     .from("events")
                     .update(eventData)
-                    .eq("id", editingEventId);
+                    .eq("id", editingEventId)
+                    .select()
+                    .single();
 
                 if (error) throw error;
+                if (!updatedEvent) throw new Error("The event was not updated. Please check your admin permissions.");
 
-                // Delete old tiers and insert new ones
-                await supabase.from("ticket_tiers").delete().eq("event_id", editingEventId);
-
-                toast.success("Event updated successfully!");
             } else {
                 const { data, error } = await supabase
                     .from("events")
@@ -300,33 +307,67 @@ const Events = () => {
 
                 if (error) throw error;
                 eventId = data.id;
-                toast.success("Event created successfully!");
             }
 
-            // Insert ticket tiers
-            if (eventId) {
-                const tiersToInsert = ticketTiers.map((tier, index) => ({
-                    event_id: eventId,
-                    name: tier.name,
-                    description: tier.description || null,
-                    price: tier.price,
-                    capacity: tier.capacity,
-                    sort_order: index,
-                }));
+            // Preserve existing tier IDs because registrations may reference them.
+            if (eventId !== null) {
+                for (const [index, tier] of ticketTiers.entries()) {
+                    const tierData = {
+                        event_id: eventId,
+                        name: tier.name,
+                        description: tier.description || null,
+                        price: tier.price,
+                        capacity: tier.capacity,
+                        sort_order: index,
+                    };
 
-                const { error: tierError } = await supabase
-                    .from("ticket_tiers")
-                    .insert(tiersToInsert);
+                    if (isEditing && tier.id !== undefined) {
+                        const { data: updatedTier, error: tierError } = await supabase
+                            .from("ticket_tiers")
+                            .update(tierData)
+                            .eq("id", tier.id)
+                            .eq("event_id", eventId)
+                            .select("id")
+                            .single();
 
-                if (tierError) {
-                    console.error("Error saving ticket tiers:", tierError);
-                    toast.error("Event saved but failed to save ticket tiers");
+                        if (tierError) throw tierError;
+                        if (!updatedTier) throw new Error(`Ticket tier "${tier.name}" was not updated.`);
+                    } else {
+                        const { error: tierError } = await supabase
+                            .from("ticket_tiers")
+                            .insert(tierData);
+
+                        if (tierError) throw tierError;
+                    }
+                }
+
+                if (isEditing) {
+                    const retainedTierIds = new Set(
+                        ticketTiers.flatMap((tier) => tier.id === undefined ? [] : [tier.id]),
+                    );
+                    const removedTierIds = originalTierIds.filter((id) => !retainedTierIds.has(id));
+
+                    if (removedTierIds.length > 0) {
+                        const { data: deletedTiers, error: deleteTiersError } = await supabase
+                            .from("ticket_tiers")
+                            .delete()
+                            .eq("event_id", eventId)
+                            .in("id", removedTierIds)
+                            .select("id");
+
+                        if (deleteTiersError) throw deleteTiersError;
+                        if ((deletedTiers || []).length !== removedTierIds.length) {
+                            throw new Error("One or more removed ticket tiers could not be deleted.");
+                        }
+                    }
                 }
             }
 
+            await queryClient.invalidateQueries({ queryKey: ["events"] });
+            await fetchEvents();
+            toast.success(isEditing ? "Event updated successfully!" : "Event created successfully!");
             setIsDialogOpen(false);
             resetForm();
-            fetchEvents();
         } catch (error: any) {
             console.error("Error saving event:", error);
             toast.error(error.message || "Failed to save event");
@@ -337,10 +378,17 @@ const Events = () => {
 
     const handleDelete = async (id: number) => {
         try {
-            const { error } = await supabase.from("events").delete().eq("id", id);
+            const { data: deletedEvent, error } = await supabase
+                .from("events")
+                .delete()
+                .eq("id", id)
+                .select("id")
+                .single();
             if (error) throw error;
+            if (!deletedEvent) throw new Error("The event was not deleted. Please check your admin permissions.");
+            await queryClient.invalidateQueries({ queryKey: ["events"] });
+            await fetchEvents();
             toast.success("Event deleted successfully!");
-            fetchEvents();
         } catch (error: any) {
             console.error("Error deleting event:", error);
             toast.error(error.message || "Failed to delete event");

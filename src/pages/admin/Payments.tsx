@@ -56,6 +56,9 @@ const Payments = () => {
         switch (status?.toLowerCase()) {
             case 'success':
             case 'successful':
+            case 'completed':
+            case 'confirmed':
+            case 'paid':
                 return <Badge className="bg-green-500">Success</Badge>
             case 'failed':
                 return <Badge variant="destructive">Failed</Badge>

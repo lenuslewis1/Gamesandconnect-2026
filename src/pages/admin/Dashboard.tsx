@@ -18,6 +18,11 @@ import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
 import { format, subMonths, startOfMonth, endOfMonth, eachMonthOfInterval, isSameMonth } from "date-fns";
 
+const CONFIRMED_PAYMENT_STATUSES = ['success', 'successful', 'completed', 'confirmed', 'paid'];
+
+const isConfirmedPayment = (status?: string | null) =>
+    CONFIRMED_PAYMENT_STATUSES.includes(status?.toLowerCase().trim() || '');
+
 const AdminDashboard = () => {
     const [loading, setLoading] = useState(true);
     const [stats, setStats] = useState([
@@ -31,11 +36,25 @@ const AdminDashboard = () => {
 
     useEffect(() => {
         fetchDashboardData();
+
+        const channel = supabase
+            .channel('admin-dashboard-analytics')
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'payments' }, () => fetchDashboardData(false))
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'registrations' }, () => fetchDashboardData(false))
+            .subscribe();
+
+        const refreshOnFocus = () => fetchDashboardData(false);
+        window.addEventListener('focus', refreshOnFocus);
+
+        return () => {
+            window.removeEventListener('focus', refreshOnFocus);
+            supabase.removeChannel(channel);
+        };
     }, []);
 
-    const fetchDashboardData = async () => {
+    const fetchDashboardData = async (showLoading = true) => {
         try {
-            setLoading(true);
+            if (showLoading) setLoading(true);
 
             // 1. Fetch Stats
             const [
@@ -44,7 +63,7 @@ const AdminDashboard = () => {
                 { count: registrationCount, error: regError },
                 { data: allPayments, error: allPaymentsError }
             ] = await Promise.all([
-                supabase.from('payments').select('amount').or('status.eq.success,status.eq.successful'),
+                supabase.from('payments').select('amount').in('status', CONFIRMED_PAYMENT_STATUSES),
                 supabase.from('profiles').select('*', { count: 'exact', head: true }),
                 supabase.from('registrations').select('*', { count: 'exact', head: true }),
                 supabase.from('payments').select('amount, created_at, status')
@@ -101,7 +120,7 @@ const AdminDashboard = () => {
             const processedRevenue = last6Months.map(monthDate => {
                 const monthName = format(monthDate, 'MMM');
                 const monthRevenue = allPayments
-                    ?.filter((p: any) => (p.status === 'success' || p.status === 'successful') && isSameMonth(new Date(p.created_at), monthDate))
+                    ?.filter((p: any) => isConfirmedPayment(p.status) && isSameMonth(new Date(p.created_at), monthDate))
                     ?.reduce((acc: number, curr: any) => acc + (Number(curr.amount) || 0), 0) || 0;
 
                 return { name: monthName, revenue: monthRevenue };
@@ -125,7 +144,7 @@ const AdminDashboard = () => {
             console.error("Dashboard data error:", error);
             toast.error("An unexpected error occurred");
         } finally {
-            setLoading(false);
+            if (showLoading) setLoading(false);
         }
     };
 
