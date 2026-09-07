@@ -3,7 +3,9 @@
   publish = "dist/client"
 
 [build.environment]
-  SECRETS_SCAN_OMIT_KEYS = "VITE_SUPABASE_URL,VITE_SUPABASE_ANON_KEY"
+  # These values are intentionally public frontend configuration/contact details.
+  # Keep secret scanning enabled for all other environment variables.
+  SECRETS_SCAN_OMIT_KEYS = "VITE_SUPABASE_URL,VITE_SUPABASE_ANON_KEY,VITE_ADMIN_EMAIL"
 
 [[redirects]]
   from = "/*"
