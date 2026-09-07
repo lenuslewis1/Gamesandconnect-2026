@@ -1,57 +1,24 @@
 # Games & Connect
 
-## Project info
+React/Vite website with the Games & Connect homepage, public pages, gallery, event booking UI, and existing administration screens.
 
-A vibrant youth community platform for games, travel adventures, trivia nights, and unforgettable experiences in Ghana.
+## Development
 
-## How can I edit this code?
+1. Run `npm ci`.
+2. Copy `.env.example` to `.env.local` and provide the existing project's public Supabase URL and anonymous key.
+3. Run `npm run dev`.
 
-**Use your preferred IDE**
+## Build and hosting
 
-Clone this repo and push changes to deploy.
+- `npm run build` produces `dist/client` and the existing Sites worker package.
+- `npm run test:sites` checks static serving and SPA fallbacks.
+- Netlify uses the included `netlify.toml`: build command `npm run build`, publish directory `dist/client`.
+- Configure `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` on the frontend host. Never expose server credentials through `VITE_` variables.
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+See `INTEGRATIONS.md` for the retained backend integrations and operational limitations. Publishing this repository does not deploy Supabase functions or run database migrations.
 
-Follow these steps:
+## Navigation checks
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+With the app running on port 5173, the scripts `scripts/audit-navigation.js` and `scripts/audit-interactions.js` can be passed to Playwright CLI's `run-code --filename` command. They inspect public routes and test non-submitting interactions. They do not complete purchases, registrations, emails, or admin writes.
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
-
-**Edit a file directly in GitHub**
-
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
-
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Build the project using `npm run build` and deploy the `dist` folder to your preferred hosting service.
+The community CTA currently requests a WhatsApp invite from the listed contact number. Replace it with the official community invite when available. Contact prepares an email draft; sending is completed in the visitor's email app.

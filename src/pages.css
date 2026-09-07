@@ -1,0 +1,86 @@
+/* Public-page design system: the same framed photography and calm rhythm as home.
+   Scoped to Layout so the homepage motion and admin workspace remain untouched. */
+.gc-inner-page { background: var(--cream); color: var(--forest); }
+.gc-inner-page main > section:not(.gc-page-hero) { padding-block: clamp(64px, 8vw, 112px); }
+.gc-inner-page main .container { padding-inline: clamp(24px, 5vw, 80px); }
+.gc-inner-page main h2 { font-family: Outfit, sans-serif; font-weight: 600; letter-spacing: -.045em; line-height: 1.12; }
+.gc-inner-page main h2.text-4xl { font-size: clamp(32px, 4vw, 54px); }
+.gc-inner-page main h3 { font-family: Outfit, sans-serif; letter-spacing: -.025em; line-height: 1.25; }
+.gc-inner-page main p { line-height: 1.65; }
+.gc-inner-page main .text-primary:not(.bg-primary),
+.gc-inner-page main [class*="text-[#4d7c0f]"] { color: var(--forest); }
+.gc-inner-page main [class*="bg-accent/"],
+.gc-inner-page main [class*="bg-muted/"] { background-color: #edf2ec; }
+.gc-inner-page main .bg-primary { color: var(--forest); }
+.gc-inner-page main .bg-card { border: 1px solid var(--line); border-radius: 22px; box-shadow: none; overflow: hidden; }
+.gc-inner-page main .bg-card:hover { box-shadow: 0 12px 36px rgb(15 61 46 / 7%); }
+.gc-inner-page main img.rounded-lg,
+.gc-inner-page main img.rounded-xl,
+.gc-inner-page main .rounded-2xl:has(> img) { border-radius: 20px; }
+.gc-inner-page main :is(a,button).inline-flex { border-radius: 999px; }
+.gc-inner-page main :is(a,button).bg-primary { box-shadow: none; font-weight: 600; }
+.gc-inner-page main :is(a,button).bg-primary:hover { background: var(--forest); color: white; }
+.gc-inner-page main :is(input,textarea,select) { background: white; border-color: #b9c5bc; border-radius: 12px; }
+.gc-inner-page main input { min-height: 48px; }
+.gc-inner-page main [role=tablist] { background: var(--line); padding: 6px; border-radius: 999px; height: auto; flex-wrap: wrap; }
+.gc-inner-page main [role=tab] { border-radius: 999px; padding: 10px 20px; }
+.gc-inner-page main [role=tab][data-state=active] { background: var(--forest); color: white; box-shadow: none; }
+
+/* The framed photographic masthead used by all overview pages. */
+.gc-inner-page .gc-page-hero,
+.gc-inner-page main > section:first-of-type:has(h1):not(:has(.prose)) {
+  margin: 14px 16px 0; border-radius: 18px; min-height: min(660px, calc(100svh - 125px));
+  position: relative; overflow: hidden; display: flex; align-items: center;
+  padding-block: 72px; background-color: var(--forest); color: white;
+}
+.gc-inner-page .gc-page-copy { text-align: center; }
+.gc-inner-page .gc-page-copy h1 { margin-inline: auto; max-width: 1000px; font-size: clamp(52px, 7.5vw, 108px); line-height: .98; }
+.gc-inner-page .gc-page-copy > p { margin-inline: auto; max-width: 650px; font-size: clamp(17px, 1.5vw, 21px); }
+.gc-inner-page .gc-page-shade { background: linear-gradient(0deg, rgb(11 27 20 / 75%), rgb(15 61 46 / 38%)); }
+.gc-inner-page .gc-page-photo { animation: gc-photo-arrive 1.2s ease-out both; }
+.gc-inner-page .gc-page-copy { animation: gc-copy-arrive .8s ease-out both; }
+.gc-inner-page .gc-page-copy .text-primary,
+.gc-inner-page main > section:first-of-type:has(h1) h1 { color: var(--lime); }
+.gc-inner-page .gc-page-copy > div { color: white; }
+.gc-inner-page main > section:first-of-type:has(h1) h1 { font-family: 'Cormorant Garamond', serif; font-size: clamp(50px, 6.8vw, 96px); line-height: 1.02; letter-spacing: -.035em; }
+.gc-inner-page main > section:first-of-type:has(h1) .text-muted-foreground { color: #e6eae6; }
+.gc-inner-page main > section:first-of-type:has(h1) :is(a,button).border-white { background: transparent; color: white; }
+.gc-inner-page main > section:first-of-type:has(h1) :is(a,button).bg-white { background: var(--lime); color: var(--forest); }
+
+/* Bespoke experience pages retain their copy/actions, now with real photography. */
+.gc-inner-page[data-page='/team-building'] { --page-photo: url('/assets/games-connect/community-team.jpg'); }
+.gc-inner-page[data-page='/corporate-events'] { --page-photo: url('/assets/games-connect/community.jpg'); }
+.gc-inner-page[data-page='/games-day-accra'] { --page-photo: url('/assets/games-connect/game-day.jpg'); }
+.gc-inner-page[data-page='/outdoor-adventures'] { --page-photo: url('/assets/games-connect/travel.jpg'); }
+.gc-inner-page[data-page='/about/what-is-games-and-connect'] { --page-photo: url('/assets/games-connect/friends-bonding.jpg'); }
+.gc-inner-page[data-page] main > section.bg-gradient-to-br:first-of-type,
+.gc-inner-page[data-page='/about/what-is-games-and-connect'] main > section:first-of-type {
+  background-image: linear-gradient(0deg, #0b1b14d9, #0f3d2e66), var(--page-photo);
+  background-size: cover; background-position: center;
+}
+.gc-inner-page main > section[class*='bg-[#']:last-of-type { background: var(--forest); color: white; }
+.gc-inner-page[data-page='/about'] main > section:last-of-type { background: var(--forest); color: white; border-radius: 20px; }
+.gc-inner-page[data-page='/about'] main > section:last-of-type button { background: var(--lime); color: var(--forest); }
+.gc-inner-page[data-page^='/blog/'] main > section:first-of-type:has(h1) { background: var(--forest); min-height: 430px; }
+.gc-inner-page[data-page^='/blog/'] main > section:first-of-type:has(h1) .text-primary { color: var(--lime); }
+.gc-inner-page[data-page^='/teams/'] main > section:first-of-type:has(h1) { background-color: var(--forest); }
+
+.gc-auth { display: grid; grid-template-columns: 1fr 1fr; gap: 6vw; align-items: center; padding: 24px 6vw 64px; }
+.gc-auth-story { border-radius: 20px; min-height: 620px; display: flex; flex-direction: column; justify-content: end; padding: 48px; color: white; background: linear-gradient(0deg, #0f3d2eef, #0f3d2e33), url('/assets/games-connect/friends-bonding.jpg') center/cover; }
+.gc-auth-story h1 { font: 500 clamp(52px, 5vw, 80px)/1 'Cormorant Garamond', serif; color: var(--lime); margin-bottom: 20px; }
+.gc-auth > .bg-card { padding: 20px; width: 100%; justify-self: center; }
+@keyframes gc-photo-arrive { from { transform: scale(1.045); } to { transform: scale(1); } }
+@keyframes gc-copy-arrive { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+@media (max-width: 700px) {
+  .gc-inner-page .gc-page-hero,
+  .gc-inner-page main > section:first-of-type:has(h1):not(:has(.prose)) { margin: 10px 10px 0; min-height: 510px; height: auto; padding-block: 64px; }
+  .gc-inner-page main h1 { overflow-wrap: anywhere; }
+  .gc-inner-page main .container { padding-inline: 24px; }
+  .gc-inner-page main .gc-page-kicker { font-size: 10px; letter-spacing: .15em; }
+  .gc-auth { grid-template-columns: 1fr; padding: 10px 16px 48px; gap: 24px; }
+  .gc-auth-story { min-height: 280px; padding: 32px; }
+  .gc-inner-page main [role=tab] { padding: 9px 12px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .gc-inner-page .gc-page-photo, .gc-inner-page .gc-page-copy { animation: none; }
+}

@@ -1,0 +1,30 @@
+/* Reference-matched hero: one viewport pinned for one viewport of scroll. */
+.new-home .hero-stage { height: calc(100svh - 94px); position: relative; padding: 16px; background: var(--cream); isolation: isolate; overflow: hidden; }
+.new-home .hero-stage .hero { margin: 0; height: 100%; min-height: 0; background: transparent; }
+.new-home .hero-stage .portrait-cloud { position: absolute; inset: 16px; height: auto; background: transparent; overflow: visible; pointer-events: none; z-index: 2; }
+.new-home .hero-stage .cloud { display: block; border-radius: 12px; max-height: none; transform-origin: center; will-change: transform; }
+.new-home .hero-stage .cloud-c { display: none; }
+.new-home .hero-stage .cloud-a { width: 29%; height: 70.3%; left: 3.9%; top: 1%; }
+.new-home .hero-stage .cloud-b { width: 13.5%; height: 32.7%; left: 19%; top: 70%; }
+.new-home .hero-stage .cloud-d { width: 13.5%; height: 32.7%; left: 66.9%; right: auto; top: 12%; }
+.new-home .hero-stage .cloud-e { width: 21.25%; height: 51.6%; left: 74.5%; right: auto; top: 58%; }
+.new-home .hero-stage .cloud-f { width: 5.7%; height: 13.8%; left: 85.7%; top: 23%; }
+.new-home .hero-stage .cloud-g { width: 5.7%; height: 13.8%; left: 8.6%; top: 71%; }
+.new-home .hero-stage .hero-copy { padding: 32px; }
+.new-home .hero-stage .hero-copy h1 { line-height: 1; }
+.new-home .hero-stage .hero-copy p { max-width: 720px; margin-top: 24px; }
+@media(max-width:720px) {
+  .new-home .hero-stage { padding: 10px; }
+  .new-home .hero-stage .portrait-cloud { inset: 10px; }
+  .new-home .hero-stage .cloud-a { width: 24%; left: 1%; height: 44%; top: 12%; }
+  .new-home .hero-stage .cloud-b { width: 18%; left: 7%; height: 25%; top: 78%; }
+  .new-home .hero-stage .cloud-d { width: 18%; left: 75%; height: 25%; top: 24%; }
+  .new-home .hero-stage .cloud-e { width: 24%; left: 75%; height: 38%; top: 64%; }
+  .new-home .hero-stage .cloud-f { left: 93%; top: 52%; }
+  .new-home .hero-stage .cloud-g { left: 1%; top: 67%; }
+}
+@media(prefers-reduced-motion:reduce) {
+  .new-home .hero-stage { height: auto; }
+  .new-home .hero-stage .hero { height: calc(100svh - 126px); min-height: 440px; }
+  .new-home .hero-stage .portrait-cloud { position: relative; inset: auto; height: 70svh; margin-top: 24px; overflow: hidden; }
+}

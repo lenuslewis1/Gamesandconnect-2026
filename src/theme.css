@@ -1,0 +1,114 @@
+/* Games & Connect palette from the September 2026 brand reference. */
+:root {
+  --lime: #a6f15d;
+  --forest: #0f3d2e;
+  --ink: #0f3d2e;
+  --cream: #f6f7f6;
+  --line: #e6eae6;
+  --pink: var(--lime);
+  --cyan: var(--forest);
+  --neutral-ink: #0b1b14;
+  --neutral-muted: #606e64;
+  --lime-soft: #edfce0;
+  --background: 120 6% 97%;
+  --foreground: 163 61% 15%;
+  --card: 0 0% 100%;
+  --card-foreground: 163 61% 15%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 163 61% 15%;
+  --primary: 90 84% 65%;
+  --primary-foreground: 163 61% 15%;
+  --secondary: 120 9% 91%;
+  --secondary-foreground: 163 61% 15%;
+  --muted: 120 6% 97%;
+  --muted-foreground: 137 7% 40%;
+  --accent: 90 82% 93%;
+  --accent-foreground: 163 61% 15%;
+  --border: 120 9% 91%;
+  --input: 137 9% 71%;
+  --ring: 163 61% 15%;
+  color: var(--forest);
+  background: var(--cream);
+}
+body { background: var(--cream); color: var(--forest); }
+.gc-nav-tabs { gap: clamp(20px, 2.5vw, 40px); }
+.gc-nav-tab { position: relative; display: inline-flex; align-items: center; min-height: 44px; color: var(--neutral-muted); font-size: 14px; font-weight: 600; white-space: nowrap; text-decoration: none; transition: color .2s; }
+.gc-nav-tab::after { content: ''; position: absolute; left: 0; right: 0; bottom: 9px; height: 2px; background: var(--lime); transform: scaleX(0); transform-origin: left; transition: transform .2s; }
+.gc-nav-tab:hover, .gc-nav-tab[aria-current='page'] { color: var(--forest); }
+.gc-nav-tab:hover::after, .gc-nav-tab[aria-current='page']::after { transform: scaleX(1); }
+.gc-mobile-tabs { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; }
+::selection { background: var(--lime); color: var(--forest); }
+:focus-visible { outline-color: var(--forest); }
+.gc-header.site-header { background: var(--cream); color: var(--forest); border: 0; box-shadow: none; backdrop-filter: none; }
+.gc-dropdown, .gc-mobile { background: var(--cream); border-color: var(--line); box-shadow: 0 18px 40px rgb(15 61 46 / 12%); }
+.gc-dropdown a:hover, .gc-dropdown a[aria-current] { background: var(--lime); color: var(--forest); }
+.gc-button, .gc-outline { background: var(--lime); color: var(--forest); border-color: var(--lime); }
+.gc-outline { background: transparent; border-color: var(--forest); }
+.gc-menu, .gc-mobile section { border-color: var(--line); }
+.gc-mobile h2 { color: var(--neutral-muted); }
+.gc-footer, .new-home .gc-footer { background: var(--forest); color: #fff; border-color: var(--forest); }
+.gc-footer-intro p, .new-home .gc-footer-intro p { color: #fff; }
+.gc-footer-links a, .gc-footer-intro > span { color: #e6eae6; }
+.gc-footer-links h2 { color: var(--lime); }
+.gc-footer-bottom, .new-home .gc-footer-bottom { border-color: rgb(230 234 230 / 24%); color: #e6eae6; }
+.gc-page-hero { background: var(--forest); }
+.gc-page-shade { background: linear-gradient(90deg, #0f3d2ed9, #0f3d2e55); }
+.gc-page-copy h1 { color: var(--lime); }
+.new-home { color: var(--forest); }
+.new-home p { color: var(--neutral-muted); }
+.new-home .hero { background: var(--cream); }
+.new-home .hero-shade { background: linear-gradient(90deg, rgb(15 61 46 / 22%), rgb(15 61 46 / 10%)), linear-gradient(0deg, rgb(11 27 20 / 28%), transparent 58%); }
+.new-home .hero-copy h1, .new-home .hero-copy p { text-shadow: 0 2px 16px rgb(11 27 20 / 35%); }
+.new-home .feature-art { min-height: 0; align-self: center; background: transparent; }
+.new-home .feature-art img { display: block; position: static; width: 100%; height: auto; object-fit: contain; }
+.new-home .hero-copy p, .new-home .hero-copy .eyebrow { color: #fff; }
+.new-home .pill { color: var(--forest); }
+.new-home .pill-secondary { color: inherit; }
+.new-home .pill:hover { box-shadow: 0 8px 24px rgb(166 241 93 / 24%); }
+.new-home .icon-tile, .new-home .feature-art { background: var(--forest); }
+.new-home .benefit-card button, .new-home .case-tabs button { background: var(--line); color: var(--forest); }
+.new-home .benefit-card:first-child button { background: var(--lime); color: var(--forest); }
+.new-home .benefit-link { display: inline-flex; align-items: center; justify-content: center; min-height: 36px; min-width: 40px; padding: 5px 12px; border-radius: 99px; background: var(--line); color: var(--forest); font-size: 13px; font-weight: 700; text-decoration: none; transition: background .2s; }
+.new-home .benefit-card:first-child .benefit-link, .new-home .benefit-link:hover { background: var(--lime); }
+.new-home .feature-card, .new-home .start-card { color: var(--forest); }
+.new-home .feature-card p, .new-home .start-card p { color: var(--forest); }
+.new-home .feature-copy .pill, .new-home .step-copy .pill { background: var(--forest); border-color: var(--forest); color: #fff; }
+.new-home .products, .new-home .faq { background: var(--forest); color: #fff; }
+.new-home .product-tabs button { color: #b0c3b8; border-color: rgb(230 234 230 / 24%); }
+.new-home .product-tabs button.active { color: var(--lime); border-color: var(--lime); }
+.new-home .product-copy p, .new-home .faq-list article p { color: #e6eae6; }
+.new-home .faq-list, .new-home .faq-list article { border-color: rgb(230 234 230 / 24%); }
+.new-home .step:nth-child(1) { --step-bg: var(--lime-soft) !important; }
+.new-home .step:nth-child(2) { --step-bg: var(--lime) !important; }
+.new-home .step:nth-child(3) { --step-bg: var(--line) !important; }
+.new-home .step:nth-child(4) { --step-bg: #cfdfd4 !important; }
+.new-home .step p { color: var(--forest); }
+.new-home .case-card { background: #fff; }
+.new-home .case-tabs button.active { background: var(--forest); color: var(--lime); }
+.new-home .story-role, .new-home .case-stats span { color: var(--neutral-muted); }
+.new-home .home-join-actions .pill:not(.pill-secondary) { background: var(--forest); color: #fff; border-color: var(--forest); }
+.new-home .toast { background: var(--forest); color: #fff; }
+/* Quiet botanical details: background-only layers leave content and motion intact. */
+.new-home #experiences.products,
+.gc-footer, .new-home .gc-footer {
+  background-image: url('/assets/games-connect/forest-pattern.svg');
+  background-repeat: repeat-x;
+  background-position: center bottom;
+  background-size: 1000px 260px;
+}
+.new-home .step {
+  background-image: url('/assets/games-connect/botanical-pattern.svg');
+  background-repeat: no-repeat;
+  background-position: right bottom;
+  background-size: min(52vw, 580px) auto;
+}
+.new-home .step:nth-child(even) {
+  background-position: left top;
+}
+@media (max-width: 720px) {
+  .new-home #experiences.products, .gc-footer, .new-home .gc-footer { background-size: 770px 200px; }
+  .new-home .step { background-size: 320px auto; }
+}
+@media (max-width: 720px) {
+  .new-home .hero-shade { background: linear-gradient(0deg, rgb(15 61 46 / 38%), rgb(15 61 46 / 12%) 72%); }
+}

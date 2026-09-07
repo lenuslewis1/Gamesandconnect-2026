@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="260" viewBox="0 0 1000 260">
+  <defs>
+    <g id="tree">
+      <path d="M-5 170 0 60 5 170Z"/>
+      <path d="M0 101C-58 111-78 76-50 57C-72 26-39 5-20 15C-13-10 25-10 34 13C71 2 85 39 60 55C89 87 47 112 0 101Z"/>
+    </g>
+    <g id="palm">
+      <path d="M-5 180Q10 90 0 40L5 39Q21 102 3 180Z"/>
+      <path d="M2 44Q-45-3-85 38Q-32 23 2 44M2 44Q-62 29-67 83Q-35 49 2 44M2 44Q-17-16 24 0Q10 16 2 44M2 44Q47-10 79 27Q39 23 2 44M2 44Q62 26 70 78Q40 49 2 44Z"/>
+    </g>
+  </defs>
+  <g fill="#a6f15d" opacity=".085">
+    <use href="#tree" transform="translate(70 130) scale(.85)"/>
+    <use href="#palm" transform="translate(200 72)"/>
+    <use href="#tree" transform="translate(330 112)"/>
+    <use href="#tree" transform="translate(470 146) scale(.75)"/>
+    <use href="#palm" transform="translate(590 45) scale(1.2)"/>
+    <use href="#tree" transform="translate(740 114)"/>
+    <use href="#palm" transform="translate(885 90)"/>
+    <use href="#tree" transform="translate(990 158) scale(.65)"/>
+  </g>
+  <path fill="#0b1b14" opacity=".2" d="M0 247Q100 220 200 243T400 240T600 240T800 244T1000 240V260H0Z"/>
+</svg>
