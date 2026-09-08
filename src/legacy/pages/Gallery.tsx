@@ -8,7 +8,7 @@ import { Dialog, DialogContent, DialogTrigger, DialogTitle } from "@/components/
 import { beachGallery } from "@/data/beachGallery";
 import { Button } from "@/components/ui/button";
 import { Link, useSearchParams } from "react-router-dom";
-import { Camera, X, ArrowRight } from "lucide-react";
+import { Camera, ArrowRight } from "lucide-react";
 
 const categoryLabels: Record<string, string> = {
     all: "All Moments",
@@ -117,14 +117,6 @@ const Gallery = () => {
                                     <DialogContent aria-describedby={undefined} className="max-w-5xl border-none bg-transparent p-0 shadow-2xl">
                                         <DialogTitle className="sr-only">{image.caption || 'Gallery photo'}</DialogTitle>
                                         <div className="relative overflow-hidden rounded-2xl bg-black/90">
-                                            <button
-                                                onClick={() => setSelectedImage(null)}
-                                                className="absolute right-4 top-4 z-50 rounded-full bg-black/50 p-2 text-white transition-colors hover:bg-white hover:text-black backdrop-blur-sm ring-1 ring-white/10"
-                                            >
-                                                <X className="h-5 w-5" />
-                                                <span className="sr-only">Close</span>
-                                            </button>
-
                                             <div className="relative aspect-[16/10] md:aspect-[16/9] w-full bg-black">
                                                 <img
                                                     src={image.image_url}

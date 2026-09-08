@@ -7,6 +7,7 @@ import "./site.css";
 import "./theme.css";
 import "./pages.css";
 import "./hero-motion.css";
+import "./mobile.css";
 
 createRoot(document.getElementById("root")).render(
   <React.StrictMode>

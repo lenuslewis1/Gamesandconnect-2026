@@ -1,0 +1,26 @@
+/* Phone-specific usability fixes; desktop composition and hero choreography stay intact. */
+@media (max-width: 700px) {
+  .gc-inner-page main .grid > * { min-width: 0; }
+  .gc-inner-page main :is(a,button).inline-flex { max-width: 100%; white-space: normal; height: auto; min-height: 44px; padding-block: 12px; text-align: center; }
+  .gc-inner-page main :is(input,textarea,[role=combobox]),
+  body:has(.gc-inner-page) [role=dialog] :is(input,textarea,[role=combobox]) { font-size: 16px; }
+  .gc-inner-page[data-page='/contact'] main .grid { grid-template-columns: minmax(0, 1fr); }
+  .gc-inner-page[data-page='/contact'] main a[href^='mailto:'] { word-break: break-word; }
+  .gc-inner-page[data-page='/community'] main a[href^='https://wa.me'] { padding-inline: 20px; font-size: 16px; }
+  .gc-inner-page[data-page='/gallery'] main [role=tablist] { flex-wrap: nowrap; justify-content: flex-start; border-radius: 16px; gap: 4px; overflow-x: auto; padding: 6px; scroll-padding-inline: 6px; }
+  .gc-inner-page[data-page='/gallery'] main [role=tab] { flex: 0 0 auto; white-space: nowrap; font: 500 15px Outfit, sans-serif; min-height: 44px; }
+  .gc-inner-page[data-page='/gallery'] .gc-page-copy > div { background: rgb(15 61 46 / 85%); color: white; }
+  .gc-inner-page[data-page^='/events/'] main > section:first-of-type .bg-gradient-to-t { background: linear-gradient(0deg, rgb(11 27 20 / 90%), rgb(11 27 20 / 65%) 55%, rgb(11 27 20 / 20%)); }
+  .gc-inner-page[data-page^='/events/'] main > section:first-of-type h1 { font-size: clamp(38px, 10vw, 48px); text-shadow: 0 2px 12px rgb(0 0 0 / 35%); }
+  .gc-inner-page[data-page^='/events/'] main > section:first-of-type .container { padding-bottom: 0; }
+  .new-home .benefit-link { min-width: 44px; min-height: 44px; }
+  .gc-footer-links a { display: flex; align-items: center; min-height: 44px; }
+  .gc-footer-links section { gap: 4px; }
+  .gc-mobile-tabs { align-items: stretch; }
+  .gc-mobile-tabs .gc-nav-tab { min-height: 48px; }
+  body:has(.gc-inner-page) [role=dialog] { width: calc(100% - 24px); max-height: calc(100dvh - 24px); overflow-y: auto; border-radius: 16px; overscroll-behavior: contain; }
+  body:has(.gc-inner-page) [role=dialog] > button:last-child { width: 44px; height: 44px; display: grid; place-items: center; right: 4px; top: 4px; background: var(--cream); color: var(--forest); opacity: 1; border-radius: 50%; z-index: 60; }
+  body:has(.gc-inner-page) [role=dialog] h2 { padding-inline: 20px; }
+  body:has([data-page='/gallery']) [role=dialog] .aspect-\[16\/10\] { aspect-ratio: auto; height: auto; display: flex; align-items: center; justify-content: center; }
+  body:has([data-page='/gallery']) [role=dialog] .aspect-\[16\/10\] img { height: auto; max-height: 65dvh; object-fit: contain; }
+}

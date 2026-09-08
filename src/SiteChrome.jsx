@@ -14,12 +14,13 @@ export function SiteHeader() {
  const {pathname} = useLocation();
  useEffect(()=>{setMobile(false);window.scrollTo(0,0)},[pathname]);
  useEffect(()=>{const close=e=>{if(e.key==='Escape')setMobile(false)};document.addEventListener('keydown',close);return()=>document.removeEventListener('keydown',close)},[]);
+ useEffect(()=>{if(!mobile)return;const previous=document.body.style.overflow;document.body.style.overflow='hidden';const resize=()=>{if(window.innerWidth>900)setMobile(false)};window.addEventListener('resize',resize);return()=>{document.body.style.overflow=previous;window.removeEventListener('resize',resize)}},[mobile]);
  return <header className="site-header gc-header">
   <Link to="/" className="gc-logo" aria-label="Games and Connect home"><img src="/assets/games-connect/brand-logo-v2.png" alt="Games & Connect"/></Link>
   <nav aria-label="Primary navigation" className="gc-desktop gc-nav-tabs">{primaryLinks.map(([label,path])=><NavLink key={path} to={path} end={path==='/'} className="gc-nav-tab">{label}</NavLink>)}</nav>
   <div className="gc-actions"><Link className="gc-button" to="/events">Explore events</Link></div>
   <button className="gc-menu" aria-label={mobile?'Close menu':'Open menu'} aria-expanded={mobile} aria-controls="mobile-navigation" onClick={()=>setMobile(!mobile)}>{mobile?'✕':'☰'}</button>
-  {mobile&&<nav id="mobile-navigation" className="gc-mobile" aria-label="Mobile navigation"><div className="gc-mobile-tabs">{primaryLinks.map(([label,path])=><NavLink key={path} to={path} end={path==='/'} className="gc-nav-tab">{label}</NavLink>)}</div><Link className="gc-button" to="/events">Explore events</Link></nav>}
+  {mobile&&<nav id="mobile-navigation" className="gc-mobile" aria-label="Mobile navigation" onClick={e=>{if(e.target.closest('a'))setMobile(false)}}><div className="gc-mobile-tabs">{primaryLinks.map(([label,path])=><NavLink key={path} to={path} end={path==='/'} className="gc-nav-tab">{label}</NavLink>)}</div><Link className="gc-button" to="/events">Explore events</Link></nav>}
  </header>;
 }
 export function SiteFooter(){return <footer className="gc-footer">
