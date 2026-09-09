@@ -1,3 +1,4 @@
+import SEOHead from "@/components/seo/SEOHead";
 import Layout from "@/components/layout/Layout";
 import PageHeader from "@/components/layout/PageHeader";
 import { Card, CardContent } from "@/components/ui/card";
@@ -63,6 +64,7 @@ const categories = [
 const Trivia = () => {
     return (
         <Layout>
+            <SEOHead title="Community Trivia in Ghana" description="Discover Games and Connect community trivia, how to join and how to take part in the next quiz." canonical="/trivia" />
             <PageHeader
                 title="Trivia Friday"
                 subtitle="The weekly brain battle where speed meets knowledge"

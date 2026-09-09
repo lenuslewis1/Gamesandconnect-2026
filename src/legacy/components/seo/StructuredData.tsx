@@ -8,12 +8,12 @@ export const OrganizationSchema = () => {
         '@context': 'https://schema.org',
         '@type': 'Organization',
         name: 'Games and Connect',
+        '@id': 'https://gamesandconnect.com/#organization',
         alternateName: 'Games & Connect Ghana',
         url: 'https://gamesandconnect.com',
         logo: 'https://gamesandconnect.com/assets/games-connect/brand-logo-v2.png',
         description:
-            'Ghana\'s leading youth community for fun events, squad games, travel adventures, and team building experiences in Accra and across Ghana.',
-        foundingDate: '2023',
+            'A Ghanaian community for fun events, squad games, travel adventures, and team building experiences in Accra and across Ghana.',
         areaServed: {
             '@type': 'Country',
             name: 'Ghana',
@@ -28,7 +28,7 @@ export const OrganizationSchema = () => {
             '@type': 'ContactPoint',
             telephone: '+233505891665',
             contactType: 'customer service',
-            email: 'hello@gamesandconnect.com',
+            email: 'gamesandconnectgh@gmail.com',
             availableLanguage: 'English',
         },
         sameAs: [
@@ -41,7 +41,7 @@ export const OrganizationSchema = () => {
 
     return (
         <Helmet>
-            <script type="application/ld+json">{JSON.stringify(schema)}</script>
+            <script type="application/ld+json">{JSON.stringify(schema).replace(/</g, "\\u003c")}</script>
         </Helmet>
     );
 };
@@ -58,7 +58,7 @@ export const LocalBusinessSchema = () => {
         image: 'https://gamesandconnect.com/assets/games-connect/brand-logo-v2.png',
         url: 'https://gamesandconnect.com',
         telephone: '+233505891665',
-        email: 'hello@gamesandconnect.com',
+        email: 'gamesandconnectgh@gmail.com',
         address: {
             '@type': 'PostalAddress',
             streetAddress: 'East Legon',
@@ -82,7 +82,7 @@ export const LocalBusinessSchema = () => {
 
     return (
         <Helmet>
-            <script type="application/ld+json">{JSON.stringify(schema)}</script>
+            <script type="application/ld+json">{JSON.stringify(schema).replace(/</g, "\\u003c")}</script>
         </Helmet>
     );
 };
@@ -113,7 +113,7 @@ export const EventSchema = ({
     timeRange,
     capacity,
 }: EventSchemaProps) => {
-    const priceNum = price ? parseFloat(price.replace(/[^0-9.]/g, '')) || 0 : 0;
+    const priceNum = price && /^(?:free|free entry)$/i.test(price.trim()) ? 0 : price && /\d/.test(price) ? Number(price.replace(/[^0-9.]/g, '')) : undefined;
 
     const schema = {
         '@context': 'https://schema.org',
@@ -129,7 +129,6 @@ export const EventSchema = ({
             address: {
                 '@type': 'PostalAddress',
                 addressLocality: location.includes('Accra') ? 'Accra' : location,
-                addressRegion: 'Greater Accra',
                 addressCountry: 'GH',
             },
         },
@@ -139,29 +138,24 @@ export const EventSchema = ({
             name: 'Games and Connect',
             url: 'https://gamesandconnect.com',
         },
-        ...(priceNum > 0
+        ...(priceNum !== undefined && Number.isFinite(priceNum) && priceNum >= 0
             ? {
                 offers: {
                     '@type': 'Offer',
                     price: priceNum,
                     priceCurrency: 'GHS',
-                    availability: 'https://schema.org/InStock',
                     url: url || 'https://gamesandconnect.com/events',
-                    validFrom: new Date().toISOString(),
                 },
             }
-            : {
-                isAccessibleForFree: true,
-            }),
-        ...(capacity ? { maximumAttendeeCapacity: capacity } : {}),
-        ...(timeRange
-            ? { doorTime: timeRange.split(' - ')[0] || timeRange }
             : {}),
+        ...(priceNum === 0 ? { isAccessibleForFree: true } : {}),
+        ...(capacity ? { maximumAttendeeCapacity: capacity } : {}),
+
     };
 
     return (
         <Helmet>
-            <script type="application/ld+json">{JSON.stringify(schema)}</script>
+            <script type="application/ld+json">{JSON.stringify(schema).replace(/</g, "\\u003c")}</script>
         </Helmet>
     );
 };
@@ -194,7 +188,7 @@ export const FAQSchema = ({ faqs }: FAQSchemaProps) => {
 
     return (
         <Helmet>
-            <script type="application/ld+json">{JSON.stringify(schema)}</script>
+            <script type="application/ld+json">{JSON.stringify(schema).replace(/</g, "\\u003c")}</script>
         </Helmet>
     );
 };
@@ -225,7 +219,7 @@ export const BreadcrumbSchema = ({ items }: BreadcrumbSchemaProps) => {
 
     return (
         <Helmet>
-            <script type="application/ld+json">{JSON.stringify(schema)}</script>
+            <script type="application/ld+json">{JSON.stringify(schema).replace(/</g, "\\u003c")}</script>
         </Helmet>
     );
 };
@@ -258,7 +252,7 @@ export const EventLocationSchema = ({
 
     return (
         <Helmet>
-            <script type="application/ld+json">{JSON.stringify(schema)}</script>
+            <script type="application/ld+json">{JSON.stringify(schema).replace(/</g, "\\u003c")}</script>
         </Helmet>
     );
 };

@@ -1,4 +1,5 @@
-import { useParams, Link, Navigate } from "react-router-dom";
+import NotFound from "./NotFound";
+import { useParams, Link } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -14,12 +15,13 @@ const BlogArticle = () => {
     const article = slug ? getBlogArticle(slug) : undefined;
 
     if (!article) {
-        return <Navigate to="/blog" replace />;
+        return <NotFound />;
     }
 
     // Get related articles (same category, excluding current)
     const relatedArticles = blogArticles
         .filter(a => a.slug !== article.slug)
+        .sort((a, b) => Number(b.category === article.category) - Number(a.category === article.category))
         .slice(0, 2);
 
     return (
@@ -29,7 +31,17 @@ const BlogArticle = () => {
                 description={article.description}
                 canonical={`/blog/${article.slug}`}
                 ogType="article"
+                ogImage={article.image}
             />
+            <script type="application/ld+json">{JSON.stringify({
+                '@context': 'https://schema.org', '@type': 'BlogPosting',
+                headline: article.title, description: article.description,
+                datePublished: article.publishDate,
+                author: { '@type': article.author === 'Games and Connect' ? 'Organization' : 'Person', name: article.author },
+                publisher: { '@id': 'https://gamesandconnect.com/#organization' },
+                mainEntityOfPage: `https://gamesandconnect.com/blog/${article.slug}`,
+                ...(article.image ? { image: new URL(article.image, 'https://gamesandconnect.com').href } : {}),
+            }).replace(/</g, '\\u003c')}</script>
             <BreadcrumbSchema items={[
                 { name: "Home", url: "/" },
                 { name: "Blog", url: "/blog" },

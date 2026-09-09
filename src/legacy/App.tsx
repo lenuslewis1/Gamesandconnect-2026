@@ -1,3 +1,4 @@
+import RouteSEO from "./components/seo/RouteSEO";
 import { lazy, Suspense } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -56,6 +57,7 @@ const App = () => (
           <Toaster />
           <Sonner />
           <BrowserRouter>
+            <RouteSEO />
             <Suspense fallback={<div role="status" className="min-h-[60vh] grid place-items-center">Loading page…</div>}>
             <Routes>
               <Route path="/" element={<Index />} />

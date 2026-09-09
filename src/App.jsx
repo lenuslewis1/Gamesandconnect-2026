@@ -1,3 +1,5 @@
+import SEOHead from "./legacy/components/seo/SEOHead";
+import { FAQSchema, OrganizationSchema } from "./legacy/components/seo/StructuredData";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { SiteHeader, SiteFooter } from "./SiteChrome";
 import { Link } from "react-router-dom";
@@ -122,12 +124,15 @@ export function App() {
   };
 
   return <div id="top" className="new-home" ref={appRef}>
+    <SEOHead title="Game Days, Group Trips & Team Building in Ghana" description="Join Games and Connect for game days in Accra, group trips across Ghana, outdoor adventures and corporate team building. Explore events and meet your community." canonical="/" />
+    <OrganizationSchema />
+    <FAQSchema faqs={faqs.map(([question, answer]) => ({ question, answer }))} />
     <SiteHeader />
     <main>
       <div className="hero-stage">
       <section className="hero" aria-label="Games and Connect introduction">
         <img src={`${G}play-accra.png`} alt="Friends playing limbo together on a beach in Accra" /><div className="hero-shade"></div>
-        <div className="hero-copy"><h1 key={headline}>{words[headline]}</h1><p>Epic game nights, road trips and experiences for young people.</p><div><AppButton href="/events">Explore events</AppButton><a className="down-button" href="#about" aria-label="Explore the page">↓</a></div></div>
+        <div className="hero-copy"><h1><span className="sr-only">Games and Connect: game days, travel and community in Ghana. </span><span aria-hidden="true" key={headline}>{words[headline]}</span></h1><p>Epic game nights, road trips and experiences for young people.</p><div><AppButton href="/events">Explore events</AppButton><a className="down-button" href="#about" aria-label="Explore the page">↓</a></div></div>
       </section>
       <section className="portrait-cloud" aria-label="Games and Connect community moments">
         <img className="cloud cloud-f" src={`${G}beach-hangout/IMG_0492.jpg`} alt="A moment with the community" />
@@ -136,7 +141,7 @@ export function App() {
       </section>
       </div>
       <section id="about" className="benefits section-pad" data-reveal>
-        <div className="benefit-intro"><span className="section-kicker">ABOUT US</span><h2>Rediscover the joy of real connection</h2><p>In a digital world, we create spaces for authentic human connection. Whether it's the adrenaline of a game night or the serenity of a weekend getaway, Games and Connect is your passport to a more social life.</p><AppButton href="/community">Join the community</AppButton></div>
+        <div className="benefit-intro"><span className="section-kicker">ABOUT US</span><h2>Rediscover the joy of real connection</h2><p>Games and Connect brings people together in Accra and across Ghana through game days, group trips, outdoor adventures and corporate team building. Whether it's the adrenaline of a game night or the serenity of a weekend getaway, Games and Connect is your passport to a more social life.</p><AppButton href="/community">Join the community</AppButton></div>
         <div className="benefit-grid">{benefits.map((item, index) => <article className="benefit-card" key={item.title}><div className="icon-tile"><img src={`${G}${item.image}`} alt="" /></div><div><h3>{item.title}</h3><p>{item.copy}</p><Link className="benefit-link" aria-label={`Read about ${item.title}`} to={`/blog/${item.title.toLowerCase().replaceAll(" ", "-")}`}>{index === 0 ? "Learn more →" : "→"}</Link></div></article>)}</div>
       </section>
       <section className="feature-card section-pad" data-reveal><div className="feature-copy"><span>UPCOMING ADVENTURE</span><small>18 September 2026 · Mole National Park</small><h2>The Savannah Experience</h2><p>Escape the ordinary and discover Northern Ghana through breathtaking landscapes, rich culture, wildlife, history and exciting group activities.</p><div className="event-price">GH₵1,700</div><AppButton secondary href="/events/40">Book this experience</AppButton></div><div className="feature-art"><img src={`${G}savannah-experience.jpg`} alt="The Savannah Experience event" /></div></section>
@@ -145,7 +150,7 @@ export function App() {
       <section className="cases section-pad" data-reveal><div className="section-heading"><div><span className="section-kicker">COMMUNITY STORIES</span><h2>Meet the people who make it special</h2></div><AppButton secondary href="/community">Join the community</AppButton></div><div className="case-tabs" role="tablist">{Object.keys(stories).map((name) => <button role="tab" aria-selected={storyTab === name} className={storyTab === name ? "active" : ""} onClick={() => setStoryTab(name)} key={name}>{name}</button>)}</div><article className="case-card"><div><span className="story-role">{selectedStory.role}</span><h3>{selectedStory.person}</h3><p>“{selectedStory.copy}”</p><a href="/community">Be part of the story →</a></div><img src={`${G}${selectedStory.image}`} alt="A shared moment from the Games and Connect community" /><div className="case-stats"><strong>{selectedStory.stat1}</strong><span>{selectedStory.label1}</span><strong>{selectedStory.stat2}</strong><span>{selectedStory.label2}</span></div></article></section>
       <section id="resources" className="resources section-pad" data-reveal><span className="section-kicker">EXPLORE</span><h2>More ways to connect</h2><div className="resource-grid"><article><img src={`${G}beach-hangout/IMG_0516.jpg`} alt="Games and Connect Game Day" /><h3>Game Day</h3><p>Competitions, laughter and team spirit. Join the arena.</p><a href="/game-day">View schedule →</a></article><article><img src={`${G}beach-hangout/IMG_0520.jpg`} alt="Games and Connect travel experience" /><h3>Travel</h3><p>Explore hidden gems and scenic escapes with new friends.</p><a href="/travel">See destinations →</a></article><article><img src={`${G}beach-hangout/IMG_0523.jpg`} alt="Games and Connect community" /><h3>Community</h3><p>Trivia nights, meetups and exclusive member moments.</p><a href="/community">Join us →</a></article></div></section>
       <section id="join" className="start-card section-pad" data-reveal><div><span className="section-kicker">YOUR NEXT ADVENTURE</span><h2>Stop watching from the sidelines</h2><p>The memories, the fun and the friends are waiting for you. Find your next experience and make it happen.</p><a className="site-link" href="https://gamesandconnect.com" target="_blank" rel="noreferrer">Visit Gamesandconnect.com ↗</a></div><div className="home-join-actions"><AppButton href="/events">Find your next event</AppButton><AppButton secondary href="/community">Meet the community</AppButton><AppButton secondary href="/contact">Talk to us</AppButton></div></section>
-      <section className="faq section-pad" data-reveal><div className="section-heading"><div><span className="section-kicker">GOOD TO KNOW</span><h2>Frequently asked questions</h2></div><AppButton href="/events">Book an experience</AppButton></div><div className="faq-list">{faqs.map(([question, answer], index) => <article className={faq === index ? "open" : ""} key={question}><button aria-expanded={faq === index} onClick={() => setFaq(faq === index ? -1 : index)}><span>{question}</span><b>{faq === index ? "−" : "+"}</b></button>{faq === index && <p>{answer}</p>}</article>)}</div></section>
+      <section className="faq section-pad" data-reveal><div className="section-heading"><div><span className="section-kicker">GOOD TO KNOW</span><h2>Frequently asked questions</h2></div><AppButton href="/events">Book an experience</AppButton></div><div className="faq-list">{faqs.map(([question, answer], index) => <article className={faq === index ? "open" : ""} key={question}><button aria-expanded={faq === index} onClick={() => setFaq(faq === index ? -1 : index)}><span>{question}</span><b>{faq === index ? "−" : "+"}</b></button><p hidden={faq !== index}>{answer}</p></article>)}</div></section>
     </main>
     <SiteFooter />
     {notice && <div className="toast" role="status"><span>{notice}</span><button aria-label="Dismiss notification" onClick={() => setNotice("")}>×</button></div>}

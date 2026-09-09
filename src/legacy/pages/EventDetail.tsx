@@ -74,6 +74,7 @@ const EventDetail = () => {
         return (
             <Layout>
                 <div className="min-h-[70vh] flex flex-col items-center justify-center container text-center">
+                    <SEOHead title="Event not found" description="This event could not be found. Explore upcoming Games and Connect experiences." noindex />
                     <h2 className="font-serif text-3xl mb-4">Event not found</h2>
                     <p className="text-muted-foreground mb-8">The event you're looking for doesn't exist or has been moved.</p>
                     <Button asChild>

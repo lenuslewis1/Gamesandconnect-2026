@@ -1,3 +1,4 @@
+import { planningArticles } from './planningArticles';
 import { communityArticles } from './communityArticles';
 
 export interface BlogArticle {
@@ -14,6 +15,7 @@ export interface BlogArticle {
 }
 
 export const blogArticles: BlogArticle[] = [
+    ...planningArticles,
     ...communityArticles,
     {
         slug: "best-team-building-activities-accra-ghana",

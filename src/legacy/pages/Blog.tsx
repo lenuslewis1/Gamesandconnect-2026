@@ -28,12 +28,12 @@ const Blog = () => {
                 <div className="container">
                     <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                         {blogArticles.map((article, i) => (
-                            <ScrollReveal key={article.slug} delay={i * 0.1}>
+                            <ScrollReveal key={article.slug} delay={(i % 3) * 0.1}>
                                 <Link to={`/blog/${article.slug}`}>
                                     <Card className="h-full border-none shadow-lg hover:shadow-xl transition-all hover:-translate-y-1 cursor-pointer overflow-hidden">
                                         {article.image && (
                                             <div className="aspect-video bg-muted">
-                                                <img src={article.image} alt={article.title} className="w-full h-full object-cover" />
+                                                <img src={article.image} alt={article.title} loading="lazy" decoding="async" className="w-full h-full object-cover" />
                                             </div>
                                         )}
                                         <CardContent className="pt-6 pb-6">

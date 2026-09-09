@@ -1,3 +1,4 @@
+import SEOHead from "@/components/seo/SEOHead";
 import { useState } from "react";
 import Layout from "@/components/layout/Layout";
 import PageHeader from "@/components/layout/PageHeader";
@@ -43,6 +44,7 @@ const Gallery = () => {
 
     return (
         <Layout>
+            <SEOHead title="Event Photos & Community Gallery in Ghana" description="Explore photos from Games and Connect game days, beach hangouts, trips and community experiences across Ghana." canonical="/gallery" />
             <PageHeader
                 title="Captured Moments"
                 subtitle="Relive the vibes from our unforgettable events and adventures"

@@ -1,3 +1,4 @@
+import SEOHead from "@/components/seo/SEOHead";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
@@ -102,6 +103,7 @@ const TeamDetail = () => {
     if (!team) {
         return (
             <Layout>
+                <SEOHead title="Team not found" description="This Games and Connect team could not be found." noindex />
                 <div className="container py-32 text-center">
                     <h1 className="text-4xl font-bold mb-4">Team Not Found</h1>
                     <p className="text-muted-foreground mb-8">The team you're looking for doesn't exist.</p>
@@ -115,6 +117,7 @@ const TeamDetail = () => {
 
     return (
         <Layout>
+            <SEOHead title={`${team.name} — Game Day in Ghana`} description={team.description} canonical={`/teams/${teamId}`} />
             {/* Hero Section */}
             <section className={`${team.color} py-20 text-white relative overflow-hidden`}>
                 <div className="absolute inset-0 bg-gradient-to-b from-black/30 to-black/10" />

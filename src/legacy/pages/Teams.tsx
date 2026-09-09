@@ -1,3 +1,4 @@
+import SEOHead from "@/components/seo/SEOHead";
 import { Link } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
 import PageHeader from "@/components/layout/PageHeader";
@@ -48,6 +49,7 @@ const teams = [
 const Teams = () => {
     return (
         <Layout>
+            <SEOHead title="Meet the Game Day Teams" description="Meet Team Red, Green, Blue and Yellow. Discover the Games and Connect teams and join friendly game day competitions in Ghana." canonical="/teams" />
             <PageHeader
                 title="Our Teams"
                 subtitle="Four houses, one community. Pick your colors and join the family."
