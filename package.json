@@ -9,7 +9,7 @@
     "preview": "vite preview",
     "test:sites": "node --test tests/sites-worker.test.mjs",
     "check:integrations": "node scripts/check-integrations.mjs",
-    "test:seo": "node --test tests/seo.test.mjs"
+    "test:seo": "node --test tests/seo.test.mjs tests/event-metadata.test.mjs"
   },
   "dependencies": {
     "@gsap/react": "^2.1.2",

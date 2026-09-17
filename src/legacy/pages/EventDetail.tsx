@@ -1,3 +1,4 @@
+import { eventMetadata } from '@/components/seo/eventMetadata.mjs';
 import { useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
@@ -85,6 +86,7 @@ const EventDetail = () => {
         );
     }
 
+    const metadata = eventMetadata(event);
     const priceNum = parsePrice(event.price);
     const eventDate = new Date(event.date);
     const today = new Date();
@@ -110,6 +112,10 @@ const EventDetail = () => {
                 url={`https://gamesandconnect.com/events/${id}`}
                 timeRange={event.time_range}
                 capacity={event.capacity}
+                endDate={metadata.endDate}
+                bookingOpen={!isPastEvent}
+                ticketSalesStart={metadata.ticketSalesStart}
+                performers={metadata.performers}
             />
             <BreadcrumbSchema items={[
                 { name: "Home", url: "/" },
@@ -195,7 +201,7 @@ const EventDetail = () => {
                                     <div className="space-y-4">
                                         <div className="flex items-center gap-3 text-sm">
                                             <Calendar className="h-5 w-5 text-[#4d7c0f]" />
-                                            <span>{formatDate(event.date)}</span>
+                                            <span>{formatDate(event.date)}{metadata.endDate && metadata.endDate !== event.date ? ` – ${formatDate(metadata.endDate)}` : ''}</span>
                                         </div>
                                         <div className="flex items-center gap-3 text-sm">
                                             <Clock className="h-5 w-5 text-[#4d7c0f]" />

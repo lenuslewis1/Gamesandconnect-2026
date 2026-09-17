@@ -1,3 +1,4 @@
+import { eventDates, offerFields } from './eventMetadata.mjs';
 import { Helmet } from 'react-helmet-async';
 
 // ==========================================
@@ -100,6 +101,10 @@ interface EventSchemaProps {
     url?: string;
     timeRange?: string;
     capacity?: number;
+    endDate?: string;
+    bookingOpen?: boolean;
+    ticketSalesStart?: string;
+    performers?: { name: string; type: 'Person' | 'PerformingGroup' }[];
 }
 
 export const EventSchema = ({
@@ -112,15 +117,23 @@ export const EventSchema = ({
     url,
     timeRange,
     capacity,
+    endDate,
+    bookingOpen = false,
+    ticketSalesStart,
+    performers = [],
 }: EventSchemaProps) => {
     const priceNum = price && /^(?:free|free entry)$/i.test(price.trim()) ? 0 : price && /\d/.test(price) ? Number(price.replace(/[^0-9.]/g, '')) : undefined;
 
+    const dates = eventDates(startDate, timeRange, endDate);
+    const offer = offerFields({ bookingOpen, ticketSalesStart });
+    const confirmedPerformers = performers.filter(p => p.name?.trim() && ['Person', 'PerformingGroup'].includes(p.type));
     const schema = {
         '@context': 'https://schema.org',
         '@type': 'Event',
         name,
         description,
-        startDate,
+        ...dates,
+        ...(confirmedPerformers.length ? { performer: confirmedPerformers.map(p => ({ '@type': p.type, name: p.name.trim() })) } : {}),
         eventStatus: 'https://schema.org/EventScheduled',
         eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
         location: {
@@ -138,12 +151,13 @@ export const EventSchema = ({
             name: 'Games and Connect',
             url: 'https://gamesandconnect.com',
         },
-        ...(priceNum !== undefined && Number.isFinite(priceNum) && priceNum >= 0
+        ...(offer && priceNum !== undefined && Number.isFinite(priceNum) && priceNum >= 0
             ? {
                 offers: {
                     '@type': 'Offer',
                     price: priceNum,
                     priceCurrency: 'GHS',
+                    ...offer,
                     url: url || 'https://gamesandconnect.com/events',
                 },
             }
