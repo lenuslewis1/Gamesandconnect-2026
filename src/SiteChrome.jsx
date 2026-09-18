@@ -30,5 +30,5 @@ export function SiteHeader() {
 export function SiteFooter(){return <footer className="gc-footer">
  <div className="gc-footer-intro"><Link className="gc-logo" to="/"><img src="/assets/games-connect/brand-logo-v2.png" alt="Games & Connect"/></Link><p>Good people.<br/>Great memories.</p><span>Play, travel and connect in Ghana.</span><a href="mailto:gamesandconnectgh@gmail.com">gamesandconnectgh@gmail.com ↗</a></div>
  <div className="gc-footer-links">{Object.entries(groups).map(([name,links])=><section key={name}><h2>{name}</h2>{links.map(([label,path])=><Link key={path} to={path}>{label}</Link>)}</section>)}</div>
- <div className="gc-footer-bottom"><span>© {new Date().getFullYear()} Games & Connect · Made with love in Accra</span><a href="https://www.instagram.com/games_connect_gh/" target="_blank" rel="noreferrer">Instagram ↗</a><Link to="/admin/login">Admin</Link></div>
+ <div className="gc-footer-bottom"><span>© {new Date().getFullYear()} Games & Connect · Made with love in Accra</span><a href="https://www.instagram.com/games_connect_gh/" target="_blank" rel="noreferrer">Instagram ↗</a></div>
  </footer>}

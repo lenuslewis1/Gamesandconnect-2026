@@ -74,7 +74,7 @@ export function App() {
 
   useGSAP(() => {
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const revealTargets = gsap.utils.toArray("[data-reveal]").filter((element) => !element.classList.contains("step"));
+    const revealTargets = gsap.utils.toArray("[data-reveal]").filter((element) => !element.classList.contains("step") && !element.classList.contains("products"));
     if (reducedMotion) {
       gsap.set([...revealTargets, ".step", ".step > img", ".cloud"], { clearProps: "all", autoAlpha: 1 });
       return;
@@ -103,8 +103,24 @@ export function App() {
       .to(surroundingImages, { y: () => -window.innerHeight * 0.14, duration: 0.2 }, 0.8);
     revealTargets.forEach((element) => gsap.fromTo(element, { autoAlpha: 0, y: 54 }, { autoAlpha: 1, y: 0, duration: 1, ease: "power3.out", scrollTrigger: { trigger: element, start: "top 84%", toggleActions: "play none none reverse" } }));
     gsap.fromTo(".benefit-card", { autoAlpha: 0, y: 64, scale: 0.94 }, { autoAlpha: 1, y: 0, scale: 1, duration: 0.85, stagger: 0.13, ease: "power3.out", scrollTrigger: { trigger: ".benefit-grid", start: "top 78%", toggleActions: "play none none reverse" } });
-    ScrollTrigger.create({ trigger: ".products", start: "top top+=94", end: "+=2200", pin: true, scrub: 0.7, anticipatePin: 1, onUpdate: (self) => setProduct(Math.min(products.length - 1, Math.floor(self.progress * products.length))) });
-    gsap.fromTo(".product-image", { scale: 0.84, autoAlpha: 0.45 }, { scale: 1, autoAlpha: 1, ease: "none", scrollTrigger: { trigger: ".products", start: "top 70%", end: "top top+=94", scrub: 0.8 } });
+    let activeProduct = -1;
+    ScrollTrigger.create({
+      trigger: ".products",
+      start: () => `top top+=${headerHeight()}`,
+      end: "bottom bottom",
+      onUpdate: ({ progress }) => {
+        const nextProduct = Math.min(products.length - 1, Math.floor(progress * products.length));
+        if (nextProduct !== activeProduct) {
+          activeProduct = nextProduct;
+          setProduct(nextProduct);
+        }
+      },
+      onLeaveBack: () => {
+        activeProduct = 0;
+        setProduct(0);
+      },
+      invalidateOnRefresh: true,
+    });
     gsap.utils.toArray(".step").forEach((element, index) => {
       const image = element.querySelector("img");
       const title = element.querySelector("h2");
@@ -121,6 +137,18 @@ export function App() {
   const demoNotice = (event) => {
     event.preventDefault();
     setNotice("Thanks for your interest. This local preview does not send form data—visit Gamesandconnect.com to book.");
+  };
+
+  const selectProduct = (index) => {
+    setProduct(index);
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const section = document.getElementById("experiences");
+    const header = document.querySelector(".site-header");
+    if (!section) return;
+    const start = section.offsetTop - (header?.offsetHeight ?? 0);
+    const end = section.offsetTop + section.offsetHeight - window.innerHeight;
+    const progress = products.length > 1 ? index / (products.length - 1) : 0;
+    window.scrollTo({ top: start + (end - start) * progress, behavior: "smooth" });
   };
 
   return <div id="top" className="new-home" ref={appRef}>
@@ -145,11 +173,11 @@ export function App() {
         <div className="benefit-grid">{benefits.map((item, index) => <article className="benefit-card" key={item.title}><div className="icon-tile"><img src={`${G}${item.image}`} alt="" /></div><div><h3>{item.title}</h3><p>{item.copy}</p><Link className="benefit-link" aria-label={`Read about ${item.title}`} to={`/blog/${item.title.toLowerCase().replaceAll(" ", "-")}`}>{index === 0 ? "Learn more →" : "→"}</Link></div></article>)}</div>
       </section>
       <section className="feature-card section-pad" data-reveal><div className="feature-copy"><span>UPCOMING ADVENTURE</span><small>18 September 2026 · Mole National Park</small><h2>The Savannah Experience</h2><p>Escape the ordinary and discover Northern Ghana through breathtaking landscapes, rich culture, wildlife, history and exciting group activities.</p><div className="event-price">GH₵1,700</div><AppButton secondary href="/events/40">Book this experience</AppButton></div><div className="feature-art"><img src={`${G}savannah-experience.jpg`} alt="The Savannah Experience event" /></div></section>
-      <section id="experiences" className="products" data-reveal><h2>Choose your vibe</h2><div className="product-layout"><div className="product-tabs" role="tablist">{products.map((item, index) => <button role="tab" aria-selected={product === index} className={product === index ? "active" : ""} onClick={() => setProduct(index)} key={item.name}>{item.name}</button>)}</div><img className="product-image" src={`${G}${products[product].image}`} alt={`${products[product].name} experience`} /><div className="product-copy"><h3>{products[product].title}</h3><p>{products[product].copy}</p><a href={["/game-day", "/travel", "/community", "/corporate-events", "/outdoor-adventures"][product]}>Explore {products[product].name.toLowerCase()} <span>›</span></a></div></div></section>
+      <section id="experiences" className="products"><div className="products-sticky"><h2>Choose your vibe</h2><div className="product-layout"><div className="product-tabs" role="tablist">{products.map((item, index) => <button role="tab" aria-selected={product === index} className={product === index ? "active" : ""} onClick={() => selectProduct(index)} key={item.name}>{item.name}</button>)}</div><div className="product-media">{products.map((item, index) => <img key={item.name} className={`product-image ${product === index ? "is-active" : ""}`} src={`${G}${item.image}`} alt={product === index ? `${item.name} experience` : ""} aria-hidden={product !== index} />)}</div><div className="product-copy" key={product}><h3>{products[product].title}</h3><p>{products[product].copy}</p><a href={["/game-day", "/travel", "/community", "/corporate-events", "/outdoor-adventures"][product]}>Explore {products[product].name.toLowerCase()} <span>›</span></a></div></div></div></section>
       <section className="steps" aria-label="How to join Games and Connect">{steps.map((step, index) => <article className="step" style={{ "--step-bg": step.color, "--step-index": index + 1 }} key={step.title} data-reveal><div className="step-copy"><span>STEP {String(index + 1).padStart(2, "0")}</span><h2>{step.title}</h2><p>{step.copy}</p><AppButton secondary href="/events">Find your next event</AppButton></div><img src={`${G}${step.image}`} alt={step.title} /></article>)}</section>
       <section className="cases section-pad" data-reveal><div className="section-heading"><div><span className="section-kicker">COMMUNITY STORIES</span><h2>Meet the people who make it special</h2></div><AppButton secondary href="/community">Join the community</AppButton></div><div className="case-tabs" role="tablist">{Object.keys(stories).map((name) => <button role="tab" aria-selected={storyTab === name} className={storyTab === name ? "active" : ""} onClick={() => setStoryTab(name)} key={name}>{name}</button>)}</div><article className="case-card"><div><span className="story-role">{selectedStory.role}</span><h3>{selectedStory.person}</h3><p>“{selectedStory.copy}”</p><a href="/community">Be part of the story →</a></div><img src={`${G}${selectedStory.image}`} alt="A shared moment from the Games and Connect community" /><div className="case-stats"><strong>{selectedStory.stat1}</strong><span>{selectedStory.label1}</span><strong>{selectedStory.stat2}</strong><span>{selectedStory.label2}</span></div></article></section>
       <section id="resources" className="resources section-pad" data-reveal><span className="section-kicker">EXPLORE</span><h2>More ways to connect</h2><div className="resource-grid"><article><img src={`${G}beach-hangout/IMG_0516.jpg`} alt="Games and Connect Game Day" /><h3>Game Day</h3><p>Competitions, laughter and team spirit. Join the arena.</p><a href="/game-day">View schedule →</a></article><article><img src={`${G}beach-hangout/IMG_0520.jpg`} alt="Games and Connect travel experience" /><h3>Travel</h3><p>Explore hidden gems and scenic escapes with new friends.</p><a href="/travel">See destinations →</a></article><article><img src={`${G}beach-hangout/IMG_0523.jpg`} alt="Games and Connect community" /><h3>Community</h3><p>Trivia nights, meetups and exclusive member moments.</p><a href="/community">Join us →</a></article></div></section>
-      <section id="join" className="start-card section-pad" data-reveal><div><span className="section-kicker">YOUR NEXT ADVENTURE</span><h2>Stop watching from the sidelines</h2><p>The memories, the fun and the friends are waiting for you. Find your next experience and make it happen.</p><a className="site-link" href="https://gamesandconnect.com" target="_blank" rel="noreferrer">Visit Gamesandconnect.com ↗</a></div><div className="home-join-actions"><AppButton href="/events">Find your next event</AppButton><AppButton secondary href="/community">Meet the community</AppButton><AppButton secondary href="/contact">Talk to us</AppButton></div></section>
+      <section id="join" className="start-card section-pad" data-reveal><div><span className="section-kicker">YOUR NEXT ADVENTURE</span><h2>Stop watching from the sidelines</h2><p>The memories, the fun and the friends are waiting for you. Find your next experience and make it happen.</p></div><div className="home-join-actions"><AppButton href="/events">Find your next event</AppButton><AppButton secondary href="/community">Meet the community</AppButton><AppButton secondary href="/contact">Talk to us</AppButton></div></section>
       <section className="faq section-pad" data-reveal><div className="section-heading"><div><span className="section-kicker">GOOD TO KNOW</span><h2>Frequently asked questions</h2></div><AppButton href="/events">Book an experience</AppButton></div><div className="faq-list">{faqs.map(([question, answer], index) => <article className={faq === index ? "open" : ""} key={question}><button aria-expanded={faq === index} onClick={() => setFaq(faq === index ? -1 : index)}><span>{question}</span><b>{faq === index ? "−" : "+"}</b></button><p hidden={faq !== index}>{answer}</p></article>)}</div></section>
     </main>
     <SiteFooter />

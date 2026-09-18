@@ -72,13 +72,17 @@ body { margin: 0; min-width: 320px; min-height: 100vh; -webkit-font-smoothing: a
 .new-home .feature-copy .pill { margin-top: 20px; background: #000; color: #fff; border-color: #000; width: max-content; }
 .new-home .feature-art { overflow: hidden; position: relative; min-height: 455px; border-radius: 12px; background: #5d0002; }
 .new-home .feature-art img { width: 100%; height: 100%; position: absolute; inset: 0; object-fit: cover; }
-.new-home .products { background: var(--ink); color: #fff; padding: 58px 6.7vw 130px; }
+.new-home .products { background: var(--ink); color: #fff; min-height: calc(100vh + 275vh); padding: 0 6.7vw; position: relative; }
+.new-home .products-sticky { min-height: calc(100vh - 94px); padding: 58px 0 70px; position: sticky; top: 94px; display: flex; flex-direction: column; justify-content: center; }
 .new-home .products h2 { text-align: center; margin-bottom: 58px; }
 .new-home .product-layout { display: grid; grid-template-columns: 1fr 315px 1fr; align-items: center; gap: 6.8vw; max-width: 1250px; margin: auto; }
 .new-home .product-tabs { display: flex; flex-direction: column; }
-.new-home .product-tabs button { color: #888; background: transparent; border: 0; border-bottom: 1px solid #303030; text-align: left; padding: 22px 0; font-weight: 700; font-size: 17px; cursor: pointer; }
+.new-home .product-tabs button { color: #888; background: transparent; border: 0; border-bottom: 1px solid #303030; text-align: left; padding: 22px 0; font-weight: 700; font-size: 17px; cursor: pointer; transition: color .35s ease, border-color .35s ease; }
 .new-home .product-tabs button.active { color: var(--lime); border-bottom-color: var(--lime); }
 .new-home .product-image { width: 315px; height: 560px; border-radius: 16px; object-fit: cover; }
+.new-home .product-media { position: relative; width: 315px; height: 560px; border-radius: 16px; overflow: hidden; }
+.new-home .product-media .product-image { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; transform: scale(1.025); transition: opacity .7s cubic-bezier(.22,.61,.36,1), transform 1.1s cubic-bezier(.22,.61,.36,1); }
+.new-home .product-media .product-image.is-active { opacity: 1; transform: scale(1); }
 .new-home .product-copy h3 { font-family: "Cormorant Garamond", Georgia, serif; font-size: 44px; font-weight: 600; max-width: 430px; }
 .new-home .product-copy p { color: #aaa; font-size: 18px; max-width: 430px; margin: 24px 0 28px; }
 .new-home .product-copy a { font-weight: 700; }
@@ -189,14 +193,18 @@ body { margin: 0; min-width: 320px; min-height: 100vh; -webkit-font-smoothing: a
   .new-home .feature-card { margin: 24px 16px 60px; padding: 32px; min-height: auto; grid-template-columns: 1fr; }
   .new-home .feature-copy h2 { font-size: 36px; }
   .new-home .feature-art { min-height: 320px; }
-  .new-home .products { padding: 48px 32px 58px; }
-  .new-home .products h2 { text-align: left; margin-bottom: 32px; }
-  .new-home .product-layout { display: flex; flex-direction: column; gap: 28px; align-items: stretch; }
-  .new-home .product-tabs { flex-direction: row; gap: 18px; overflow-x: auto; padding-bottom: 5px; }
+  .new-home .products { min-height: calc(100svh + 230svh); padding: 0 32px; }
+  .new-home .products-sticky { min-height: calc(100svh - 94px); padding: 26px 0 30px; justify-content: flex-start; }
+  .new-home .products h2 { text-align: left; margin-bottom: 18px; }
+  .new-home .product-layout { display: flex; flex-direction: column; gap: 16px; align-items: stretch; min-width: 0; width: 100%; }
+  .new-home .product-tabs { flex-direction: row; gap: 18px; overflow-x: auto; padding-bottom: 5px; max-width: 100%; min-width: 0; }
   .new-home .product-tabs button { flex: 0 0 auto; padding: 12px 0; }
   .new-home .product-image { width: 100%; height: auto; aspect-ratio: 9/16; max-height: 600px; }
+  .new-home .product-media { width: 100%; height: clamp(250px, 38svh, 340px); aspect-ratio: auto; }
+  .new-home .product-media .product-image { height: 100%; }
+  .new-home .product-copy { min-height: 150px; }
   .new-home .product-copy h3 { font-size: 29px; }
-  .new-home .product-copy p { font-size: 16px; }
+  .new-home .product-copy p { font-size: 16px; margin: 10px 0 14px; }
   .new-home .step { min-height: auto; position: relative; top: auto; grid-template-columns: 1fr; padding: 64px 32px; gap: 38px; border-radius: 0; }
   .new-home .step-copy h2 { font-size: 39px; }
   .new-home .step > img { width: 100%; max-height: 550px; }

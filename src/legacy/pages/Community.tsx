@@ -80,6 +80,15 @@ const guidelines = [
     "Support your fellow members.",
 ];
 
+const communityPortraits = [
+    "/assets/games-connect/beach-hangout/IMG_0478.jpg",
+    "/assets/games-connect/beach-hangout/IMG_0480.jpg",
+    "/assets/games-connect/beach-hangout/IMG_0464.jpg",
+    "/assets/games-connect/beach-hangout/IMG_0489.jpg",
+];
+
+const communityTestimonialNames = ["Kinat", "Combo", "Jessica"];
+
 const Community = () => {
     const whatsappLink = "https://wa.me/233505891665?text=" + encodeURIComponent("Hi Games & Connect! Please send me an invite to join the WhatsApp community.");
     const { data: testimonials = [], isLoading: isLoadingTestimonials } = useTestimonials();
@@ -180,7 +189,9 @@ const Community = () => {
 
                     {!isLoadingTestimonials && testimonials.length > 0 && (
                         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-                            {testimonials.map((testimonial) => (
+                            {testimonials.map((testimonial, index) => {
+                                const displayName = communityTestimonialNames[index] ?? testimonial.name;
+                                return (
                                 <Card
                                     key={testimonial.id}
                                     className="border-none bg-muted/30 shadow-none hover:bg-muted/50 transition-colors"
@@ -191,23 +202,25 @@ const Community = () => {
                                             "{testimonial.content}"
                                         </p>
                                         <div className="flex items-center gap-3 pt-6 border-t border-border/10">
-                                            <Avatar className="h-10 w-10">
+                                            <Avatar className="h-12 w-12 shrink-0">
                                                 <AvatarImage
-                                                    src={testimonial.avatar_url || undefined}
-                                                    alt={testimonial.name}
+                                                    src={communityPortraits[index % communityPortraits.length]}
+                                                    alt="Games and Connect community member"
+                                                    className="object-cover"
                                                 />
                                                 <AvatarFallback className="bg-primary/10 text-[#4d7c0f]">
-                                                    {testimonial.name.charAt(0)}
+                                                    {displayName.charAt(0)}
                                                 </AvatarFallback>
                                             </Avatar>
                                             <div>
-                                                <p className="font-semibold text-sm">{testimonial.name}</p>
+                                                <p className="font-semibold text-sm">{displayName}</p>
                                                 <p className="text-xs text-muted-foreground">{testimonial.role}</p>
                                             </div>
                                         </div>
                                     </CardContent>
                                 </Card>
-                            ))}
+                                );
+                            })}
                         </div>
                     )}
                 </div>
