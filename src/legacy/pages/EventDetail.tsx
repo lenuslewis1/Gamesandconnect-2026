@@ -22,6 +22,8 @@ import BookingModal from "@/components/events/BookingModal";
 import SEOHead from "@/components/seo/SEOHead";
 import { EventSchema, FAQSchema, BreadcrumbSchema } from "@/components/seo/StructuredData";
 import ScrollReveal from "@/components/ui/ScrollReveal";
+import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { savannahRecapPhotos } from "@/data/savannahGallery";
 
 // Helper to format date
 const formatDate = (dateString: string) => {
@@ -45,6 +47,7 @@ const EventDetail = () => {
     const { id } = useParams();
     const [openFaq, setOpenFaq] = useState<number | null>(0);
     const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
+    const [selectedRecapPhoto, setSelectedRecapPhoto] = useState<string | null>(null);
 
     const { data: event, isLoading, error } = useEvent(id || "");
     const { data: allEvents = [] } = useEvents();
@@ -262,6 +265,48 @@ const EventDetail = () => {
                                 />
                             </div>
                         </ScrollReveal>
+                    </div>
+                </section>
+            )}
+
+            {/* Savannah trip recap */}
+            {String(event.id) === "40" && (
+                <section className="py-20 bg-accent/30" aria-labelledby="savannah-recap-title">
+                    <div className="container">
+                        <ScrollReveal>
+                            <div className="mb-10 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+                                <div>
+                                    <p className="mb-3 text-sm font-semibold uppercase tracking-[0.18em] text-[#4d7c0f]">The trip, remembered</p>
+                                    <h2 id="savannah-recap-title" className="font-serif text-3xl font-medium md:text-4xl">Savannah, in moments</h2>
+                                </div>
+                                <p className="max-w-md text-muted-foreground">A few scenes from the people, wildlife and landscapes that made the journey.</p>
+                            </div>
+                        </ScrollReveal>
+
+                        <div className="grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-5">
+                            {savannahRecapPhotos.map((photo, index) => (
+                                <Dialog key={photo.id} open={selectedRecapPhoto === photo.id} onOpenChange={(open) => setSelectedRecapPhoto(open ? photo.id : null)}>
+                                    <DialogTrigger asChild>
+                                        <button
+                                            type="button"
+                                            onClick={() => setSelectedRecapPhoto(photo.id)}
+                                            aria-label={`View Savannah trip photo ${index + 1}`}
+                                            className={`group relative block w-full overflow-hidden rounded-2xl bg-muted text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#4d7c0f] ${index === 0 || index === 5 ? "aspect-[4/5] md:row-span-2 md:aspect-auto md:min-h-[26rem]" : "aspect-[4/3]"}`}
+                                        >
+                                            <img src={photo.image_url} alt={photo.caption || "Savannah trip moment"} loading="lazy" decoding="async" className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.04]" />
+                                            <span className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/65 to-transparent px-4 pb-4 pt-10 text-sm font-medium text-white opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100">Savannah Experience</span>
+                                        </button>
+                                    </DialogTrigger>
+                                    <DialogContent aria-describedby={undefined} className="max-w-5xl border-none bg-transparent p-0 shadow-2xl">
+                                        <DialogTitle className="sr-only">{photo.caption || "Savannah trip photo"}</DialogTitle>
+                                        <div className="overflow-hidden rounded-2xl bg-black/90">
+                                            <img src={photo.image_url} alt={photo.caption || "Savannah trip moment"} className="max-h-[82vh] w-full object-contain" />
+                                            <p className="bg-black/50 p-4 text-center text-sm text-white/80">{photo.caption}</p>
+                                        </div>
+                                    </DialogContent>
+                                </Dialog>
+                            ))}
+                        </div>
                     </div>
                 </section>
             )}

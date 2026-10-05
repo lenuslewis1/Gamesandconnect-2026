@@ -7,7 +7,7 @@ import { chromium } from 'playwright';
 const root = fileURLToPath(new URL('../', import.meta.url));
 const dist = path.join(root, 'dist/client');
 const shell = await readFile(path.join(dist, 'index.html'), 'utf8');
-const routes = ['/', '/about', '/events', '/game-day', '/contact', '/travel', '/community', '/gallery', '/teams', '/teams/red', '/teams/green', '/teams/blue', '/teams/yellow', '/trivia', '/team-building', '/games-day-accra', '/corporate-events', '/outdoor-adventures', '/about/what-is-games-and-connect', '/blog'];
+const routes = ['/', '/about', '/events', '/game-day', '/contact', '/terms-and-conditions', '/travel', '/community', '/gallery', '/teams', '/teams/red', '/teams/green', '/teams/blue', '/teams/yellow', '/trivia', '/team-building', '/games-day-accra', '/corporate-events', '/outdoor-adventures', '/about/what-is-games-and-connect', '/blog'];
 for (const file of ['blogData.ts', 'communityArticles.ts', 'planningArticles.ts']) {
     const source = await readFile(path.join(root, 'src/legacy/data', file), 'utf8');
     for (const match of source.matchAll(/slug:\s*['"]([^'"]+)['"]/g)) routes.push(`/blog/${match[1]}`);

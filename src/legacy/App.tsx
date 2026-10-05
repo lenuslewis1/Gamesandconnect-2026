@@ -10,6 +10,7 @@ import { App as Index } from "../App";
 const About = lazy(() => import("./pages/About"));
 const GameDay = lazy(() => import("./pages/GameDay"));
 const EventDetail = lazy(() => import("./pages/EventDetail"));
+const Terms = lazy(() => import("./pages/Terms"));
 const Contact = lazy(() => import("./pages/Contact"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const Auth = lazy(() => import("./pages/Auth"));
@@ -66,6 +67,7 @@ const App = () => (
               <Route path="/game-day" element={<GameDay />} />
               <Route path="/events/:id" element={<EventDetail />} />
               <Route path="/contact" element={<Contact />} />
+              <Route path="/terms-and-conditions" element={<Terms />} />
               <Route path="/travel" element={<Travel />} />
               <Route path="/community" element={<Community />} />
               <Route path="/gallery" element={<Gallery />} />

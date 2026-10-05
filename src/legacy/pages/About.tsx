@@ -39,14 +39,14 @@ const About = () => {
       <section className="relative h-[60vh] flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 z-0">
           <img
-            src="https://res.cloudinary.com/drkjnrvtu/image/upload/v1742488675/_MG_1679_ovnanp.jpg"
-            alt="About Hero"
+            src="/assets/games-connect/savannah/JTN_6568.webp"
+            alt="Games and Connect travelers together at Mole National Park"
             className="h-full w-full object-cover"
           />
           <div className="absolute inset-0 bg-black/50" />
         </div>
         <div className="container relative z-10 text-center text-white">
-          <h1 className="font-serif text-5xl md:text-7xl font-medium mb-6 text-primary">Rediscover real connection.</h1>
+          <h1 className="font-serif text-5xl md:text-7xl font-medium mb-6">Rediscover real connection.</h1>
           <TextMotion
             text="We're on a mission to cure loneliness by connecting young people through play, travel, and adventure."
             variant="word"
@@ -96,12 +96,12 @@ const About = () => {
                 {
                   title: "Diversity & Inclusion",
                   desc: "We create spaces where everyone belongs, regardless of background or identity. Our community is a melting pot of cultures.",
-                  img: "https://res.cloudinary.com/drkjnrvtu/image/upload/v1746915393/_MG_2181_oohsbh.jpg"
+                  img: "/assets/games-connect/savannah/JTN_6343.webp"
                 },
                 {
                   title: "Adventure & Play",
                   desc: "Life is meant to be enjoyed. We prioritize fun, spontaneous adventures that get you out of your comfort zone.",
-                  img: "https://res.cloudinary.com/drkjnrvtu/image/upload/v1746915383/_MG_2106_epgam5.jpg"
+                  img: "/assets/games-connect/savannah/JTN_6766.webp"
                 },
                 {
                   title: "Safety & Respect",

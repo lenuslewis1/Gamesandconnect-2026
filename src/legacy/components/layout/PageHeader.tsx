@@ -10,7 +10,7 @@ interface PageHeaderProps {
 
 const PageHeader = ({ title, subtitle, className, children }: PageHeaderProps) => {
   const { pathname } = useLocation();
-  const images: Record<string,string> = { '/events':'hero-game-day.jpg', '/game-day':'game-day.jpg', '/travel':'travel.jpg', '/community':'community.jpg', '/gallery':'friends-bonding.jpg', '/teams':'community-team.jpg', '/trivia':'community-play.jpg', '/blog':'savannah-experience.jpg', '/contact':'community-portrait.jpg' };
+  const images: Record<string,string> = { '/events':'hero-game-day.jpg', '/game-day':'game-day.jpg', '/travel':'savannah/JTN_6397.webp', '/community':'savannah/JTN_6780.webp', '/gallery':'savannah/JTN_6606.webp', '/teams':'community-team.jpg', '/trivia':'community-play.jpg', '/blog':'savannah-experience.jpg', '/contact':'community-portrait.jpg' };
   return (
     <section className={cn("gc-page-hero", className)}>
       <img className="gc-page-photo" src={'/assets/games-connect/' + (images[pathname] || 'community.jpg')} alt="Games and Connect experiences in Ghana" />

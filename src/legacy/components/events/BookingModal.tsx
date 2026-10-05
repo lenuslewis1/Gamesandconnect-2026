@@ -871,6 +871,9 @@ const BookingModal = ({ isOpen, onClose, event }: BookingModalProps) => {
                                             Change Payment Option
                                         </Button>
                                     )}
+                                    <p className="text-sm text-muted-foreground leading-relaxed">
+                                        Before registering, read our <a href="/terms-and-conditions" target="_blank" rel="noopener noreferrer" className="underline underline-offset-4 text-primary">Terms &amp; Conditions (opens in a new tab)</a>, including payment and refund conditions. Customer cancellations received at least 24 hours before the published event start time (Ghana time) receive a 50% refund of the amount paid. Later cancellations and no-shows are not refundable, subject to applicable legal rights. Event photography may be used in our gallery and event promotions unless you opt out. Email us or tell the host if you do not want your image used; separate permission will be requested where required.
+                                    </p>
                                     <Button
                                         type="submit"
                                         className="w-full h-12 rounded-full text-lg"

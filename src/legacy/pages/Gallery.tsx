@@ -7,6 +7,7 @@ import { useGalleryImages } from "@/hooks/useSupabaseData";
 import { DbGalleryImage } from "@/lib/supabase";
 import { Dialog, DialogContent, DialogTrigger, DialogTitle } from "@/components/ui/dialog";
 import { beachGallery } from "@/data/beachGallery";
+import { savannahGallery } from "@/data/savannahGallery";
 import { Button } from "@/components/ui/button";
 import { Link, useSearchParams } from "react-router-dom";
 import { Camera, ArrowRight } from "lucide-react";
@@ -26,14 +27,14 @@ const categoryLabels: Record<string, string> = {
 
 const Gallery = () => {
     const { data: savedImages = [], isLoading: loadingSaved } = useGalleryImages();
-    const images = [...beachGallery, ...savedImages];
+    const images = [...savannahGallery, ...beachGallery, ...savedImages];
     const isLoading = loadingSaved && images.length === 0;
     const [params, setParams] = useSearchParams();
     const activeCategory = params.get('category') || 'all';
-    const [visibleCount, setVisibleCount] = useState(24);
+    const [visibleCount, setVisibleCount] = useState(28);
     const setActiveCategory = (category: string) => {
         setParams(category === 'all' ? {} : { category }, { replace: true });
-        setVisibleCount(24);
+        setVisibleCount(28);
     };
     const [selectedImage, setSelectedImage] = useState<DbGalleryImage | null>(null);
 
@@ -49,7 +50,7 @@ const Gallery = () => {
                 title="Captured Moments"
                 subtitle="Relive the vibes from our unforgettable events and adventures"
             >
-                <div className="mt-8 flex justify-center gap-3 text-muted-foreground bg-muted/30 w-fit mx-auto px-6 py-2 rounded-full border border-border/50">
+                <div className="mt-8 flex justify-center gap-3 text-white bg-black/45 w-fit mx-auto px-6 py-2 rounded-full border border-white/30">
                     <Camera className="h-5 w-5" />
                     <span className="font-medium">{isLoading ? "..." : images.length}+ photos sharing our story</span>
                 </div>
@@ -144,7 +145,7 @@ const Gallery = () => {
 
                     {filteredImages.length > visibleCount && (
                         <div className="mt-10 text-center">
-                            <Button onClick={() => setVisibleCount(count => count + 24)}>Load more photos ({filteredImages.length - visibleCount} remaining)</Button>
+                            <Button onClick={() => setVisibleCount(count => count + 28)}>Load more photos ({filteredImages.length - visibleCount} remaining)</Button>
                         </div>
                     )}
 
