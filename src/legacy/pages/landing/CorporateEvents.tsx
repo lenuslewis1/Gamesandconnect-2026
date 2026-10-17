@@ -73,7 +73,7 @@ const CorporateEvents = () => {
                             From interbank games to company retreats, Games and Connect delivers professional corporate event experiences that your team will never forget.
                         </p>
                         <Button asChild size="lg" className="bg-primary hover:bg-primary/90 rounded-full h-14 px-8">
-                            <Link to="/contact">Request a Quote</Link>
+                            <Link to="/corporate-team-bonding">Request a Quote</Link>
                         </Button>
                     </ScrollReveal>
                 </div>
@@ -154,7 +154,7 @@ const CorporateEvents = () => {
                             Contact us today for a free consultation and customised quote for your next corporate event in Ghana.
                         </p>
                         <Button asChild size="lg" className="bg-primary hover:bg-primary/90 rounded-full h-14 px-8">
-                            <Link to="/contact">
+                            <Link to="/corporate-team-bonding">
                                 Get Started <ArrowRight className="ml-2 h-5 w-5" />
                             </Link>
                         </Button>

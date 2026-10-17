@@ -1,12 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 
-const primaryLinks = [['Home','/'],['About','/about'],['Events','/events'],['Game Day','/game-day'],['Media','/media'],['Contact','/contact']];
+const primaryLinks = [['Home','/'],['About','/about'],['Events','/events'],['Game Day','/game-day'],['Corporate','/corporate-team-bonding'],['Media','/media'],['Contact','/contact']];
 const groups = {
  Explore: [['Events','/events'],['Travel','/travel'],['Game Day','/game-day'],['Our teams','/teams']],
  Community: [['Join the community','/community'],['Trivia','/trivia']],
  Media: [['Blog posts','/blog'],['Gallery','/gallery']],
- Experiences: [['Team building','/team-building'],['Corporate events','/corporate-events'],['Outdoor adventures','/outdoor-adventures'],['Games Day Accra','/games-day-accra']],
+ Experiences: [['Corporate team bonding','/corporate-team-bonding'],['Team building','/team-building'],['Corporate events','/corporate-events'],['Outdoor adventures','/outdoor-adventures'],['Games Day Accra','/games-day-accra']],
  About: [['Our story','/about'],['What is Games & Connect?','/about/what-is-games-and-connect'],['Contact us','/contact']],
 };
 export function SiteHeader() {

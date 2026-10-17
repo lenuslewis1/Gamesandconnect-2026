@@ -11,6 +11,7 @@ const About = lazy(() => import("./pages/About"));
 const GameDay = lazy(() => import("./pages/GameDay"));
 const EventDetail = lazy(() => import("./pages/EventDetail"));
 const Terms = lazy(() => import("./pages/Terms"));
+const CorporateTeamBonding = lazy(() => import("./pages/CorporateTeamBonding"));
 const Contact = lazy(() => import("./pages/Contact"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const Auth = lazy(() => import("./pages/Auth"));
@@ -23,6 +24,7 @@ const Gallery = lazy(() => import("./pages/Gallery"));
 const Trivia = lazy(() => import("./pages/Trivia"));
 
 import AdminLayout from "./layouts/AdminLayout";
+const CorporateEnquiries = lazy(() => import("./pages/admin/CorporateEnquiries"));
 const AdminDashboard = lazy(() => import("./pages/admin/Dashboard"));
 const TeamRegistrations = lazy(() => import("./pages/admin/TeamRegistrations"));
 const EventRegistrations = lazy(() => import("./pages/admin/EventRegistrations"));
@@ -67,6 +69,7 @@ const App = () => (
               <Route path="/game-day" element={<GameDay />} />
               <Route path="/events/:id" element={<EventDetail />} />
               <Route path="/contact" element={<Contact />} />
+              <Route path="/corporate-team-bonding" element={<CorporateTeamBonding />} />
               <Route path="/terms-and-conditions" element={<Terms />} />
               <Route path="/travel" element={<Travel />} />
               <Route path="/community" element={<Community />} />
@@ -93,6 +96,7 @@ const App = () => (
               <Route element={<AdminRoute />}>
                 <Route element={<AdminLayout />}>
                   <Route path="/admin" element={<AdminDashboard />} />
+                  <Route path="/admin/corporate-enquiries" element={<CorporateEnquiries />} />
                   <Route path="/admin/teams" element={<TeamRegistrations />} />
                   <Route path="/admin/registrations" element={<EventRegistrations />} />
                   <Route path="/admin/payments" element={<Payments />} />

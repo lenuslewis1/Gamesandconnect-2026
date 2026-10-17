@@ -74,7 +74,7 @@ const TeamBuilding = () => {
                         </p>
                         <div className="flex gap-4 justify-center flex-wrap">
                             <Button asChild size="lg" className="bg-white text-[#4d7c0f] hover:bg-white/90 rounded-full h-14 px-8">
-                                <Link to="/contact">Get a Free Quote</Link>
+                                <Link to="/corporate-team-bonding">Get a Free Quote</Link>
                             </Button>
                             <Button asChild size="lg" variant="outline" className="border-white text-white hover:bg-white/10 rounded-full h-14 px-8">
                                 <Link to="/events">See Events</Link>
@@ -182,7 +182,7 @@ const TeamBuilding = () => {
                             Let's plan an unforgettable team building experience for your company. Contact us today for a free consultation and custom quote.
                         </p>
                         <Button asChild size="lg" className="bg-white text-[#4d7c0f] hover:bg-white/90 rounded-full h-14 px-8">
-                            <Link to="/contact">
+                            <Link to="/corporate-team-bonding">
                                 Contact Us <ArrowRight className="ml-2 h-5 w-5" />
                             </Link>
                         </Button>
