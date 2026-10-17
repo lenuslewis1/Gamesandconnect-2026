@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
+import { supabase } from "@/lib/supabase";
 import Layout from "@/components/layout/Layout";
 import PageHeader from "@/components/layout/PageHeader";
 import { Card, CardContent } from "@/components/ui/card";
@@ -31,16 +32,30 @@ const Contact = () => {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false);
     const [subject, setSubject] = useState("general");
+    const [error, setError] = useState("");
+    const inFlight = useRef(false);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        if (inFlight.current) return;
+        inFlight.current = true;
         setIsSubmitting(true);
+        setError("");
         const form = e.currentTarget as HTMLFormElement;
-        const value = (id: string) => (form.querySelector('#' + id) as HTMLInputElement)?.value || '';
-        const body = value('message') + '\n\nFrom: ' + value('firstName') + ' ' + value('lastName') + '\nEmail: ' + value('email');
-        window.location.href = 'mailto:gamesandconnectgh@gmail.com?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
-        setIsSubmitting(false);
-        setIsSuccess(true);
+        const value = (id: string) => (form.querySelector('#' + id) as HTMLInputElement)?.value.trim() || '';
+        try {
+            const { error } = await supabase.from('contact_messages').insert({
+                name: `${value('firstName')} ${value('lastName')}`.trim(),
+                email: value('email'), subject, message: value('message'),
+            }).abortSignal(AbortSignal.timeout(20000));
+            if (error) throw error;
+            setIsSuccess(true);
+        } catch {
+            setError("We couldn't confirm your submission. Your message is still here. Please try again or call +233 50 589 1665.");
+        } finally {
+            inFlight.current = false;
+            setIsSubmitting(false);
+        }
     };
 
     return (
@@ -65,17 +80,17 @@ const Contact = () => {
                                 <div className="max-w-lg">
                                     <h2 className="font-serif text-3xl font-medium mb-2">Send us a Message</h2>
                                     <p className="text-muted-foreground mb-8">
-                                        Fill out the form to prepare a message in your email app.
+                                        Send your message directly to our team.
                                     </p>
 
                                     {isSuccess ? (
-                                        <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-2xl p-8 text-center">
+                                        <div role="status" className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-2xl p-8 text-center">
                                             <div className="h-14 w-14 rounded-full bg-green-100 dark:bg-green-800/40 flex items-center justify-center text-green-600 dark:text-green-400 mx-auto mb-4">
                                                 <Send className="h-6 w-6" />
                                             </div>
-                                            <h3 className="font-serif text-xl font-medium mb-2">Your email draft is ready</h3>
+                                            <h3 className="font-serif text-xl font-medium mb-2">Your message has been submitted</h3>
                                             <p className="text-muted-foreground">
-                                                Finish sending in your email app. If it did not open, email gamesandconnectgh@gmail.com directly.
+                                                Thank you. Our team will review your message and reply using your email address.
                                             </p>
                                             <Button
                                                 variant="outline"
@@ -86,21 +101,22 @@ const Contact = () => {
                                             </Button>
                                         </div>
                                     ) : (
-                                        <form onSubmit={handleSubmit} className="space-y-6">
+                                        <form onSubmit={handleSubmit} className="space-y-6" aria-busy={isSubmitting}>
+                                            <fieldset disabled={isSubmitting} className="space-y-6">
                                             <div className="grid sm:grid-cols-2 gap-6">
                                                 <div className="space-y-2">
                                                     <Label htmlFor="firstName">First Name</Label>
-                                                    <Input id="firstName" placeholder="Jane" required className="rounded-xl h-12" />
+                                                    <Input id="firstName" placeholder="Jane" required maxLength={100} className="rounded-xl h-12" />
                                                 </div>
                                                 <div className="space-y-2">
                                                     <Label htmlFor="lastName">Last Name</Label>
-                                                    <Input id="lastName" placeholder="Doe" required className="rounded-xl h-12" />
+                                                    <Input id="lastName" placeholder="Doe" required maxLength={100} className="rounded-xl h-12" />
                                                 </div>
                                             </div>
 
                                             <div className="space-y-2">
                                                 <Label htmlFor="email">Email Address</Label>
-                                                <Input id="email" type="email" placeholder="jane@example.com" required className="rounded-xl h-12" />
+                                                <Input id="email" type="email" placeholder="jane@example.com" required maxLength={254} className="rounded-xl h-12" />
                                             </div>
 
                                             <div className="space-y-2">
@@ -125,6 +141,7 @@ const Contact = () => {
                                                     placeholder="Tell us more..."
                                                     className="min-h-[150px] rounded-xl resize-none p-4"
                                                     required
+                                                    maxLength={5000}
                                                 />
                                             </div>
 
@@ -135,9 +152,12 @@ const Contact = () => {
                                                         Sending...
                                                     </>
                                                 ) : (
-                                                    "Open email draft"
+                                                    "Send message"
                                                 )}
                                             </Button>
+                                            </fieldset>
+                                            <p className="text-xs text-muted-foreground">We store your details so our team can respond to your message.</p>
+                                            {error && <p role="alert" className="text-red-700">{error}</p>}
                                         </form>
                                     )}
                                 </div>

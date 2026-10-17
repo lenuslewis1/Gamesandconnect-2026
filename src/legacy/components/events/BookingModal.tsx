@@ -106,6 +106,7 @@ const BookingModal = ({ isOpen, onClose, event }: BookingModalProps) => {
 
     // Refs to avoid closure stale state in polling
     const registrationIdRef = useRef<number | null>(null);
+    const savingDetailsRef = useRef(false);
     const transactionRefRef = useRef<string | null>(null);
     const pollCountRef = useRef(0);
 
@@ -319,6 +320,7 @@ const BookingModal = ({ isOpen, onClose, event }: BookingModalProps) => {
     };
 
     const handleDetailsSubmit = async (values: FormValues) => {
+        if (savingDetailsRef.current) return;
         setRegistrationData(values);
 
         if (totalPrice === 0) {
@@ -374,7 +376,32 @@ const BookingModal = ({ isOpen, onClose, event }: BookingModalProps) => {
                 });
                 return;
             }
-            setStep("payment");
+            // Capture submitted details before the visitor starts payment.
+            // Reuse this booking for retries so payment does not create duplicates.
+            savingDetailsRef.current = true;
+            setIsLoading(true);
+            try {
+                const payload = {
+                    event_id: event.id, ticket_tier_id: selectedTierId,
+                    full_name: values.full_name, email: values.email,
+                    phone_number: formatPhoneNumberForDb(values.phone),
+                    number_of_participants: values.ticket_count, location: 'Accra',
+                    payment_status: 'pending', total_amount: totalPrice, amount_paid: 0,
+                };
+                const query = registrationIdRef.current
+                    ? supabase.from('registrations').update(payload).eq('id', registrationIdRef.current)
+                    : supabase.from('registrations').insert(payload);
+                const { data, error } = await query.select('id').single();
+                if (error) throw error;
+                setRegistrationId(data.id);
+                registrationIdRef.current = data.id;
+                setStep("payment");
+            } catch (error: any) {
+                toast({ variant: 'destructive', title: 'Registration not saved', description: error.message || 'Please try again. Your details are still here.' });
+            } finally {
+                savingDetailsRef.current = false;
+                setIsLoading(false);
+            }
         }
     };
 
@@ -480,28 +507,8 @@ const BookingModal = ({ isOpen, onClose, event }: BookingModalProps) => {
 
             const payAccountNumber = formattedPhone.replace(/\D/g, "");
 
-            // Create registration
-            const { data: registration, error: regError } = await supabase
-                .from('registrations')
-                .insert({
-                    event_id: event.id,
-                    ticket_tier_id: selectedTierId, // Set the selected tier ID
-                    full_name: registrationData.full_name,
-                    email: registrationData.email,
-                    phone_number: formattedPhone,
-                    number_of_participants: registrationData.ticket_count,
-                    location: 'Accra',
-                    payment_status: 'pending',
-                })
-                .select()
-                .single();
-
-            if (regError) {
-                throw new Error(regError.message || 'Failed to create registration');
-            }
-
-            setRegistrationId(registration.id);
-            registrationIdRef.current = registration.id;
+            const registration = { id: registrationIdRef.current };
+            if (!registration.id) throw new Error('Please submit your booking details first.');
 
             const tierName = selectedTier ? selectedTier.name : 'Standard';
             const isPartPayment = paymentType === "part" && payingAmount < totalPrice;

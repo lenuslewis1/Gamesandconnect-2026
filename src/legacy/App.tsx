@@ -1,4 +1,5 @@
 import RouteSEO from "./components/seo/RouteSEO";
+import SiteLoader from "../SiteLoader";
 import { lazy, Suspense } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -25,6 +26,7 @@ const Trivia = lazy(() => import("./pages/Trivia"));
 
 import AdminLayout from "./layouts/AdminLayout";
 const CorporateEnquiries = lazy(() => import("./pages/admin/CorporateEnquiries"));
+const ContactMessages = lazy(() => import("./pages/admin/ContactMessages"));
 const AdminDashboard = lazy(() => import("./pages/admin/Dashboard"));
 const TeamRegistrations = lazy(() => import("./pages/admin/TeamRegistrations"));
 const EventRegistrations = lazy(() => import("./pages/admin/EventRegistrations"));
@@ -61,7 +63,7 @@ const App = () => (
           <Sonner />
           <BrowserRouter>
             <RouteSEO />
-            <Suspense fallback={<div role="status" className="min-h-[60vh] grid place-items-center">Loading page…</div>}>
+            <Suspense fallback={<SiteLoader />}>
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/about" element={<About />} />
@@ -97,6 +99,7 @@ const App = () => (
                 <Route element={<AdminLayout />}>
                   <Route path="/admin" element={<AdminDashboard />} />
                   <Route path="/admin/corporate-enquiries" element={<CorporateEnquiries />} />
+                  <Route path="/admin/contact-messages" element={<ContactMessages />} />
                   <Route path="/admin/teams" element={<TeamRegistrations />} />
                   <Route path="/admin/registrations" element={<EventRegistrations />} />
                   <Route path="/admin/payments" element={<Payments />} />

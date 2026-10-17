@@ -1,4 +1,5 @@
 import { Fragment, useEffect, useState } from "react";
+import EventFormRecords from './EventFormRecords';
 import { supabase } from "@/lib/supabase";
 import {
     Table,
@@ -254,6 +255,7 @@ const EventRegistrations = () => {
                     </Table>
                 </CardContent>
             </Card>
+            <EventFormRecords />
         </div>
     );
 };
