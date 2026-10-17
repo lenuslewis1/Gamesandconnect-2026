@@ -154,7 +154,7 @@ const Contact = () => {
                                     { icon: MapPin, title: "Visit Us", desc: "East Legon, Accra\nGhana", value: "", link: null }
                                 ].map((item, index) => (
                                     <ScrollReveal key={index} delay={0.2 + (index * 0.1)} variant="slide-in-right">
-                                        <Card className="border-border/50 bg-muted/20 shadow-none hover:bg-muted/40 transition-colors">
+                                        <Card className={`border-border/50 shadow-none transition-colors ${index === 1 ? "bg-transparent hover:bg-transparent" : "bg-muted/20 hover:bg-muted/40"}`}>
                                             <CardContent className="p-6 flex items-start gap-4">
                                                 <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-[#4d7c0f] shrink-0">
                                                     <item.icon className="h-5 w-5" />
