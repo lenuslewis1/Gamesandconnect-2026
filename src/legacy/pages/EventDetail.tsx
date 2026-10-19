@@ -1,6 +1,7 @@
 import { eventMetadata } from '@/components/seo/eventMetadata.mjs';
 import { useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, Navigate, useLocation } from "react-router-dom";
+import { eventPath, eventIdFromLink } from '@/lib/eventLinks.mjs';
 import Layout from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -45,17 +46,19 @@ const parsePrice = (price: string | null): number => {
 
 const EventDetail = () => {
     const { id } = useParams();
+    const eventId = eventIdFromLink(id);
+    const location = useLocation();
     const [openFaq, setOpenFaq] = useState<number | null>(0);
     const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
     const [selectedRecapPhoto, setSelectedRecapPhoto] = useState<string | null>(null);
 
-    const { data: event, isLoading, error } = useEvent(id || "");
+    const { data: event, isLoading, error } = useEvent(eventId);
     const { data: allEvents = [] } = useEvents();
 
     const { data: testimonials = [] } = useTestimonials();
 
     const relatedEvents = allEvents
-        .filter(e => e.id.toString() !== id && e.category === event?.category)
+        .filter(e => e.id.toString() !== eventId && e.category === event?.category)
         .slice(0, 2);
 
     const featuredTestimonial = testimonials[0] || {
@@ -64,7 +67,7 @@ const EventDetail = () => {
         role: "Game Day Attendee"
     };
 
-    if (isLoading) {
+    if (eventId && isLoading) {
         return (
             <Layout>
                 <div className="min-h-[70vh] flex items-center justify-center">
@@ -89,6 +92,10 @@ const EventDetail = () => {
         );
     }
 
+    const canonicalPath = eventPath(event);
+    if (location.pathname !== canonicalPath) {
+        return <Navigate to={`${canonicalPath}${location.search}${location.hash}`} replace />;
+    }
     const metadata = eventMetadata(event);
     const priceNum = parsePrice(event.price);
     const eventDate = new Date(event.date);
@@ -102,7 +109,7 @@ const EventDetail = () => {
             <SEOHead
                 title={`${event.title} — Event in ${event.location}`}
                 description={event.description?.slice(0, 155) || `Join ${event.title} by Games and Connect in ${event.location}. Book your spot for this exciting event in Ghana!`}
-                canonical={`/events/${id}`}
+                canonical={canonicalPath}
                 ogImage={event.image_url || undefined}
             />
             <EventSchema
@@ -112,7 +119,7 @@ const EventDetail = () => {
                 location={event.location}
                 image={event.image_url || undefined}
                 price={event.price || undefined}
-                url={`https://gamesandconnect.com/events/${id}`}
+                url={`https://gamesandconnect.com${canonicalPath}`}
                 timeRange={event.time_range}
                 capacity={event.capacity}
                 endDate={metadata.endDate}
@@ -123,7 +130,7 @@ const EventDetail = () => {
             <BreadcrumbSchema items={[
                 { name: "Home", url: "/" },
                 { name: "Events", url: "/events" },
-                { name: event.title, url: `/events/${id}` }
+                { name: event.title, url: canonicalPath }
             ]} />
             {/* Hero Section */}
             <section className="relative h-[70vh] min-h-[500px] flex items-end overflow-hidden">
@@ -393,7 +400,7 @@ const EventDetail = () => {
                         {relatedEvents.map((related, i) => (
                             <ScrollReveal key={related.id} delay={i * 0.1}>
                                 <Link
-                                    to={`/events/${related.id}`}
+                                    to={eventPath(related)}
                                     className="group block bg-white rounded-3xl overflow-hidden border border-accent hover:shadow-xl transition-all duration-300 h-full"
                                 >
                                     <div className="grid md:grid-cols-2 h-full">

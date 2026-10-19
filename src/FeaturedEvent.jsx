@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useEvents } from "./legacy/hooks/useSupabaseData";
 import { selectUpcomingEvent } from "./legacy/lib/upcomingEvent.mjs";
+import { eventPath } from "./legacy/lib/eventLinks.mjs";
 
 export default function FeaturedEvent() {
   const { data: events = [], isLoading, isError } = useEvents();
@@ -32,7 +33,7 @@ export default function FeaturedEvent() {
           ? "Explore game days, group trips and community experiences with Games and Connect."
           : "No upcoming events are listed yet. Explore past events and join the community for updates."}</p>
         {event?.price && <div className="event-price">{event.price}</div>}
-        <Link className="pill pill-secondary" to={event ? `/events/${event.id}` : "/events"}>
+        <Link className="pill pill-secondary" to={event ? eventPath(event) : "/events"}>
           {event ? "View event" : "Explore events"}
         </Link>
       </div>

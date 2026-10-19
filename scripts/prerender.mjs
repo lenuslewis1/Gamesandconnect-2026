@@ -55,6 +55,15 @@ try {
         if (failures.length) throw new Error(`${route}: ${failures.join('; ')}`);
         if (route === '/events') {
             const eventRoutes = await page.locator('main a[href^="/events/"]').evaluateAll(links => links.map(link => new URL(link.href).pathname));
+            // Both tabs need crawlable detail pages, even though only one is visible.
+            const pastTab = page.getByRole('tab', { name: /^Past\b/ });
+            if (await pastTab.count()) {
+                await pastTab.click();
+                await page.waitForURL(url => url.searchParams.get('view') === 'past');
+                eventRoutes.push(...await page.locator('main a[href^="/events/"]').evaluateAll(links => links.map(link => new URL(link.href).pathname)));
+                await page.getByRole('tab', { name: /^Upcoming\b/ }).click();
+                await page.waitForURL(url => !url.searchParams.has('view'));
+            }
             for (const eventRoute of new Set(eventRoutes)) if (!routes.includes(eventRoute)) routes.push(eventRoute);
         }
         const html = await page.evaluate(() => {

@@ -27,7 +27,7 @@ const travelFAQs = [
     },
     {
         question: "How much do travel trips cost?",
-        answer: "Trip prices vary by destination and duration, typically between GH₵300 and GH₵2,000. We offer flexible part-payment plans so you can secure your spot with a deposit and pay the rest in installments."
+        answer: "Trip prices vary by destination and duration, typically between GH₵300 and GH₵2,000. Choose any amount towards your booking, up to the full trip price, and settle the remaining balance before departure."
     },
     {
         question: "What is included in a Games and Connect trip?",
@@ -49,7 +49,7 @@ const whyTravel = [
     {
         icon: CreditCard,
         title: "Flexible Payment",
-        description: "Secure your spot with a deposit and pay the rest in easy monthly installments.",
+        description: "Choose how much to pay now and settle the remaining balance before departure.",
     },
     {
         icon: CheckCircle2,

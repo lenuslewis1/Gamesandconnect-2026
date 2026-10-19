@@ -1,4 +1,5 @@
 import Layout from "@/components/layout/Layout";
+import { eventPath } from '@/lib/eventLinks.mjs';
 import Hero from "@/components/home/Hero";
 import TestimonialSlider from "@/components/home/TestimonialSlider";
 import { Link } from "react-router-dom";
@@ -99,7 +100,7 @@ const Index = () => {
                             featuredEvents.map((event) => {
                                 const priceNum = parsePrice(event.price);
                                 return (
-                                    <Link key={event.id} to={`/events/${event.id}`} className="group block h-full">
+                                    <Link key={event.id} to={eventPath(event)} className="group block h-full">
                                         <div className="group bg-card rounded-[2rem] border border-border overflow-hidden hover:shadow-xl transition-all duration-300 flex flex-col h-full">
                                             <div className="aspect-[4/3] overflow-hidden relative">
                                                 <img

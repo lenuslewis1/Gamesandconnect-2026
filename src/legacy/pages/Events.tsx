@@ -1,13 +1,14 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Layout from "@/components/layout/Layout";
 import PageHeader from "@/components/layout/PageHeader";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useEvents } from "@/hooks/useSupabaseData";
+import { eventPath } from '@/lib/eventLinks.mjs';
 import { Calendar, MapPin, Clock, Loader2, ArrowRight } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import ScrollReveal from "@/components/ui/ScrollReveal";
 import SEOHead from "@/components/seo/SEOHead";
 import { BreadcrumbSchema } from "@/components/seo/StructuredData";
@@ -16,26 +17,29 @@ const Events = () => {
     const { data: events = [], isLoading, error } = useEvents();
 
 
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    // Sort events: Upcoming first (ascending), then Past (descending)
-    const sortedEvents = [...events].sort((a, b) => {
-        const dateA = new Date(a.date);
-        const dateB = new Date(b.date);
-
-        const isPastA = dateA < today;
-        const isPastB = dateB < today;
-
-        if (isPastA && !isPastB) return 1;
-        if (!isPastA && isPastB) return -1;
-
-        // If both are upcoming, sort by date ascending
-        if (!isPastA && !isPastB) return dateA.getTime() - dateB.getTime();
-
-        // If both are past, sort by date descending (most recent first)
-        return dateB.getTime() - dateA.getTime();
+    const [params, setParams] = useSearchParams();
+    const activeTab = params.get('view') === 'past' ? 'past' : 'upcoming';
+    const setActiveTab = (value: string) => setParams(current => {
+        const next = new URLSearchParams(current);
+        if (value === 'past') next.set('view', 'past');
+        else next.delete('view');
+        return next;
     });
+    // Keep today's events upcoming through the end of the Ghana calendar day.
+    const [today, setToday] = useState(() => new Date().toISOString().slice(0, 10));
+    useEffect(() => {
+        const refreshDay = () => setToday(new Date().toISOString().slice(0, 10));
+        const timer = window.setInterval(refreshDay, 60000);
+        window.addEventListener('focus', refreshDay);
+        return () => { window.clearInterval(timer); window.removeEventListener('focus', refreshDay); };
+    }, []);
+    const startOfToday = Date.parse(`${today}T00:00:00Z`);
+    const datedEvents = events.filter(event => Number.isFinite(Date.parse(event.date)));
+    const upcomingEvents = datedEvents.filter(event => Date.parse(event.date) >= startOfToday)
+        .sort((a, b) => Date.parse(a.date) - Date.parse(b.date));
+    const pastEvents = datedEvents.filter(event => Date.parse(event.date) < startOfToday)
+        .sort((a, b) => Date.parse(b.date) - Date.parse(a.date));
+    const visibleEvents = activeTab === 'past' ? pastEvents : upcomingEvents;
 
 
     const formatDate = (dateString: string) => {
@@ -44,6 +48,7 @@ const Events = () => {
             day: "numeric",
             month: "long",
             year: "numeric",
+            timeZone: "UTC",
         });
     };
 
@@ -69,8 +74,12 @@ const Events = () => {
 
             <section className="py-16 md:py-24">
                 <div className="container">
-
-
+                    <Tabs value={activeTab} onValueChange={setActiveTab}>
+                        <TabsList aria-label="Events by date" className="mb-10 mx-auto flex w-fit">
+                            <TabsTrigger value="upcoming" className="px-6">Upcoming{!isLoading && !error && ` (${upcomingEvents.length})`}</TabsTrigger>
+                            <TabsTrigger value="past" className="px-6">Past{!isLoading && !error && ` (${pastEvents.length})`}</TabsTrigger>
+                        </TabsList>
+                        <TabsContent key={activeTab} value={activeTab}>
                     {/* Loading State */}
                     {isLoading && (
                         <div className="flex justify-center py-20">
@@ -90,14 +99,13 @@ const Events = () => {
                     {/* Events Grid */}
                     {!isLoading && !error && (
                         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-                            {sortedEvents.map((event, index) => {
+                            {visibleEvents.map((event, index) => {
                                 const priceNum = parsePrice(event.price);
-                                const eventDate = new Date(event.date);
-                                const isPast = eventDate < today;
+                                const isPast = activeTab === 'past';
 
                                 return (
                                     <ScrollReveal key={event.id} delay={index * 0.1} width="100%" className="h-full">
-                                        <Link to={`/events/${event.id}`} className="group block h-full">
+                                        <Link to={eventPath(event)} className="group block h-full">
                                             <Card className={`h-full overflow-hidden border-border/60 hover:shadow-lg transition-all duration-300 flex flex-col ${isPast ? "opacity-90 saturate-50" : ""}`}>
                                                 <div className="relative aspect-[16/10] overflow-hidden">
                                                     <img
@@ -154,15 +162,17 @@ const Events = () => {
                     )}
 
 
-                    {!isLoading && !error && sortedEvents.length === 0 && (
+                    {!isLoading && !error && visibleEvents.length === 0 && (
                         <div className="text-center py-20 bg-muted/10 rounded-2xl border border-dashed border-border">
-                            <h3 className="font-serif text-xl font-medium mb-2">No events found</h3>
+                            <h3 className="font-serif text-xl font-medium mb-2">{activeTab === 'past' ? 'No past events yet' : 'No upcoming events yet'}</h3>
                             <p className="text-muted-foreground">
-                                We couldn't find any events. Please check back later!
+                                {activeTab === 'past' ? 'Our completed events will appear here.' : 'New experiences are on the way. Check back soon for the next event.'}
                             </p>
+                            {activeTab === 'upcoming' && pastEvents.length > 0 && <Button variant="outline" className="mt-6" onClick={() => setActiveTab('past')}>Explore past events</Button>}
                         </div>
                     )}
-
+                        </TabsContent>
+                    </Tabs>
                 </div>
             </section>
         </Layout>

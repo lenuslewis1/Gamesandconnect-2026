@@ -15,4 +15,8 @@ Build app UI in `src/`. Keep `.openai/hosting.json`, `worker/index.js`, `scripts
 
 Primary navigation uses a Media tab containing Blog posts and Gallery. Keep both destinations accessible in desktop and mobile navigation.
 
+Generate event links from the event title with `eventPath` in `src/legacy/lib/eventLinks.mjs`. Keep the ID suffix for uniqueness, redirect numeric or outdated names to the current canonical URL, and preserve query strings and hashes.
+
 Do not show an Admin link or button in public navigation or the footer. Admin pages remain available through their direct URLs.
+
+Trip booking payments let visitors choose any positive amount in pesewas up to the booking total. Do not reintroduce a fixed deposit percentage. Show the chosen payment and remaining balance, and preserve the full booking total in Admin.

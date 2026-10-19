@@ -23,6 +23,7 @@ import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/lib/supabase";
+import { chosenPayment } from "@/lib/chosenPayment.mjs";
 import { Loader2, Ticket, ArrowLeft, CheckCircle2, XCircle, Smartphone, Clock, RefreshCw } from "lucide-react";
 
 interface TicketTier {
@@ -187,14 +188,14 @@ const BookingModal = ({ isOpen, onClose, event }: BookingModalProps) => {
     const unitPrice = selectedTier
         ? selectedTier.price
         : parseFloat(event.price?.replace(/[^0-9.]/g, '') || "0");
-    const totalPrice = unitPrice * (ticketCount || 0);
+    const totalPrice = Math.round(unitPrice * (ticketCount || 0) * 100) / 100;
     const isFreeEvent = totalPrice === 0;
 
-    const minPartPayment = Math.max(Math.ceil(totalPrice * 0.5), Math.min(10, totalPrice));
-    const parsedPartAmount = parseFloat(partPaymentAmount) || 0;
-    const payingAmount = paymentType === "full" ? totalPrice : paymentType === "part" ? parsedPartAmount : 0;
-    const balanceRemaining = totalPrice - payingAmount;
-    const isPartAmountValid = paymentType !== "part" || (parsedPartAmount >= minPartPayment && parsedPartAmount < totalPrice);
+    const customPayment = chosenPayment(partPaymentAmount, totalPrice);
+    const payingAmount = paymentType === "full" ? totalPrice : paymentType === "part" ? customPayment?.amount ?? 0 : 0;
+    const balanceRemaining = paymentType === "part" && customPayment ? customPayment.balance : Math.round((totalPrice - payingAmount) * 100) / 100;
+    const isPartAmountValid = paymentType !== "part" || customPayment !== null;
+    const isPartialPayment = paymentType === "part" && payingAmount < totalPrice;
 
     const formatPhoneNumberForDb = (phone: string) => {
         return phone.startsWith('0')
@@ -372,7 +373,7 @@ const BookingModal = ({ isOpen, onClose, event }: BookingModalProps) => {
                 toast({
                     variant: "destructive",
                     title: "Invalid Amount",
-                    description: `Part payment must be at least GHS ${minPartPayment} and less than the full total.`,
+                    description: `Enter an amount from GHS 0.01 to GHS ${totalPrice}, with up to two decimal places.`,
                 });
                 return;
             }
@@ -476,6 +477,11 @@ const BookingModal = ({ isOpen, onClose, event }: BookingModalProps) => {
 
     const handlePayment = async () => {
         if (!registrationData) return;
+        if (!isPartAmountValid) {
+            setStep("details");
+            toast({ variant: "destructive", title: "Invalid Amount", description: `Choose an amount from GHS 0.01 to GHS ${totalPrice}.` });
+            return;
+        }
 
         // Validate required fields
         if (!registrationData.phone || !registrationData.full_name) {
@@ -663,8 +669,8 @@ const BookingModal = ({ isOpen, onClose, event }: BookingModalProps) => {
                                         htmlFor="choice-part"
                                         className="flex flex-col gap-1 rounded-xl border-2 p-4 cursor-pointer transition-all peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/5 border-border hover:border-primary/50"
                                     >
-                                        <span className="font-medium">Pay Part Payment</span>
-                                        <span className="text-sm text-muted-foreground">Fill your booking details, choose a deposit amount, then pay by mobile money.</span>
+                                        <span className="font-medium">Choose how much to pay</span>
+                                        <span className="text-sm text-muted-foreground">Pay any amount towards your booking and settle the balance before departure.</span>
                                     </Label>
                                 </div>
                                 <div>
@@ -834,22 +840,22 @@ const BookingModal = ({ isOpen, onClose, event }: BookingModalProps) => {
                                         <div className="space-y-3">
                                             {paymentType === "part" && (
                                                 <div className="space-y-2 animate-fade-in">
-                                                    <Label className="text-sm">Amount to pay now (min GHS {minPartPayment})</Label>
+                                                    <Label htmlFor="chosen-payment-amount" className="text-sm">Amount to pay now (GHS)</Label>
                                                     <Input
+                                                        id="chosen-payment-amount"
                                                         type="number"
-                                                        min={minPartPayment}
-                                                        max={totalPrice - 1}
+                                                        min="0.01"
+                                                        max={totalPrice}
                                                         step="0.01"
-                                                        placeholder={`e.g. ${minPartPayment}`}
+                                                        inputMode="decimal"
+                                                        placeholder="Enter your amount"
                                                         value={partPaymentAmount}
                                                         onChange={(e) => setPartPaymentAmount(e.target.value)}
                                                         className="text-lg"
                                                     />
-                                                    {parsedPartAmount > 0 && parsedPartAmount < minPartPayment && (
-                                                        <p className="text-xs text-red-500">Minimum part payment is GHS {minPartPayment}</p>
-                                                    )}
-                                                    {parsedPartAmount >= totalPrice && (
-                                                        <p className="text-xs text-red-500">Use full payment for the full amount.</p>
+                                                    <p className="text-xs text-muted-foreground">Choose any amount from GHS 0.01 up to GHS {totalPrice}. Pay the rest before departure.</p>
+                                                    {partPaymentAmount !== "" && !isPartAmountValid && (
+                                                        <p role="alert" className="text-xs text-red-500">Enter a valid amount from GHS 0.01 to GHS {totalPrice}, with up to two decimal places.</p>
                                                     )}
                                                     {isPartAmountValid && (
                                                         <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 text-sm text-amber-800">
@@ -1059,7 +1065,7 @@ const BookingModal = ({ isOpen, onClose, event }: BookingModalProps) => {
                                 ? "Registration Complete!"
                                 : paymentType === "later"
                                     ? "Registration Saved!"
-                                    : paymentType === "part"
+                                    : isPartialPayment
                                         ? "Part Payment Successful!"
                                     : "Payment Successful!"}
                         </h3>
@@ -1076,13 +1082,13 @@ const BookingModal = ({ isOpen, onClose, event }: BookingModalProps) => {
                             <p className="text-green-800 text-sm">
                                 <strong>Booking Reference:</strong> #{registrationId}
                             </p>
-                            {paymentType === "part" && (
+                            {isPartialPayment && (
                                 <p className="text-green-800 text-sm">
                                     <strong>Balance Remaining:</strong> GHS {balanceRemaining}
                                 </p>
                             )}
                         </div>
-                        {paymentType === "part" && (
+                        {isPartialPayment && (
                             <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-6 text-sm text-amber-800">
                                 Please complete the remaining balance of <strong>GHS {balanceRemaining}</strong> before the event date.
                             </div>
