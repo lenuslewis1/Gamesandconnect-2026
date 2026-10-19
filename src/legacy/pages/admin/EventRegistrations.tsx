@@ -46,6 +46,7 @@ interface Registration {
 
 const EventRegistrations = () => {
     const { data: events = [] } = useEvents();
+    const eventLinks = new Map(events.map(event => [event.id, eventPath(event)]));
     const [registrations, setRegistrations] = useState<Registration[]>([]);
     const [loading, setLoading] = useState(true);
     const [deletingId, setDeletingId] = useState<number | null>(null);
@@ -241,7 +242,7 @@ const EventRegistrations = () => {
                                                         <div><dt className="text-xs font-medium text-muted-foreground">Phone number</dt><dd className="mt-1 break-words">{registration.phone_number ? <a className="underline underline-offset-4" href={`tel:${registration.phone_number.replace(/[^\d+]/g, '')}`}>{registration.phone_number}</a> : 'Not provided'}</dd></div>
                                                         <div><dt className="text-xs font-medium text-muted-foreground">Email address</dt><dd className="mt-1 break-all">{registration.email ? <a className="underline underline-offset-4" href={`mailto:${registration.email}`}>{registration.email}</a> : 'Not provided'}</dd></div>
                                                         <div><dt className="text-xs font-medium text-muted-foreground">Location</dt><dd className="mt-1 break-words">{registration.location || 'Not provided'}</dd></div>
-                                                        <div><dt className="text-xs font-medium text-muted-foreground">Event</dt><dd className="mt-1"><a className="underline underline-offset-4" href={eventPath(events.find(event => event.id === registration.event_id) || { id: registration.event_id, title: 'event' })}>View event</a></dd></div>
+                                                        <div><dt className="text-xs font-medium text-muted-foreground">Event</dt><dd className="mt-1"><a className="underline underline-offset-4" href={eventLinks.get(registration.event_id) || '/events'}>{eventLinks.has(registration.event_id) ? 'View event' : 'View events'}</a></dd></div>
                                                         <div><dt className="text-xs font-medium text-muted-foreground">Registration ID</dt><dd className="mt-1 break-all">{registration.id}</dd></div>
                                                         <div><dt className="text-xs font-medium text-muted-foreground">Ticket tier ID</dt><dd className="mt-1 break-all">{registration.ticket_tier_id ?? 'Not recorded'}</dd></div>
                                                         <div><dt className="text-xs font-medium text-muted-foreground">Participants</dt><dd className="mt-1">{registration.number_of_participants}</dd></div>

@@ -15,7 +15,7 @@ Build app UI in `src/`. Keep `.openai/hosting.json`, `worker/index.js`, `scripts
 
 Primary navigation uses a Media tab containing Blog posts and Gallery. Keep both destinations accessible in desktop and mobile navigation.
 
-Generate event links from the event title with `eventPath` in `src/legacy/lib/eventLinks.mjs`. Keep the ID suffix for uniqueness, redirect numeric or outdated names to the current canonical URL, and preserve query strings and hashes.
+Generate event links from the event title only with `eventPath` in `src/legacy/lib/eventLinks.mjs`; do not append database IDs. Resolve names before legacy IDs, redirect numeric and old name-plus-ID links to the current canonical URL, and preserve query strings and hashes. A recurring event with the same name opens its latest edition.
 
 Do not show an Admin link or button in public navigation or the footer. Admin pages remain available through their direct URLs.
 

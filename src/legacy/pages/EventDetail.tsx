@@ -1,7 +1,7 @@
 import { eventMetadata } from '@/components/seo/eventMetadata.mjs';
 import { useState } from "react";
 import { useParams, Link, Navigate, useLocation } from "react-router-dom";
-import { eventPath, eventIdFromLink } from '@/lib/eventLinks.mjs';
+import { eventPath, resolveEventLink } from '@/lib/eventLinks.mjs';
 import Layout from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -18,7 +18,7 @@ import {
     Quote,
     Loader2
 } from "lucide-react";
-import { useEvent, useEvents, useTestimonials } from "@/hooks/useSupabaseData";
+import { useEvents, useTestimonials } from "@/hooks/useSupabaseData";
 import BookingModal from "@/components/events/BookingModal";
 import SEOHead from "@/components/seo/SEOHead";
 import { EventSchema, FAQSchema, BreadcrumbSchema } from "@/components/seo/StructuredData";
@@ -46,19 +46,18 @@ const parsePrice = (price: string | null): number => {
 
 const EventDetail = () => {
     const { id } = useParams();
-    const eventId = eventIdFromLink(id);
     const location = useLocation();
     const [openFaq, setOpenFaq] = useState<number | null>(0);
     const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
     const [selectedRecapPhoto, setSelectedRecapPhoto] = useState<string | null>(null);
 
-    const { data: event, isLoading, error } = useEvent(eventId);
-    const { data: allEvents = [] } = useEvents();
+    const { data: allEvents = [], isLoading, error } = useEvents();
+    const event = resolveEventLink(allEvents, id);
 
     const { data: testimonials = [] } = useTestimonials();
 
     const relatedEvents = allEvents
-        .filter(e => e.id.toString() !== eventId && e.category === event?.category)
+        .filter(e => e.id !== event?.id && e.category === event?.category)
         .slice(0, 2);
 
     const featuredTestimonial = testimonials[0] || {
@@ -67,7 +66,7 @@ const EventDetail = () => {
         role: "Game Day Attendee"
     };
 
-    if (eventId && isLoading) {
+    if (isLoading) {
         return (
             <Layout>
                 <div className="min-h-[70vh] flex items-center justify-center">
