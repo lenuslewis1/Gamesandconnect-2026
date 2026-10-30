@@ -19,6 +19,8 @@ Generate event links from the event title only with `eventPath` in `src/legacy/l
 
 Do not show an Admin link or button in public navigation or the footer. Admin pages remain available through their direct URLs.
 
+The corporate page uses proposal CTAs opening the Games Day Brief modal, based on the supplied corporate brief PDF, rather than an inline form. Keep all four rounds and direct enquiry submission; save the full brief with the corporate enquiry.
+
 Articles are managed at `/admin/articles` and stored in Supabase `blog_posts`. Public blog pages must read published database records, without falling back to static articles that could restore unpublished stories. Keep existing article slugs fixed. The source-file archive can be imported idempotently with `scripts/import-legacy-articles.mjs`; preserve existing database records on slug conflicts.
 
 Trip booking payments let visitors choose any positive amount in pesewas up to the booking total. Do not reintroduce a fixed deposit percentage. Show the chosen payment and remaining balance, and preserve the full booking total in Admin.
