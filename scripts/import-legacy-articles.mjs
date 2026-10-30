@@ -1,0 +1,15 @@
+import { build } from 'esbuild';
+import { mkdir, writeFile } from 'node:fs/promises';
+import { pathToFileURL } from 'node:url';
+import path from 'node:path';
+await mkdir('output', {recursive:true});
+const bundled = path.resolve('output/legacy-articles.mjs');
+await build({entryPoints:['src/legacy/data/blogData.ts'],bundle:true,platform:'node',format:'esm',outfile:bundled});
+const { blogArticles } = await import(pathToFileURL(bundled).href);
+if(new Set(blogArticles.map(a=>a.slug)).size !== blogArticles.length) throw new Error('Duplicate legacy slugs');
+const rows = blogArticles.map(a=>({slug:a.slug,title:a.title,content:a.content,excerpt:a.description,author:a.author,featured_image:a.image || null,category:a.category,status:'published',published_at:a.publishDate,read_time:parseInt(a.readTime,10)||Math.max(1,Math.ceil(a.content.split(/\s+/).length/200)),tags:a.tags}));
+const json = JSON.stringify(rows);
+if(json.includes('$legacy_articles$')) throw new Error('SQL delimiter collision');
+const sql = `insert into public.blog_posts (slug,title,content,excerpt,author,featured_image,category,status,published_at,read_time,tags) select slug,title,content,excerpt,author,featured_image,category,status,published_at,read_time,tags from jsonb_to_recordset($legacy_articles$${json}$legacy_articles$::jsonb) as a(slug text,title text,content text,excerpt text,author text,featured_image text,category text,status text,published_at timestamptz,read_time integer,tags text[]) on conflict (slug) do nothing returning slug;`;
+await writeFile('output/import-legacy-articles.sql',sql);
+console.log(JSON.stringify({articles:rows.length,slugs:rows.map(a=>a.slug)}));

@@ -1,5 +1,7 @@
 
 import { useEffect, useState } from "react";
+import { Link } from 'react-router-dom';
+import { useAdminArticles } from '@/hooks/useArticles';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Users, CreditCard, UserPlus, DollarSign, Loader2 } from "lucide-react";
 import {
@@ -24,6 +26,7 @@ const isConfirmedPayment = (status?: string | null) =>
     CONFIRMED_PAYMENT_STATUSES.includes(status?.toLowerCase().trim() || '');
 
 const AdminDashboard = () => {
+    const {data: articles = []} = useAdminArticles();
     const [loading, setLoading] = useState(true);
     const [stats, setStats] = useState([
         { title: "Total Revenue", value: "GHS 0.00", change: "...", icon: DollarSign, color: "bg-gradient-to-br from-green-500 to-emerald-700", textColor: "text-white" },
@@ -164,6 +167,10 @@ const AdminDashboard = () => {
                     <p className="text-muted-foreground">Overview of your platform's performance.</p>
                 </div>
             </div>
+            <section className="flex flex-wrap items-center justify-between gap-4 rounded-xl border p-5">
+                <div><h3 className="text-lg font-semibold">Articles</h3><p className="text-sm text-muted-foreground">{articles.filter(article=>article.status==='published').length} published · {articles.filter(article=>article.status==='draft').length} drafts</p></div>
+                <div className="flex flex-wrap gap-3"><Link className="rounded-lg border px-4 py-2 text-sm font-medium" to="/admin/articles">Manage articles</Link><Link className="rounded-lg bg-[#0f3d2e] px-4 py-2 text-sm font-medium text-white" to="/admin/articles/new">Write an article</Link></div>
+            </section>
 
             {/* Stats Cards */}
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">

@@ -28,6 +28,7 @@ import AdminLayout from "./layouts/AdminLayout";
 const CorporateEnquiries = lazy(() => import("./pages/admin/CorporateEnquiries"));
 const ContactMessages = lazy(() => import("./pages/admin/ContactMessages"));
 const AdminDashboard = lazy(() => import("./pages/admin/Dashboard"));
+const AdminArticles = lazy(() => import("./pages/admin/Articles"));
 const TeamRegistrations = lazy(() => import("./pages/admin/TeamRegistrations"));
 const EventRegistrations = lazy(() => import("./pages/admin/EventRegistrations"));
 const Payments = lazy(() => import("./pages/admin/Payments"));
@@ -98,6 +99,8 @@ const App = () => (
               <Route element={<AdminRoute />}>
                 <Route element={<AdminLayout />}>
                   <Route path="/admin" element={<AdminDashboard />} />
+                  <Route path="/admin/articles" element={<AdminArticles />} />
+                  <Route path="/admin/articles/:id" element={<AdminArticles />} />
                   <Route path="/admin/corporate-enquiries" element={<CorporateEnquiries />} />
                   <Route path="/admin/contact-messages" element={<ContactMessages />} />
                   <Route path="/admin/teams" element={<TeamRegistrations />} />

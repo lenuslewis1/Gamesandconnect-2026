@@ -6,10 +6,11 @@ import { Calendar, Clock, ArrowRight } from "lucide-react";
 import SEOHead from "@/components/seo/SEOHead";
 import { BreadcrumbSchema } from "@/components/seo/StructuredData";
 import ScrollReveal from "@/components/ui/ScrollReveal";
-import { blogArticles } from "@/data/blogData";
+import { useArticles } from '@/hooks/useArticles';
 import PageHeader from "@/components/layout/PageHeader";
 
 const Blog = () => {
+    const { data: blogArticles = [], isLoading, error, refetch } = useArticles();
     return (
         <Layout>
             <SEOHead
@@ -26,6 +27,9 @@ const Blog = () => {
 
             <section className="py-24">
                 <div className="container">
+                    {isLoading && <p role="status">Loading articles…</p>}
+                    {error && <div role="alert"><p>Articles could not be loaded.</p><button onClick={() => refetch()}>Try again</button></div>}
+                    {!isLoading && !error && !blogArticles.length && <p>New stories are on the way. Check back soon.</p>}
                     <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                         {blogArticles.map((article, i) => (
                             <ScrollReveal key={article.slug} delay={(i % 3) * 0.1}>

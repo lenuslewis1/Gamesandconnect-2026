@@ -7,12 +7,16 @@ import { Calendar, Clock, ArrowLeft, ArrowRight } from "lucide-react";
 import SEOHead from "@/components/seo/SEOHead";
 import { BreadcrumbSchema } from "@/components/seo/StructuredData";
 import ScrollReveal from "@/components/ui/ScrollReveal";
-import { getBlogArticle, blogArticles } from "@/data/blogData";
+import { useArticles } from '@/hooks/useArticles';
 import ReactMarkdown from "react-markdown";
 
 const BlogArticle = () => {
     const { slug } = useParams<{ slug: string }>();
-    const article = slug ? getBlogArticle(slug) : undefined;
+    const {data: blogArticles = [], isLoading, error, refetch} = useArticles();
+    const article = blogArticles.find(article => article.slug === slug);
+
+    if (isLoading) return <Layout><div className="container py-24" role="status">Loading article…</div></Layout>;
+    if (error) return <Layout><div className="container py-24" role="alert"><p>This article could not be loaded.</p><button onClick={() => refetch()}>Try again</button></div></Layout>;
 
     if (!article) {
         return <NotFound />;

@@ -16,6 +16,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
 const sidebarItems = [
+    { title: "Articles", href: "/admin/articles", icon: CalendarDays },
     { title: "Contact messages", href: "/admin/contact-messages", icon: CalendarCheck },
     { title: "Corporate enquiries", href: "/admin/corporate-enquiries", icon: CalendarCheck },
     {

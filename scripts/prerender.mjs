@@ -8,10 +8,7 @@ const root = fileURLToPath(new URL('../', import.meta.url));
 const dist = path.join(root, 'dist/client');
 const shell = await readFile(path.join(dist, 'index.html'), 'utf8');
 const routes = ['/', '/about', '/events', '/game-day', '/contact', '/terms-and-conditions', '/travel', '/community', '/gallery', '/teams', '/teams/red', '/teams/green', '/teams/blue', '/teams/yellow', '/trivia', '/team-building', '/games-day-accra', '/corporate-events', '/corporate-team-bonding', '/outdoor-adventures', '/about/what-is-games-and-connect', '/blog'];
-for (const file of ['blogData.ts', 'communityArticles.ts', 'planningArticles.ts']) {
-    const source = await readFile(path.join(root, 'src/legacy/data', file), 'utf8');
-    for (const match of source.matchAll(/slug:\s*['"]([^'"]+)['"]/g)) routes.push(`/blog/${match[1]}`);
-}
+// Published article routes are discovered from the live blog listing below.
 const mime = { '.js': 'text/javascript', '.css': 'text/css', '.png': 'image/png', '.jpg': 'image/jpeg', '.svg': 'image/svg+xml', '.woff2': 'font/woff2' };
 const server = createServer(async (request, response) => {
     const pathname = decodeURIComponent(new URL(request.url, 'http://localhost').pathname);
@@ -53,6 +50,12 @@ try {
         // Allow public data requests to settle without depending on analytics or image downloads.
         await page.waitForLoadState('networkidle', { timeout: 10000 }).catch(() => {});
         if (failures.length) throw new Error(`${route}: ${failures.join('; ')}`);
+        if (route === '/blog') {
+            await page.waitForFunction(() => !document.querySelector('main [role="status"]'));
+            if (await page.locator('main [role="alert"]').count()) throw new Error('Published articles could not be loaded for prerendering.');
+            const articleRoutes = await page.locator('main a[href^="/blog/"]').evaluateAll(links => links.map(link => new URL(link.href).pathname));
+            for (const articleRoute of new Set(articleRoutes)) if (!routes.includes(articleRoute)) routes.push(articleRoute);
+        }
         if (route === '/events') {
             const eventRoutes = await page.locator('main a[href^="/events/"]').evaluateAll(links => links.map(link => new URL(link.href).pathname));
             // Both tabs need crawlable detail pages, even though only one is visible.
