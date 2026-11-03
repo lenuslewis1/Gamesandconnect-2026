@@ -4,9 +4,9 @@ import AdminSidebar from "@/components/admin/AdminSidebar";
 
 const AdminLayout = () => {
     return (
-        <div className="flex min-h-screen w-full bg-muted/20">
+        <div className="flex min-h-screen w-full flex-col md:flex-row bg-muted/20">
             <AdminSidebar />
-            <div className="flex-1 flex flex-col">
+            <div className="min-w-0 flex-1 flex flex-col">
                 <header className="sticky top-0 z-10 flex h-14 items-center gap-4 border-b bg-background px-6 lg:h-[60px]">
                     <div className="flex-1">
                         {/* Header content like breadcrumbs or search could go here */}

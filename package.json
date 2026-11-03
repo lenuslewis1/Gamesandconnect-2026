@@ -8,6 +8,8 @@
     "build": "vite build && node scripts/prerender.mjs && node scripts/prepare-sites-build.mjs",
     "preview": "vite preview",
     "test:sites": "node --test tests/sites-worker.test.mjs",
+    "test:sms": "node --test tests/bms-sms.test.mjs tests/bulk-sms.test.mjs tests/website-contacts-db.test.mjs",
+    "test:community": "node --test tests/community-import.test.mjs",
     "check:integrations": "node scripts/check-integrations.mjs",
     "test:seo": "node --test tests/seo.test.mjs tests/event-metadata.test.mjs tests/event-links.test.mjs"
   },
@@ -71,6 +73,7 @@
     "zod": "^3.25.76"
   },
   "devDependencies": {
+    "@electric-sql/pglite": "0.3.14",
     "@tailwindcss/typography": "^0.5.16",
     "@types/node": "^22.16.5",
     "@types/react": "^18.3.23",

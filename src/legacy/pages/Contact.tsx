@@ -46,7 +46,7 @@ const Contact = () => {
         try {
             const { error } = await supabase.from('contact_messages').insert({
                 name: `${value('firstName')} ${value('lastName')}`.trim(),
-                email: value('email'), subject, message: value('message'),
+                email: value('email'), phone: value('phone'), subject, message: value('message'),
             }).abortSignal(AbortSignal.timeout(20000));
             if (error) throw error;
             setIsSuccess(true);
@@ -117,6 +117,11 @@ const Contact = () => {
                                             <div className="space-y-2">
                                                 <Label htmlFor="email">Email Address</Label>
                                                 <Input id="email" type="email" placeholder="jane@example.com" required maxLength={254} className="rounded-xl h-12" />
+                                            </div>
+
+                                            <div className="space-y-2">
+                                                <Label htmlFor="phone">Phone number <span className="font-normal text-muted-foreground">(optional)</span></Label>
+                                                <Input id="phone" name="phone" type="tel" autoComplete="tel" placeholder="024 123 4567" maxLength={40} className="rounded-xl h-12" />
                                             </div>
 
                                             <div className="space-y-2">

@@ -26,6 +26,8 @@ const Trivia = lazy(() => import("./pages/Trivia"));
 
 import AdminLayout from "./layouts/AdminLayout";
 const CorporateEnquiries = lazy(() => import("./pages/admin/CorporateEnquiries"));
+const BulkSms = lazy(() => import("./pages/admin/BulkSms"));
+const CommunityMembers = lazy(() => import("./pages/admin/CommunityMembers"));
 const ContactMessages = lazy(() => import("./pages/admin/ContactMessages"));
 const AdminDashboard = lazy(() => import("./pages/admin/Dashboard"));
 const AdminArticles = lazy(() => import("./pages/admin/Articles"));
@@ -102,6 +104,8 @@ const App = () => (
                   <Route path="/admin/articles" element={<AdminArticles />} />
                   <Route path="/admin/articles/:id" element={<AdminArticles />} />
                   <Route path="/admin/corporate-enquiries" element={<CorporateEnquiries />} />
+                  <Route path="/admin/sms" element={<BulkSms />} />
+                  <Route path="/admin/community-members" element={<CommunityMembers />} />
                   <Route path="/admin/contact-messages" element={<ContactMessages />} />
                   <Route path="/admin/teams" element={<TeamRegistrations />} />
                   <Route path="/admin/registrations" element={<EventRegistrations />} />

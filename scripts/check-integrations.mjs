@@ -33,7 +33,7 @@ await Promise.all([
   ...['pay','verify-payment','payment-callback','cloudinary-upload','send-confirmation-email'].map(name=>check(`Function preflight: ${name}`,`${base}/functions/v1/${name}`,{method:'OPTIONS',headers:{...headers,Origin:'http://localhost:5173','Access-Control-Request-Method':'POST'}},async r=>({allowedOrigin:r.headers.get('access-control-allow-origin')}))),
 ]);
 if (env.RESEND_API_KEY) await check('Resend domains','https://api.resend.com/domains',{headers:{Authorization:`Bearer ${env.RESEND_API_KEY}`}},async r=>({domains:(await r.json()).data?.map(({name,status})=>({name,status}))}));
-const required=['PAYMENT_API_URL','DCM_PARTNER_CODE','CLOUDINARY_CLOUD_NAME','CLOUDINARY_API_KEY','CLOUDINARY_API_SECRET','RESEND_API_KEY','HUBTEL_CLIENT_ID','HUBTEL_CLIENT_SECRET'];
+const required=['PAYMENT_API_URL','DCM_PARTNER_CODE','CLOUDINARY_CLOUD_NAME','CLOUDINARY_API_KEY','CLOUDINARY_API_SECRET','RESEND_API_KEY','BMS_API_KEY','BMS_SENDER_ID'];
 const report={checkedAt:new Date().toISOString(),project:new URL(base).hostname.split('.')[0],mode:'Read-only: public queries, auth settings, CORS preflights and provider status. No bookings, uploads, payments or messages are created.',localServerConfiguration:required.map(name=>({name,present:Boolean(env[name])})),results};
 fs.mkdirSync(path.join(root,'output'),{recursive:true});
 fs.writeFileSync(path.join(root,'output/integration-status.json'),JSON.stringify(report,null,2)+'\n');

@@ -1,10 +1,10 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
+import { sendBmsSms } from "./bms-sms.mjs";
 
 const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY');
 const ADMIN_EMAIL = 'gamesandconnectgh@gmail.com';
-const HUBTEL_CLIENT_ID = Deno.env.get('HUBTEL_CLIENT_ID');
-const HUBTEL_CLIENT_SECRET = Deno.env.get('HUBTEL_CLIENT_SECRET');
-const HUBTEL_SENDER_ID = Deno.env.get('HUBTEL_SENDER_ID') || 'SmartAscend';
+const BMS_API_KEY = Deno.env.get('BMS_API_KEY');
+const BMS_SENDER_ID = Deno.env.get('BMS_SENDER_ID');
 const ADMIN_SMS_PHONE = Deno.env.get('ADMIN_SMS_PHONE') || '+233505891665';
 
 const corsHeaders = {
@@ -36,55 +36,8 @@ interface DeliveryResult {
     error?: string;
 }
 
-function normalizeGhanaPhone(phone: string): string {
-    const digits = phone.replace(/\D/g, '');
-
-    if (digits.startsWith('233') && digits.length === 12) return digits;
-    if (digits.startsWith('0') && digits.length === 10) return `233${digits.slice(1)}`;
-    if (digits.length === 9) return `233${digits}`;
-
-    throw new Error('Invalid Ghana phone number');
-}
-
-async function sendHubtelSms(to: string, content: string): Promise<DeliveryResult> {
-    if (!HUBTEL_CLIENT_ID || !HUBTEL_CLIENT_SECRET) {
-        return { success: false, error: 'Hubtel SMS service is not configured' };
-    }
-
-    try {
-        const params = new URLSearchParams({
-            clientsecret: HUBTEL_CLIENT_SECRET,
-            clientid: HUBTEL_CLIENT_ID,
-            from: HUBTEL_SENDER_ID,
-            to: normalizeGhanaPhone(to),
-            content,
-        });
-
-        const response = await fetch(`https://sms.hubtel.com/v1/messages/send?${params.toString()}`, {
-            method: 'GET',
-            headers: { Accept: 'application/json' },
-        });
-        const responseText = await response.text();
-        let responseData: unknown = responseText;
-
-        try {
-            responseData = JSON.parse(responseText);
-        } catch {
-            // Hubtel may return plain text for some errors.
-        }
-
-        return {
-            success: response.ok,
-            status: response.status,
-            data: responseData,
-            error: response.ok ? undefined : 'Hubtel rejected the SMS request',
-        };
-    } catch (error) {
-        return {
-            success: false,
-            error: error instanceof Error ? error.message : 'Hubtel SMS request failed',
-        };
-    }
+function sendSms(to: string, content: string): Promise<DeliveryResult> {
+    return sendBmsSms(to, content, { apiKey: BMS_API_KEY, senderId: BMS_SENDER_ID });
 }
 
 function generateEmailHtml(data: EmailPayload): string {
@@ -413,8 +366,8 @@ Deno.serve(async (req: Request) => {
         const adminSms = `New registration: ${payload.customer_name} for ${payload.event_title}. Tickets: ${payload.ticket_count}. Status: ${statusLabel}. Phone: ${payload.phone}. Ref: ${payload.booking_reference}.`;
 
         const [customerSmsResult, adminSmsResult] = await Promise.all([
-            sendHubtelSms(payload.phone, customerSms),
-            sendHubtelSms(ADMIN_SMS_PHONE, adminSms),
+            sendSms(payload.phone, customerSms),
+            sendSms(ADMIN_SMS_PHONE, adminSms),
         ]);
 
         if (!customerSmsResult.success) {
@@ -478,13 +431,14 @@ Deno.serve(async (req: Request) => {
             ]);
         }
 
-        const smsSuccess = customerSmsResult.success && adminSmsResult.success;
+        // Customer confirmation succeeds independently of the internal admin alert.
+        const smsSuccess = customerSmsResult.success;
 
         return new Response(
             JSON.stringify({
                 success: smsSuccess,
                 message: smsSuccess
-                    ? 'Customer and admin text messages sent'
+                    ? 'Customer confirmation text accepted by BMS Africa'
                     : 'Registration saved, but one or more text messages failed',
                 sms: {
                     success: smsSuccess,

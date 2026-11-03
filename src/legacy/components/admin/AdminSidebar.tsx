@@ -9,13 +9,16 @@ import {
     LogOut,
     CalendarDays,
     Image as ImageIcon,
-    Trophy
+    Trophy,
+    MessageSquare
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
 const sidebarItems = [
+    { title: "Contacts & SMS", href: "/admin/sms", icon: MessageSquare },
+    { title: "Community members", href: "/admin/community-members", icon: Users },
     { title: "Articles", href: "/admin/articles", icon: CalendarDays },
     { title: "Contact messages", href: "/admin/contact-messages", icon: CalendarCheck },
     { title: "Corporate enquiries", href: "/admin/corporate-enquiries", icon: CalendarCheck },
@@ -75,13 +78,13 @@ const AdminSidebar = () => {
     const location = useLocation();
 
     return (
-        <div className="flex h-screen w-64 flex-col border-r bg-background">
-            <div className="p-6">
+        <div className="flex h-auto w-full shrink-0 flex-col border-b md:border-b-0 md:border-r md:h-screen md:w-64 bg-background">
+            <div className="hidden md:block p-6">
                 <h2 className="text-2xl font-bold tracking-tight text-[#4d7c0f]">Admin</h2>
                 <p className="text-sm text-muted-foreground">Manage your platform</p>
             </div>
-            <div className="flex-1 overflow-auto py-4">
-                <nav className="grid items-start px-4 text-sm font-medium">
+            <div className="flex-1 overflow-auto py-2 md:py-4">
+                <nav className="flex md:grid items-start px-4 text-sm font-medium whitespace-nowrap">
                     {sidebarItems.map((item, index) => {
                         const Icon = item.icon;
                         const isActive = location.pathname === item.href || (item.href !== "/admin" && location.pathname.startsWith(item.href));
@@ -104,7 +107,7 @@ const AdminSidebar = () => {
                     })}
                 </nav>
             </div>
-            <div className="border-t p-4">
+            <div className="hidden md:block border-t p-4">
                 <Button variant="ghost" className="w-full justify-start gap-2 text-red-500 hover:text-red-500 hover:bg-red-50">
                     <LogOut className="h-4 w-4" />
                     Logout

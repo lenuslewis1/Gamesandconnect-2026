@@ -9,7 +9,9 @@ The new frontend connects to the same existing Supabase project, `fxqzihpsasuerp
 | DCM mobile-money payment initiation | `supabase/functions/pay` and payment components | Hosted function preflight returns 200 |
 | Payment verification and callbacks | `supabase/functions/verify-payment`, `payment-callback` | Both hosted function preflights return 200; callback remains on Supabase |
 | Cloudinary uploads | `src/legacy/lib/cloudinary.ts`, `supabase/functions/cloudinary-upload` | Hosted preflight returns 200; existing image URLs preserved |
-| Resend confirmation email and Hubtel customer/admin SMS | `supabase/functions/send-confirmation-email` | Hosted preflight returns 200; delivery not exercised |
+| Resend confirmation email and BMS Africa customer/admin SMS | `supabase/functions/send-confirmation-email` | BMS adapter prepared locally; API key, approved sender, deployment and delivery test pending |
+| Saved website contacts and admin bulk SMS | `/admin/sms`, `supabase/functions/bulk-sms` | Contact/campaign schema applied live; frontend, sending function and BMS configuration deployment pending. See `docs/bulk-sms.md` |
+| Imported community members | `/admin/community-members`, `community_members` | 123 live source records linked to 105 unique SMS contacts; new admin view prepared locally. See `docs/community-members.md` |
 | Supabase gallery storage, team content and scores | Existing hooks and admin/gallery screens | Public gallery, team and scoreboard queries return 200 |
 | WhatsApp/social links and SEO structured data | Existing page content and SEO components | Preserved from migrated source |
 | Netlify build, SPA routes and security headers | `netlify.toml` | Adapted to `dist/client`; existing Sites packaging is also retained |
@@ -18,7 +20,7 @@ The new frontend connects to the same existing Supabase project, `fxqzihpsasuerp
 
 Frontend configuration remains in the ignored root `.env.local`: only `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` are required. Configure these public values on the eventual frontend host.
 
-Available old server configuration has been copied to the ignored `supabase/functions/.env.local`. The old file contains payment settings, but its Cloudinary and Resend values are blank, and it has no Hubtel credentials. This does not establish whether hosted secrets exist. Their values should remain server-side; never add a `VITE_` prefix to provider or service-role credentials. Required names are listed in `supabase/functions/.env.example`.
+Available old server configuration has been copied to the ignored `supabase/functions/.env.local`. The old file contains payment settings, but its Cloudinary and Resend values are blank, and it has no BMS Africa credentials. This does not establish whether hosted secrets exist. Their values should remain server-side; never add a `VITE_` prefix to provider or service-role credentials. Required names are listed in `supabase/functions/.env.example`.
 
 All five backend function source folders, the two original migration files, and local Supabase configuration are now included. Local Auth URLs use ports 5173 and 4173; the reference to a nonexistent seed file was removed. These local config settings do not alter the hosted project's Auth configuration.
 
@@ -26,7 +28,7 @@ The copied migrations are the old checkout's partial history, not a complete dat
 
 ## Known inherited limitation
 
-The copied confirmation function still uses `onboarding@resend.dev`. That is Resend's testing sender, so general customer email delivery should not be considered ready until a verified sending domain is configured. Historical notes also flagged domain verification as pending; current domain status is unverified. The copied SMS sender defaults to `SmartAscend` unless the hosted `HUBTEL_SENDER_ID` overrides it. No external messages or payments were sent during migration.
+The copied confirmation function still uses `onboarding@resend.dev`. That is Resend's testing sender, so general customer email delivery should not be considered ready until a verified sending domain is configured. Historical notes also flagged domain verification as pending; current domain status is unverified. The SMS adapter now requires server-only `BMS_API_KEY` and `BMS_SENDER_ID`, with no fallback sender. Use an enabled BMS key and an approved sender ID of at most 11 characters. The official BMS v2 documentation uses `https://api.mnotify.com/api/sms/quick`. An API success response means provider acceptance, not confirmed handset delivery. Customer SMS acceptance is independent of the internal admin SMS result. No external messages or payments were sent during migration.
 
 ## Verification
 
@@ -35,3 +37,9 @@ Run `npm run check:integrations` for read-only service checks. Use `npm run chec
 The new sign-in flow now sends ordinary members to Events and retains the admin route for allowed admins. Signup handles both immediate sessions and email-confirmation responses. Contact remains an explicit email-draft flow because the old contact form had no sending integration.
 
 Before changing the public hostname, verify its Auth redirect allowlist in the existing Supabase project. Actual payment, upload, notification delivery, and authenticated admin writes still need an authorized operational test. This migration does not publish the frontend or alter provider accounts.
+
+## BMS Africa activation
+
+On November 3, 2026, the Games Connect BMS developer page showed no API keys. The local adapter replaces Hubtel for this function only; payment integrations are unchanged. Create a dedicated key after user approval, confirm an approved sender ID, and save both values as Supabase Edge Function secrets. Never store the key in frontend configuration or Git. Deploy `send-confirmation-email` only after configuration is available. Verify a controlled confirmation SMS and its delivery report before claiming the service is live. Existing public callers supply notification details; before exposing a funded production sender, validate booking details against stored records and enforce duplicate/rate limits.
+
+Run `node --test tests/bms-sms.test.mjs` for mocked provider contract and failure checks; these tests do not send messages or spend credits.

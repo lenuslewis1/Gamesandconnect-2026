@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { Button } from '@/components/ui/button';
 
-type Message = { id: string; name: string; email: string; subject: string; message: string; created_at: string; is_read: boolean };
+type Message = { id: string; name: string; email: string; phone?: string; subject: string; message: string; created_at: string; is_read: boolean };
 const PAGE_SIZE = 50;
 
 export default function ContactMessages() {
@@ -41,7 +41,7 @@ export default function ContactMessages() {
         {error && <p role="alert" className="text-red-700">{error}</p>}
         {loading ? <p role="status">Loading messages…</p> : rows.length === 0 ? <p>No messages yet.</p> : rows.map(row => <article key={row.id} className="border rounded-xl p-6 space-y-4">
             <div className="flex flex-wrap justify-between gap-4"><div><h3 className="text-xl font-semibold">{row.subject}</h3><p className="text-sm text-muted-foreground">{new Date(row.created_at).toLocaleString()} · {row.is_read ? 'Read' : 'Unread'}</p></div><Button variant="outline" disabled={updating === row.id} onClick={() => markRead(row)}>Mark as {row.is_read ? 'unread' : 'read'}</Button></div>
-            <p>{row.name} · <a className="underline break-all" href={`mailto:${row.email}`}>{row.email}</a></p>
+            <p>{row.name} · <a className="underline break-all" href={`mailto:${row.email}`}>{row.email}</a>{row.phone && <> · <a href={`tel:${row.phone.replace(/[^\d+]/g, '')}`}>{row.phone}</a></>}</p>
             <p className="whitespace-pre-wrap break-words">{row.message}</p>
         </article>)}
         <div className="flex flex-wrap items-center gap-4"><Button variant="outline" disabled={loading || page === 0} onClick={() => setPage(value => value - 1)}>Previous</Button><span>{total} messages · Page {page + 1} of {Math.max(1, Math.ceil(total / PAGE_SIZE))}</span><Button variant="outline" disabled={loading || (page + 1) * PAGE_SIZE >= total} onClick={() => setPage(value => value + 1)}>Next</Button></div>
