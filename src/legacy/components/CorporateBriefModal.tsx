@@ -11,16 +11,14 @@ export default function CorporateBriefModal({ open, onOpenChange, restoreFocus }
   const [reference,setReference] = useState('');
   const [submitting,setSubmitting] = useState(false);
   const [error,setError] = useState('');
-  const [copied,setCopied] = useState(false);
   const inFlight = useRef(false);
   const result = useRef<HTMLDivElement>(null);
   const today = new Date().toLocaleDateString('en-CA');
   const value = (name:string) => values[name]?.join(', ') || '';
-  const brief = ['GAMES DAY BRIEF', ...Object.entries(values).filter(([key,items])=>key!=='Website' && items.some(Boolean)).map(([key,items])=>`${key}: ${items.join(', ')}`)].join('\n');
   function capture(form:HTMLFormElement) {
     const next:Record<string,string[]> = {};
     new FormData(form).forEach((entry,key)=>{(next[key] ||= []).push(String(entry).trim());});
-    setValues(next);setCopied(false);
+    setValues(next);
   }
   async function submit(event:React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -87,7 +85,6 @@ export default function CorporateBriefModal({ open, onOpenChange, restoreFocus }
             {field('How did you hear about us?')}
             <label className="bond-wide">Anything else we should know?<textarea name="Anything else we should know?" rows={4} maxLength={1500} defaultValue={value('Anything else we should know?')} placeholder="Company culture, past events that worked or flopped, a theme in mind"/></label>
           </div></section>
-          <details className="brief-summary"><summary>Review your brief</summary><pre>{brief}</pre><button type="button" className="brief-copy" onClick={async()=>{try{await navigator.clipboard.writeText(brief);setCopied(true);}catch{setError('Copy is unavailable. You can select and copy the brief above.');}}}>{copied?'Brief copied':'Copy brief'}</button></details>
           <p className="bond-help">We store your answers so our team can prepare your proposal and respond to your enquiry. This is a request, not a confirmed booking.</p>
           <button className="bond-button" type="submit">{submitting?'Submitting…':'Submit your brief'} <span aria-hidden="true">↗</span></button>
         </fieldset>
