@@ -1,30 +1,16 @@
-
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import AdminSidebar from "@/components/admin/AdminSidebar";
 
 const AdminLayout = () => {
-    return (
-        <div className="flex min-h-screen w-full flex-col md:flex-row bg-muted/20">
-            <AdminSidebar />
-            <div className="min-w-0 flex-1 flex flex-col">
-                <header className="sticky top-0 z-10 flex h-14 items-center gap-4 border-b bg-background px-6 lg:h-[60px]">
-                    <div className="flex-1">
-                        {/* Header content like breadcrumbs or search could go here */}
-                        <h1 className="text-lg font-semibold">Dashboard</h1>
-                    </div>
-                    <div className="flex items-center gap-4">
-                        {/* User Profile dropdown could go here */}
-                        <div className="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold">
-                            A
-                        </div>
-                    </div>
-                </header>
-                <main className="flex-1 p-6 overflow-auto">
-                    <Outlet />
-                </main>
-            </div>
+    const location = useLocation();
+    const section = location.pathname.split("/")[2];
+    const title = section ? section.replace(/-/g, " ") : "Overview";
+    return <div className="flex min-h-screen w-full flex-col bg-[#f5f8f4] md:flex-row">
+        <AdminSidebar />
+        <div className="flex min-w-0 flex-1 flex-col">
+            <header className="flex h-16 items-center justify-between border-b border-[#dfe8e1] bg-white px-5 sm:px-8"><p className="text-sm font-medium capitalize text-[#597064]">{title}</p><span className="text-xs font-medium text-[#839489]">Games & Connect</span></header>
+            <main className="min-w-0 flex-1 p-5 sm:p-8 lg:p-10"><Outlet /></main>
         </div>
-    );
+    </div>;
 };
-
 export default AdminLayout;

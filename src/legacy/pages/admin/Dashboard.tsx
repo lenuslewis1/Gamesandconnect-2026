@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { Link } from 'react-router-dom';
 import { useAdminArticles } from '@/hooks/useArticles';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Users, CreditCard, UserPlus, DollarSign, Loader2 } from "lucide-react";
+import { Users, CreditCard, UserPlus, DollarSign, Loader2, ArrowUpRight, FileText, CalendarDays } from "lucide-react";
 import {
     AreaChart,
     Area,
@@ -30,7 +30,7 @@ const AdminDashboard = () => {
     const [loading, setLoading] = useState(true);
     const [stats, setStats] = useState([
         { title: "Total Revenue", value: "GHS 0.00", change: "...", icon: DollarSign, color: "bg-gradient-to-br from-green-500 to-emerald-700", textColor: "text-white" },
-        { title: "Active Users", value: "0", change: "...", icon: Users, color: "bg-gradient-to-br from-blue-500 to-indigo-700", textColor: "text-white" },
+        { title: "Profiles", value: "0", change: "...", icon: Users, color: "bg-gradient-to-br from-blue-500 to-indigo-700", textColor: "text-white" },
         { title: "Registrations", value: "0", change: "...", icon: UserPlus, color: "bg-gradient-to-br from-purple-500 to-fuchsia-700", textColor: "text-white" },
         { title: "Total Payments", value: "0", change: "...", icon: CreditCard, color: "bg-gradient-to-br from-orange-500 to-red-700", textColor: "text-white" },
     ]);
@@ -89,7 +89,7 @@ const AdminDashboard = () => {
                     textColor: "text-white"
                 },
                 {
-                    title: "Active Users",
+                    title: "Profiles",
                     value: (userCount || 0).toString(),
                     change: "Registered profiles",
                     icon: Users,
@@ -139,7 +139,7 @@ const AdminDashboard = () => {
             const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
             const processedActivity = days.map(day => {
                 const count = recentProfiles?.filter((p: any) => format(new Date(p.created_at), 'EEE') === day).length || 0;
-                return { name: day, new: count, active: Math.floor(count * 1.5) }; // Mocking active as 1.5x new for visual
+                return { name: day, new: count };
             });
             setUserActivityData(processedActivity);
 
@@ -160,94 +160,40 @@ const AdminDashboard = () => {
     }
 
     return (
-        <div className="space-y-8 animate-in fade-in-50 duration-500">
-            <div className="flex items-center justify-between space-y-2">
+        <div className="mx-auto max-w-[1500px] space-y-8 text-[#10291d] animate-in fade-in duration-500">
+            <div className="flex flex-wrap items-end justify-between gap-4">
                 <div>
-                    <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
-                    <p className="text-muted-foreground">Overview of your platform's performance.</p>
+                    <p className="mb-2 text-xs font-bold uppercase tracking-[0.18em] text-[#668071]">Games & Connect / Admin</p>
+                    <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">Overview</h2>
+                    <p className="mt-2 text-sm text-[#687b6f]">A snapshot of your community and activity.</p>
                 </div>
+                <Link to="/admin/events" className="inline-flex items-center gap-2 rounded-lg bg-[#0f3d2e] px-4 py-3 text-sm font-semibold text-white transition-colors hover:bg-[#19523d]">Manage events <ArrowUpRight className="h-4 w-4" /></Link>
             </div>
-            <section className="flex flex-wrap items-center justify-between gap-4 rounded-xl border p-5">
-                <div><h3 className="text-lg font-semibold">Articles</h3><p className="text-sm text-muted-foreground">{articles.filter(article=>article.status==='published').length} published Â· {articles.filter(article=>article.status==='draft').length} drafts</p></div>
-                <div className="flex flex-wrap gap-3"><Link className="rounded-lg border px-4 py-2 text-sm font-medium" to="/admin/articles">Manage articles</Link><Link className="rounded-lg bg-[#0f3d2e] px-4 py-2 text-sm font-medium text-white" to="/admin/articles/new">Write an article</Link></div>
+
+            <section aria-label="Platform totals" className="grid grid-cols-1 overflow-hidden rounded-xl border border-[#dfe8e1] bg-white sm:grid-cols-2 xl:grid-cols-4">
+                {stats.map((stat) => {
+                    const Icon = stat.icon;
+                    return <div key={stat.title} className="border-b border-[#e7eee8] p-6 last:border-b-0 sm:border-r xl:border-b-0">
+                        <div className="flex items-center justify-between gap-3"><span className="text-sm font-medium text-[#60756a]">{stat.title}</span><Icon className="h-4 w-4 text-[#759083]" /></div>
+                        <div className="mt-5 text-3xl font-semibold tracking-tight text-[#10291d]">{stat.value}</div>
+                        <p className="mt-2 text-xs text-[#7a8d80]">{stat.change}</p>
+                    </div>;
+                })}
             </section>
 
-            {/* Stats Cards */}
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                {stats.map((stat, index) => {
-                    const Icon = stat.icon;
-                    return (
-                        <Card key={index} className={`${stat.color} border-none shadow-lg transition-transform hover:scale-105 duration-300`}>
-                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                <CardTitle className={`text-sm font-medium ${stat.textColor} opacity-90`}>
-                                    {stat.title}
-                                </CardTitle>
-                                <Icon className={`h-4 w-4 ${stat.textColor} opacity-75`} />
-                            </CardHeader>
-                            <CardContent>
-                                <div className={`text-2xl font-bold ${stat.textColor}`}>{stat.value}</div>
-                                <p className={`text-xs ${stat.textColor} opacity-75`}>
-                                    {stat.change}
-                                </p>
-                            </CardContent>
-                        </Card>
-                    )
-                })}
+            <div className="grid gap-6 xl:grid-cols-[minmax(0,1.6fr)_minmax(300px,1fr)]">
+                <section className="min-w-0 rounded-xl border border-[#dfe8e1] bg-white p-5 sm:p-7">
+                    <div className="mb-8 flex flex-wrap items-start justify-between gap-4"><div><p className="text-xs font-bold uppercase tracking-[0.15em] text-[#7b9183]">Payments</p><h3 className="mt-2 text-lg font-semibold">Revenue overview</h3><p className="mt-1 text-sm text-[#718479]">Confirmed payments over the last 6 months</p></div><span className="rounded-full bg-[#eef5ee] px-3 py-1 text-xs font-medium text-[#416a51]">Last 6 months</span></div>
+                    <div className="h-[260px] w-full"><ResponsiveContainer width="100%" height="100%"><AreaChart data={revenueData} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}><defs><linearGradient id="dashboardRevenue" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#a6f15d" stopOpacity={0.4}/><stop offset="100%" stopColor="#a6f15d" stopOpacity={0.02}/></linearGradient></defs><CartesianGrid stroke="#edf2ed" vertical={false}/><XAxis dataKey="name" tickLine={false} axisLine={false} tick={{fill:'#829389',fontSize:12}} dy={10}/><YAxis tickLine={false} axisLine={false} width={55} tick={{fill:'#829389',fontSize:11}} tickFormatter={(value) => value >= 1000 ? `${value / 1000}k` : `${value}`}/><Tooltip formatter={(value: number) => [`GHS ${value.toLocaleString()}`, 'Revenue']} contentStyle={{border:'1px solid #dfe8e1',borderRadius:10}}/><Area type="monotone" dataKey="revenue" stroke="#43855c" strokeWidth={2.5} fill="url(#dashboardRevenue)"/></AreaChart></ResponsiveContainer></div>
+                </section>
+                <section className="min-w-0 rounded-xl border border-[#dfe8e1] bg-white p-5 sm:p-7">
+                    <p className="text-xs font-bold uppercase tracking-[0.15em] text-[#7b9183]">Community</p><h3 className="mt-2 text-lg font-semibold">New profiles</h3><p className="mt-1 text-sm text-[#718479]">Signups by day of week over the past month</p>
+                    <div className="mt-8 h-[260px] w-full"><ResponsiveContainer width="100%" height="100%"><BarChart data={userActivityData} margin={{top:8,right:0,left:-25,bottom:0}}><CartesianGrid stroke="#edf2ed" vertical={false}/><XAxis dataKey="name" tickLine={false} axisLine={false} tick={{fill:'#829389',fontSize:12}} dy={10}/><YAxis allowDecimals={false} tickLine={false} axisLine={false} tick={{fill:'#829389',fontSize:11}}/><Tooltip cursor={{fill:'#f4f8f3'}} contentStyle={{border:'1px solid #dfe8e1',borderRadius:10}}/><Bar dataKey="new" name="New profiles" fill="#82c96f" radius={[5,5,0,0]} maxBarSize={34}/></BarChart></ResponsiveContainer></div>
+                </section>
             </div>
-
-            {/* Charts Section */}
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-
-                {/* Revenue Chart */}
-                <Card className="col-span-4 border-none shadow-md bg-white/50 backdrop-blur-sm dark:bg-slate-900/50">
-                    <CardHeader>
-                        <CardTitle>Revenue Overview</CardTitle>
-                        <CardDescription>Monthly revenue performance (last 6 months)</CardDescription>
-                    </CardHeader>
-                    <CardContent className="pl-2">
-                        <ResponsiveContainer width="100%" height={350}>
-                            <AreaChart data={revenueData}>
-                                <defs>
-                                    <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
-                                        <stop offset="5%" stopColor="#10b981" stopOpacity={0.8} />
-                                        <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
-                                    </linearGradient>
-                                </defs>
-                                <XAxis dataKey="name" stroke="#888888" fontSize={12} tickLine={false} axisLine={false} />
-                                <YAxis stroke="#888888" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => `GHS${value}`} />
-                                <CartesianGrid strokeDasharray="3 3" vertical={false} className="stroke-muted" />
-                                <Tooltip
-                                    contentStyle={{ backgroundColor: 'rgba(255, 255, 255, 0.9)', borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
-                                    itemStyle={{ color: '#10b981' }}
-                                />
-                                <Area type="monotone" dataKey="revenue" stroke="#10b981" strokeWidth={2} fillOpacity={1} fill="url(#colorRevenue)" />
-                            </AreaChart>
-                        </ResponsiveContainer>
-                    </CardContent>
-                </Card>
-
-                {/* User Activity Chart */}
-                <Card className="col-span-3 border-none shadow-md bg-white/50 backdrop-blur-sm dark:bg-slate-900/50">
-                    <CardHeader>
-                        <CardTitle>User Activity</CardTitle>
-                        <CardDescription>New signups by day of week</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <ResponsiveContainer width="100%" height={350}>
-                            <BarChart data={userActivityData}>
-                                <XAxis dataKey="name" stroke="#888888" fontSize={12} tickLine={false} axisLine={false} />
-                                <Tooltip
-                                    cursor={{ fill: 'transparent' }}
-                                    contentStyle={{ backgroundColor: 'rgba(255, 255, 255, 0.9)', borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
-                                />
-                                <Legend />
-                                <Bar dataKey="new" name="New Signups" fill="#6366f1" radius={[4, 4, 0, 0]} />
-                                <Bar dataKey="active" name="Active Users (Est)" fill="#a855f7" radius={[4, 4, 0, 0]} />
-                            </BarChart>
-                        </ResponsiveContainer>
-                    </CardContent>
-                </Card>
-            </div>
+            <section className="rounded-xl border border-[#dfe8e1] bg-white p-5 sm:p-7">
+                <div className="flex flex-wrap items-center justify-between gap-5"><div className="flex items-start gap-4"><div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-[#eef5ee] text-[#2f7049]"><FileText className="h-5 w-5"/></div><div><h3 className="font-semibold">Articles</h3><p className="mt-1 text-sm text-[#718479]">{articles.filter(article => article.status === 'published').length} published · {articles.filter(article => article.status === 'draft').length} drafts</p></div></div><div className="flex flex-wrap gap-2"><Link className="rounded-lg border border-[#d8e4da] px-4 py-2.5 text-sm font-medium transition-colors hover:bg-[#f4f8f3]" to="/admin/articles">Manage articles</Link><Link className="rounded-lg bg-[#a6f15d] px-4 py-2.5 text-sm font-semibold text-[#163a24] transition-colors hover:bg-[#b9f782]" to="/admin/articles/new">Write an article</Link></div></div>
+            </section>
         </div>
     );
 };
