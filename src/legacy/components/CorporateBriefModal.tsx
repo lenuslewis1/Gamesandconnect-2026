@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { supabase } from '@/lib/supabase';
 
@@ -6,7 +6,9 @@ const goals = ['Connection across departments', 'Morale boost', 'Staff recogniti
 const games = ['Icebreakers', 'Team challenges', 'Active and sports', 'Trivia and brain games', 'Ghanaian classics', 'Squid Game-style', 'Table game tournament'];
 const extras = ['Branded team tees or bibs', 'Banners and signage', 'Photographer', 'Highlight video', 'Social media content', 'Sound system and MC', 'Prizes and hampers', 'Charity element', 'Catering', 'Transport', 'Custom merchandise'];
 
-export default function CorporateBriefModal({ open, onOpenChange, restoreFocus }: { open:boolean; onOpenChange:(open:boolean)=>void; restoreFocus:()=>void }) {
+export default function CorporateBriefModal({ open, onOpenChange, restoreFocus, selectedPackage }: { open:boolean; onOpenChange:(open:boolean)=>void; restoreFocus:()=>void; selectedPackage:string }) {
+  const [packagePreference,setPackagePreference] = useState(selectedPackage);
+  useEffect(() => { if (open) setPackagePreference(selectedPackage); }, [open, selectedPackage]);
   const [values,setValues] = useState<Record<string,string[]>>({});
   const [reference,setReference] = useState('');
   const [submitting,setSubmitting] = useState(false);
@@ -45,7 +47,7 @@ export default function CorporateBriefModal({ open, onOpenChange, restoreFocus }
   const select=(name:string,options:string[])=><label>{name}<select name={name} defaultValue={value(name)}><option value="">Select</option>{options.map(option=><option key={option}>{option}</option>)}</select></label>;
   const choices=(name:string,options:string[])=><fieldset className="brief-choices bond-wide"><legend>{name}</legend><div>{options.map(option=><label key={option}><input type={name==='Setting'?'radio':'checkbox'} name={name} value={option} defaultChecked={values[name]?.includes(option)}/><span>{option}</span></label>)}</div></fieldset>;
   return <Dialog open={open} onOpenChange={next=>{if(!submitting) onOpenChange(next);}}>
-    <DialogContent className="bond-modal" onCloseAutoFocus={event=>{event.preventDefault();restoreFocus();}} onEscapeKeyDown={event=>{if(submitting)event.preventDefault();}} onPointerDownOutside={event=>event.preventDefault()}>
+    <DialogContent className="bond-modal" onCloseAutoFocus={event=>{event.preventDefault();restoreFocus();}} onEscapeKeyDown={event=>{if(submitting)event.preventDefault();}}>
       <header className="brief-header"><span className="bond-kicker">GAMES & CONNECT · CORPORATE</span><DialogTitle>Games Day Brief</DialogTitle><DialogDescription>Tell us about your team and the day you have in mind. We’ll use your answers to prepare a proposal with a games lineup, schedule and pricing for your team.</DialogDescription></header>
       {reference ? <div ref={result} tabIndex={-1} className="bond-result" role="status"><h3>Your brief has been submitted</h3><p>Thank you. Our team will review your enquiry and contact you using the details provided.</p><p>Reference: {reference}</p><button className="bond-button" onClick={()=>onOpenChange(false)}>Done</button></div> : <form className="bond-form brief-form" onSubmit={submit} onChange={event=>capture(event.currentTarget)} aria-busy={submitting}>
         <p className="bond-help">Fields marked * are required. Rounds 3 and 4 are optional.</p>
@@ -79,7 +81,7 @@ export default function CorporateBriefModal({ open, onOpenChange, restoreFocus }
           </div></section>
           <section className="brief-round" aria-labelledby="brief-extras"><span className="bond-kicker">ROUND 4 · OPTIONAL</span><h3 id="brief-extras">Extras and budget</h3><div className="bond-fields">
             {choices('Would you like any of these?',extras)}
-            {field('Package preference','Package you are leaning towards',{placeholder:'Tell us your preference, or help us choose'})}
+            <label>Package you are leaning towards<input name="Package preference" value={packagePreference} onChange={event => setPackagePreference(event.target.value)} maxLength={160} placeholder="Tell us your preference, or help us choose"/></label>
             {field('Approximate budget (GHS)','Approximate budget (GHS)',{placeholder:'e.g. 15,000 or a range',maxLength:100})}
             {field('Date you will decide by','Date you will decide by',{type:'date',min:today})}
             {field('How did you hear about us?')}

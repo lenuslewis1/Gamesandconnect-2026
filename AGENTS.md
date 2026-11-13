@@ -1,5 +1,5 @@
 # Prototype Instructions
-Keep decorative patterns subtle: forest silhouettes along the bottom of the experiences section and footer, and botanical line patterns on the step cards. Preserve readable copy and existing motion.
+Keep decorative patterns subtle: travel and adventure icons along the bottom of the experiences section, game-themed icons in the footer, and large game icons on the step cards. Preserve readable copy and existing motion.
 Hero motion now follows the live TikTok for Business reference: pin a single viewport, fade copy early, shrink the original image into a centered portrait, reveal six surrounding images, then release the composition. Keep Games & Connect branding and reduced-motion fallback.
 Public secondary pages should match the homepage: inset rounded photographic heroes, centered editorial headings, light spacious content, forest/lime actions, and consistent shared navigation/footer. Preserve page content, booking/forms, and homepage scroll choreography.
 
@@ -29,3 +29,7 @@ Trip booking payments let visitors choose any positive amount in pesewas up to t
 Admin Contacts & SMS lives at `/admin/sms`. Save website contacts from enquiries, bookings, team registrations and profiles through internal database triggers, including historical backfill. Keep contacts and campaign history admin-only, preserve SMS exclusions when contacts resubmit, and deduplicate recipients by normalized Ghana phone number. Bulk sends use BMS Africa server-side credentials, an explicit review step, and a unique campaign reference to prevent duplicate requests from sending twice. No provider key belongs in the browser.
 
 Imported community-member source records live in `community_members`, with the admin view at `/admin/community-members`. Preserve all original imported fields and differing records for repeated phone numbers; deduplicate only the linked SMS contact list. Keep member data and generated import SQL outside Git and public build assets. Identical file imports are idempotent by file fingerprint and source row. The import preserves existing contact details and SMS exclusions.
+
+Hire us is the public navigation parent at `/hire-us`, with Corporate at `/hire-us/corporate` and Packages at `/hire-us/packages`. Keep package selection on its own page. Legacy corporate links redirect while preserving queries and hashes.
+
+Show homepage gallery photos at their original aspect ratios, without cropping or colored fill. Keep the larger center photo sharp, with smaller, softer previews on either side. Put subtle slideshow controls on the center photo and omit visible captions and counters.

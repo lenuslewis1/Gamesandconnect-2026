@@ -64,10 +64,24 @@ export default function HomeGallery() {
       onTouchEnd={event => { if (touchStart.current !== null) { const delta = event.changedTouches[0].clientX - touchStart.current; if (Math.abs(delta) > 40) move(delta < 0 ? 1 : -1); touchStart.current = null; } }}>
       <div className="gallery-stage">
         <button className="gallery-preview" onClick={() => move(-1)} aria-label="Previous photo"><img src={photos[(current - 1 + photos.length) % photos.length].image_url} alt="" loading="lazy" /></button>
-        <figure className="gallery-slide" aria-roledescription="slide" aria-label={`Photo ${current + 1} of ${photos.length}`}><img key={photos[current].image_url} src={photos[current].image_url} alt={photos[current].caption || "Games and Connect community moment"} loading="lazy" /></figure>
+        <figure className="gallery-slide" aria-roledescription="slide" aria-label={`Photo ${current + 1} of ${photos.length}`}>
+          <div className="gallery-photo-frame">
+            <img
+              className="gallery-slide-photo"
+              key={photos[current].image_url}
+              src={photos[current].image_url}
+              alt={photos[current].caption || "Games and Connect community moment"}
+              loading="lazy"
+            />
+            <div className="gallery-controls">
+              <button type="button" onClick={() => move(-1)} aria-label="Previous slide"><ArrowLeft size={16} /></button>
+              <button type="button" onClick={() => setPlaying(value => !value)} aria-label={playing ? "Pause slideshow" : "Play slideshow"}>{playing ? <Pause size={16} /> : <Play size={16} />}</button>
+              <button type="button" onClick={() => move(1)} aria-label="Next slide"><ArrowRight size={16} /></button>
+            </div>
+          </div>
+        </figure>
         <button className="gallery-preview" onClick={() => move(1)} aria-label="Next photo"><img src={photos[(current + 1) % photos.length].image_url} alt="" loading="lazy" /></button>
       </div>
-      <div className="gallery-toolbar"><div className="gallery-caption" aria-live={playing ? "off" : "polite"}><span>{String(current + 1).padStart(2, "0")} / {photos.length}</span><p>{photos[current].caption || "Games and Connect community moment"}</p></div><div className="gallery-controls"><button onClick={() => move(-1)} aria-label="Previous slide"><ArrowLeft size={20} /></button><button onClick={() => setPlaying(value => !value)} aria-label={playing ? "Pause slideshow" : "Play slideshow"}>{playing ? <Pause size={18} /> : <Play size={18} />}</button><button onClick={() => move(1)} aria-label="Next slide"><ArrowRight size={20} /></button></div></div>
     </div>
   </section>;
 }

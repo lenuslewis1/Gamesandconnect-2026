@@ -89,13 +89,7 @@ body { background: var(--cream); color: var(--forest); }
 .new-home .home-join-actions .pill:not(.pill-secondary) { background: var(--forest); color: #fff; border-color: var(--forest); }
 .new-home .toast { background: var(--forest); color: #fff; }
 /* Quiet botanical details: background-only layers leave content and motion intact. */
-.new-home #experiences.products,
-.gc-footer, .new-home .gc-footer {
-  background-image: url('/assets/games-connect/forest-pattern.svg');
-  background-repeat: repeat-x;
-  background-position: center bottom;
-  background-size: 1000px 260px;
-}
+
 .new-home .step {
   background-image: url('/assets/games-connect/botanical-pattern.svg');
   background-repeat: no-repeat;
@@ -106,7 +100,6 @@ body { background: var(--cream); color: var(--forest); }
   background-position: left top;
 }
 @media (max-width: 720px) {
-  .new-home #experiences.products, .gc-footer, .new-home .gc-footer { background-size: 770px 200px; }
   .new-home .step { background-size: 320px auto; }
 }
 @media (max-width: 720px) {
@@ -132,29 +125,26 @@ body { background: var(--cream); color: var(--forest); }
 .home-gallery .section-heading p { margin-top: 16px; color: #606E64; }
 .gallery-link { display: inline-flex; gap: 12px; align-items: center; color: var(--forest); font-weight: 600; white-space: nowrap; }
 .gallery-player:focus-visible { outline: 2px solid var(--forest); outline-offset: 8px; border-radius: 16px; }
-.gallery-stage { display: grid; grid-template-columns: 1fr 3.4fr 1fr; align-items: center; gap: 24px; }
-.gallery-slide { margin: 0; aspect-ratio: 3 / 2; background: var(--forest); border-radius: 18px; overflow: hidden; }
-.gallery-slide img { width: 100%; height: 100%; object-fit: contain; animation: gallery-appear .45s ease; }
-.new-home .gallery-preview { height: 75%; min-width: 0; border: 0; border-radius: 14px; overflow: hidden; padding: 0; background: var(--forest); cursor: pointer; opacity: .65; transition: opacity .2s; }
-.gallery-preview img { width: 100%; height: 100%; object-fit: cover; }
-.new-home .gallery-preview:hover { opacity: 1; }
-.gallery-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding-top: 24px; }
-.gallery-caption { display: flex; align-items: baseline; gap: 24px; min-width: 0; }
-.gallery-caption span { font-size: 13px; font-variant-numeric: tabular-nums; white-space: nowrap; }
-.gallery-caption p { font-size: 14px; margin: 0; }
-.gallery-controls { display: flex; gap: 10px; }
-.new-home .gallery-controls button { width: 46px; height: 46px; padding: 0; display: grid; place-items: center; border: 1px solid #B9C5BC; border-radius: 50%; color: var(--forest); background: transparent; cursor: pointer; }
-.new-home .gallery-controls button:hover { background: var(--lime); border-color: var(--lime); }
-.gallery-controls button:focus-visible, .gallery-preview:focus-visible { outline: 2px solid var(--forest); outline-offset: 4px; }
+.gallery-stage { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 6fr) minmax(0, 1fr); align-items: center; gap: 24px; }
+.gallery-slide { display: grid; place-items: center; container-type: size; min-width: 0; margin: 0; aspect-ratio: 3 / 2; }
+.gallery-photo-frame { position: relative; min-width: 0; max-width: 100%; }
+.gallery-slide-photo { display: block; width: auto; height: auto; max-width: 100%; max-height: 100cqh; border-radius: 18px; animation: gallery-appear .45s ease; }
+.gallery-preview img { position: absolute; inset: 0; margin: auto; width: auto; height: auto; max-width: 100%; max-height: 100%; }
+.new-home .gallery-preview { position: relative; height: 50%; min-width: 0; border: 0; border-radius: 14px; padding: 0; background: transparent; cursor: pointer; opacity: .45; transition: opacity .2s; }
+.gallery-preview img { border-radius: inherit; filter: blur(1.5px); }
+.new-home .gallery-preview:is(:hover, :focus-visible) { opacity: .7; }
+.gallery-controls { position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); display: flex; padding: 2px; border-radius: 999px; background: rgb(11 27 20 / 70%); }
+.new-home .gallery-controls button { width: 36px; height: 36px; padding: 0; display: grid; place-items: center; border: 0; border-radius: 50%; color: white; background: transparent; cursor: pointer; }
+.new-home .gallery-controls button:hover { background: rgb(255 255 255 / 20%); }
+.gallery-controls button:focus-visible { outline: 2px solid white; outline-offset: -3px; }
+.gallery-preview:focus-visible { outline: 2px solid var(--forest); outline-offset: 4px; }
 @keyframes gallery-appear { from { opacity: .35; } to { opacity: 1; } }
 @media (max-width: 700px) {
   .home-gallery .section-heading { align-items: start; gap: 24px; flex-direction: column; }
   .gallery-stage { grid-template-columns: 1fr; }
   .new-home .gallery-preview { display: none; }
-  .gallery-slide { aspect-ratio: 4 / 3; border-radius: 12px; }
-  .gallery-caption { flex-direction: column; gap: 8px; }
-  .gallery-toolbar { align-items: start; gap: 12px; }
-  .gallery-controls { gap: 6px; }
+  .gallery-slide { aspect-ratio: 6 / 5; }
+  .gallery-slide-photo { border-radius: 12px; }
   .new-home .gallery-controls button { width: 40px; height: 40px; }
 }
 @media (prefers-reduced-motion: reduce) { .gallery-slide img { animation: none; } .new-home .gallery-preview { transition: none; } }
@@ -169,3 +159,28 @@ body { background: var(--cream); color: var(--forest); }
 .gc-inner-page main [class~="bg-white"] {
   background-color: var(--cream);
 }
+
+/* Subtle game motifs replace the footer's forest silhouette. */
+.gc-footer, .new-home .gc-footer { position: relative; overflow: hidden; }
+.gc-footer > :not(.gc-footer-games) { position: relative; z-index: 1; }
+.gc-footer-games { position: absolute; inset: auto 2% 0; height: 200px; display: flex; align-items: flex-end; justify-content: space-between; gap: 4vw; color: #a6f15d; opacity: .09; pointer-events: none; }
+.gc-footer-games svg { width: clamp(70px, 13vw, 170px); height: auto; flex: 0 1 auto; stroke-width: 1.25; transform: rotate(-12deg) translateY(22%); }
+.gc-footer-games svg:nth-child(even) { transform: rotate(12deg) translateY(5%); }
+@media (max-width: 720px) { .gc-footer-games { height: 120px; gap: 12px; } .gc-footer-games svg { width: 20vw; } }
+
+/* Game motifs stay behind each step’s content. */
+.new-home .step { background-image: none; }
+.new-home .step-game-icons { position: absolute; inset: 0; pointer-events: none; color: var(--forest); opacity: .09; }
+.new-home .step-game-icons svg { position: absolute; width: clamp(150px, 23vw, 300px); height: auto; stroke-width: 1; }
+.new-home .step-game-icons svg:nth-child(1) { top: 5%; left: 7%; transform: rotate(-18deg); }
+.new-home .step-game-icons svg:nth-child(2) { top: 3%; left: 38%; transform: rotate(12deg); }
+.new-home .step-game-icons svg:nth-child(3) { bottom: -8%; left: 29%; transform: rotate(15deg); }
+.new-home .step .step-copy, .new-home .step > img { position: relative; z-index: 1; }
+@media (max-width: 720px) { .new-home .step-game-icons svg { width: 38vw; } .new-home .step-game-icons svg:nth-child(2) { left: 55%; } }
+
+/* Travel and adventure motifs in the experiences section. */
+.new-home .experience-icons { position: absolute; inset: auto 0 0; height: 180px; display: flex; align-items: end; justify-content: space-between; gap: 4vw; color: var(--lime); opacity: .09; pointer-events: none; overflow: hidden; }
+.new-home .experience-icons svg { width: clamp(90px, 14vw, 180px); height: auto; stroke-width: 1.2; transform: rotate(-10deg) translateY(20%); flex: 0 1 auto; }
+.new-home .experience-icons svg:nth-child(even) { transform: rotate(10deg) translateY(8%); }
+.new-home .products-sticky > h2, .new-home .product-layout { position: relative; z-index: 1; }
+@media (max-width: 720px) { .new-home .experience-icons { height: 120px; } .new-home .experience-icons svg { width: 22vw; } }

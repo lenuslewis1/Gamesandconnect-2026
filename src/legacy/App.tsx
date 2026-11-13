@@ -5,7 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import { App as Index } from "../App";
 const About = lazy(() => import("./pages/About"));
@@ -13,6 +13,8 @@ const GameDay = lazy(() => import("./pages/GameDay"));
 const EventDetail = lazy(() => import("./pages/EventDetail"));
 const Terms = lazy(() => import("./pages/Terms"));
 const CorporateTeamBonding = lazy(() => import("./pages/CorporateTeamBonding"));
+const HireUs = lazy(() => import("./pages/HireUs"));
+const Packages = lazy(() => import("./pages/Packages"));
 const Contact = lazy(() => import("./pages/Contact"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const Auth = lazy(() => import("./pages/Auth"));
@@ -57,6 +59,11 @@ const BlogArticle = lazy(() => import("./pages/BlogArticle"));
 
 const queryClient = new QueryClient();
 
+function LegacyCorporateRedirect() {
+  const { search, hash } = useLocation();
+  return <Navigate to={`/hire-us/corporate${search}${hash}`} replace />;
+}
+
 const App = () => (
   <HelmetProvider>
     <QueryClientProvider client={queryClient}>
@@ -74,7 +81,10 @@ const App = () => (
               <Route path="/game-day" element={<GameDay />} />
               <Route path="/events/:id" element={<EventDetail />} />
               <Route path="/contact" element={<Contact />} />
-              <Route path="/corporate-team-bonding" element={<CorporateTeamBonding />} />
+              <Route path="/corporate-team-bonding" element={<LegacyCorporateRedirect />} />
+              <Route path="/hire-us" element={<HireUs />} />
+              <Route path="/hire-us/corporate" element={<CorporateTeamBonding />} />
+              <Route path="/hire-us/packages" element={<Packages />} />
               <Route path="/terms-and-conditions" element={<Terms />} />
               <Route path="/travel" element={<Travel />} />
               <Route path="/community" element={<Community />} />
