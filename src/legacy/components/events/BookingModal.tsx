@@ -82,6 +82,7 @@ const getPaymentResult = (payload: any) => {
 interface BookingModalProps {
     isOpen: boolean;
     onClose: () => void;
+    onCloseAutoFocus?: (event: Event) => void;
     event: {
         id: number;
         title: string;
@@ -92,7 +93,7 @@ interface BookingModalProps {
     };
 }
 
-const BookingModal = ({ isOpen, onClose, event }: BookingModalProps) => {
+const BookingModal = ({ isOpen, onClose, onCloseAutoFocus, event }: BookingModalProps) => {
     const { toast } = useToast();
     const [step, setStep] = useState<Step>("payment-choice");
     const [isLoading, setIsLoading] = useState(false);
@@ -631,7 +632,7 @@ const BookingModal = ({ isOpen, onClose, event }: BookingModalProps) => {
 
     return (
         <Dialog open={isOpen} onOpenChange={handleClose}>
-            <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-[480px]">
+            <DialogContent onCloseAutoFocus={onCloseAutoFocus} className="max-h-[90vh] overflow-y-auto sm:max-w-[480px]">
                 {/* Step: Payment Choice */}
                 {step === "payment-choice" && (
                     <>

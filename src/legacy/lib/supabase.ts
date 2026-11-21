@@ -18,6 +18,7 @@ export interface DbEvent {
     location: string;
     description: string;
     image_url: string | null;
+    gallery?: string[] | null;
     price: string | null;
     capacity: number;
     category: string | null;

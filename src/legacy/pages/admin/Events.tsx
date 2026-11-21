@@ -1,7 +1,7 @@
 
 import { useEffect, useState, useRef } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/lib/supabase";
+import { supabase, type DbEvent } from "@/lib/supabase";
 import { uploadToCloudinary } from "@/lib/cloudinary";
 import {
     Table,
@@ -14,7 +14,9 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
-import { Loader2, Plus, Pencil, Trash2, X, Image as ImageIcon } from "lucide-react";
+import { Loader2, Plus, Pencil, Trash2, Image as ImageIcon } from "lucide-react";
+import EventMediaFields, { type EventImageDraft } from "@/components/admin/EventMediaFields";
+import { eventPhotos } from "@/data/eventPhotos";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -41,19 +43,8 @@ import {
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 
-interface Event {
-    id: number;
-    title: string;
-    date: string;
-    time_range: string;
-    location: string;
-    description: string;
-    image_url: string | null;
-    price: string | null;
-    capacity: number;
-    category: string | null;
+interface Event extends DbEvent {
     organizer: string | null;
-    created_at: string;
 }
 
 interface TicketTier {
@@ -72,7 +63,6 @@ const initialFormState = {
     time_range: "",
     location: "",
     description: "",
-    image_url: "",
     capacity: 0,
     category: "",
     organizer: "",
@@ -97,10 +87,10 @@ const Events = () => {
     const [ticketTiers, setTicketTiers] = useState<TicketTier[]>([createDefaultTier()]);
     const [originalTierIds, setOriginalTierIds] = useState<number[]>([]);
     const [submitting, setSubmitting] = useState(false);
-    const [imageFile, setImageFile] = useState<File | null>(null);
-    const [imagePreview, setImagePreview] = useState<string | null>(null);
-    const [uploading, setUploading] = useState(false);
-    const fileInputRef = useRef<HTMLInputElement>(null);
+    const [flyer, setFlyer] = useState<EventImageDraft | null>(null);
+    const [gallery, setGallery] = useState<EventImageDraft[]>([]);
+    const saving = useRef(false);
+    const [loadingEditor, setLoadingEditor] = useState(false);
 
     useEffect(() => {
         fetchEvents();
@@ -130,10 +120,7 @@ const Events = () => {
             .eq("event_id", eventId)
             .order("sort_order");
 
-        if (error) {
-            console.error("Error fetching ticket tiers:", error);
-            return [];
-        }
+        if (error) throw error;
         return (data || []).map((tier) => ({
             ...tier,
             description: tier.description || "",
@@ -171,107 +158,77 @@ const Events = () => {
         setTicketTiers(prev => prev.filter((_, i) => i !== index));
     };
 
-    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (file) {
-            if (!file.type.startsWith('image/')) {
-                toast.error("Please select an image file");
-                return;
-            }
-            if (file.size > 5 * 1024 * 1024) {
-                toast.error("Image must be less than 5MB");
-                return;
-            }
-            setImageFile(file);
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                setImagePreview(reader.result as string);
-            };
-            reader.readAsDataURL(file);
-        }
-    };
-
-    const clearImage = () => {
-        setImageFile(null);
-        setImagePreview(null);
-        setFormData(prev => ({ ...prev, image_url: "" }));
-        if (fileInputRef.current) {
-            fileInputRef.current.value = "";
-        }
-    };
-
-    const uploadImage = async (): Promise<string | null> => {
-        if (!imageFile) return formData.image_url || null;
-
-        setUploading(true);
-        try {
-            const cloudinaryUrl = await uploadToCloudinary(imageFile, "games-and-connect/events");
-            return cloudinaryUrl;
-        } catch (error: any) {
-            console.error("Error uploading image:", error);
-            toast.error("Failed to upload image: " + (error.message || "Unknown error"));
-            return null;
-        } finally {
-            setUploading(false);
-        }
-    };
-
     const resetForm = () => {
         setFormData(initialFormState);
         setTicketTiers([createDefaultTier()]);
         setOriginalTierIds([]);
         setIsEditing(false);
         setEditingEventId(null);
-        setImageFile(null);
-        setImagePreview(null);
-        if (fileInputRef.current) {
-            fileInputRef.current.value = "";
-        }
+        setFlyer(null);
+        setGallery([]);
     };
 
     const openEditDialog = async (event: Event) => {
+        setLoadingEditor(true);
         setFormData({
             title: event.title,
             date: event.date,
             time_range: event.time_range,
             location: event.location,
             description: event.description,
-            image_url: event.image_url || "",
             capacity: event.capacity,
             category: event.category || "",
             organizer: event.organizer || "",
         });
-        setImagePreview(event.image_url || null);
+        setFlyer(event.image_url);
+        setGallery(eventPhotos(event).map(photo => photo.src));
         setIsEditing(true);
         setEditingEventId(event.id);
 
-        // Fetch existing tiers
-        const existingTiers = await fetchTicketTiers(event.id);
-        if (existingTiers.length > 0) {
-            setTicketTiers(existingTiers);
-            setOriginalTierIds(existingTiers.flatMap((tier) => tier.id === undefined ? [] : [tier.id]));
-        } else {
-            // Legacy event with just price - create tier from it
-            const legacyPrice = parseFloat(event.price?.replace(/[^0-9.]/g, '') || "0");
-            setTicketTiers([{ ...createDefaultTier(), price: legacyPrice }]);
+        try {
+            const existingTiers = await fetchTicketTiers(event.id);
+            if (existingTiers.length > 0) {
+                setTicketTiers(existingTiers);
+                setOriginalTierIds(existingTiers.flatMap((tier) => tier.id === undefined ? [] : [tier.id]));
+            } else {
+                const legacyPrice = parseFloat(event.price?.replace(/[^0-9.]/g, '') || "0");
+                setTicketTiers([{ ...createDefaultTier(), price: legacyPrice }]);
+                setOriginalTierIds([]);
+            }
+            setIsDialogOpen(true);
+        } catch (error) {
+            console.error("Error loading tickets for event editor:", error);
+            toast.error("Could not load this event's ticket tiers. Try opening the editor again.");
+            resetForm();
+        } finally {
+            setLoadingEditor(false);
         }
-
-        setIsDialogOpen(true);
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        if (saving.current) return;
+        saving.current = true;
         setSubmitting(true);
 
-        try {
-            let imageUrl = formData.image_url;
-
-            if (imageFile) {
-                const uploadedUrl = await uploadImage();
-                if (uploadedUrl) {
-                    imageUrl = uploadedUrl;
-                }
+        const uploaded = new Map<File, string>();
+        const resolveImage = async (image: EventImageDraft) => {
+            if (typeof image === "string") return image;
+            const previous = uploaded.get(image);
+            if (previous) return previous;
+            try {
+                const url = await uploadToCloudinary(image);
+                uploaded.set(image, url);
+                return url;
+            } catch {
+                throw new Error(`Could not upload "${image.name}". Please try again or choose a different image.`);
             }
+        };
+
+        try {
+            const imageUrl = flyer ? await resolveImage(flyer) : null;
+            const galleryUrls: string[] = [];
+            for (const photo of gallery) galleryUrls.push(await resolveImage(photo));
 
             // Calculate min price from tiers for legacy compatibility
             const minPrice = Math.min(...ticketTiers.map(t => t.price));
@@ -281,7 +238,8 @@ const Events = () => {
 
             const eventData = {
                 ...formData,
-                image_url: imageUrl || null,
+                image_url: imageUrl,
+                gallery: galleryUrls,
                 price: priceDisplay,
             };
 
@@ -369,9 +327,14 @@ const Events = () => {
             setIsDialogOpen(false);
             resetForm();
         } catch (error: any) {
+            // Keep URLs from completed uploads if a later upload or the save failed.
+            const keepUpload = (image: EventImageDraft) => typeof image === "string" ? image : uploaded.get(image) || image;
+            setFlyer(current => current && keepUpload(current));
+            setGallery(current => current.map(keepUpload));
             console.error("Error saving event:", error);
             toast.error(error.message || "Failed to save event");
         } finally {
+            saving.current = false;
             setSubmitting(false);
         }
     };
@@ -408,11 +371,12 @@ const Events = () => {
             <div className="flex items-center justify-between">
                 <h2 className="text-3xl font-bold tracking-tight">Events</h2>
                 <Dialog open={isDialogOpen} onOpenChange={(open) => {
+                    if (saving.current) return;
                     setIsDialogOpen(open);
                     if (!open) resetForm();
                 }}>
                     <DialogTrigger asChild>
-                        <Button>
+                        <Button disabled={loadingEditor}>
                             <Plus className="mr-2 h-4 w-4" /> Add Event
                         </Button>
                     </DialogTrigger>
@@ -423,7 +387,8 @@ const Events = () => {
                                 {isEditing ? "Update the event details below." : "Fill in the details for the new event."}
                             </DialogDescription>
                         </DialogHeader>
-                        <form onSubmit={handleSubmit} className="space-y-4 py-4">
+                        <form onSubmit={handleSubmit}>
+                          <fieldset disabled={submitting} className="min-w-0 space-y-4 py-4">
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-2">
                                     <Label htmlFor="title">Title *</Label>
@@ -448,6 +413,8 @@ const Events = () => {
                                 <Label htmlFor="description">Description *</Label>
                                 <Textarea id="description" name="description" rows={3} value={formData.description} onChange={handleInputChange} required />
                             </div>
+
+                            <EventMediaFields flyer={flyer} gallery={gallery} onFlyerChange={setFlyer} onGalleryChange={setGallery} />
 
                             {/* Ticket Tiers Section */}
                             <div className="space-y-4 border rounded-lg p-4 bg-muted/30">
@@ -532,53 +499,13 @@ const Events = () => {
                                 <Input id="organizer" name="organizer" value={formData.organizer} onChange={handleInputChange} />
                             </div>
 
-                            {/* Image Upload Section */}
-                            <div className="space-y-2">
-                                <Label>Event Flyer</Label>
-                                <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-4">
-                                    {imagePreview ? (
-                                        <div className="relative">
-                                            <img
-                                                src={imagePreview}
-                                                alt="Preview"
-                                                className="w-full h-48 object-cover rounded-md"
-                                            />
-                                            <Button
-                                                type="button"
-                                                variant="destructive"
-                                                size="icon"
-                                                className="absolute top-2 right-2"
-                                                onClick={clearImage}
-                                            >
-                                                <X className="h-4 w-4" />
-                                            </Button>
-                                        </div>
-                                    ) : (
-                                        <div
-                                            className="flex flex-col items-center justify-center py-8 cursor-pointer hover:bg-muted/50 rounded-md transition-colors"
-                                            onClick={() => fileInputRef.current?.click()}
-                                        >
-                                            <ImageIcon className="h-10 w-10 text-muted-foreground mb-2" />
-                                            <p className="text-sm text-muted-foreground">Click to upload event flyer</p>
-                                            <p className="text-xs text-muted-foreground mt-1">PNG, JPG up to 5MB</p>
-                                        </div>
-                                    )}
-                                    <input
-                                        ref={fileInputRef}
-                                        type="file"
-                                        accept="image/*"
-                                        onChange={handleFileChange}
-                                        className="hidden"
-                                    />
-                                </div>
-                            </div>
-
                             <DialogFooter>
-                                <Button type="submit" disabled={submitting || uploading}>
-                                    {(submitting || uploading) && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                                    {uploading ? "Uploading..." : isEditing ? "Save Changes" : "Create Event"}
+                                <Button type="submit">
+                                    {submitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                    {submitting ? "Saving…" : isEditing ? "Save Changes" : "Create Event"}
                                 </Button>
                             </DialogFooter>
+                          </fieldset>
                         </form>
                     </DialogContent>
                 </Dialog>
@@ -592,7 +519,7 @@ const Events = () => {
                     <Table>
                         <TableHeader>
                             <TableRow>
-                                <TableHead className="w-16">Image</TableHead>
+                                <TableHead className="w-16">Flyer</TableHead>
                                 <TableHead>Date</TableHead>
                                 <TableHead>Title</TableHead>
                                 <TableHead>Location</TableHead>
@@ -632,7 +559,7 @@ const Events = () => {
                                             {event.category ? <Badge variant="secondary">{event.category}</Badge> : "-"}
                                         </TableCell>
                                         <TableCell className="text-right space-x-2">
-                                            <Button variant="ghost" size="icon" onClick={() => openEditDialog(event)}>
+                                            <Button variant="ghost" size="icon" aria-label={"Edit " + event.title} disabled={loadingEditor} onClick={() => openEditDialog(event)}>
                                                 <Pencil className="h-4 w-4" />
                                             </Button>
                                             <AlertDialog>

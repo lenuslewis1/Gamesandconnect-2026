@@ -1,91 +1,104 @@
-import { eventMetadata } from '@/components/seo/eventMetadata.mjs';
-import { useState } from "react";
-import { useParams, Link, Navigate, useLocation } from "react-router-dom";
-import { eventPath, resolveEventLink } from '@/lib/eventLinks.mjs';
-import Layout from "@/components/layout/Layout";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { useRef, useState, type MouseEvent } from "react";
+import { Link, Navigate, useLocation, useParams } from "react-router-dom";
 import {
-    Calendar,
-    MapPin,
-    Users,
-    Clock,
-    CheckCircle2,
-    ArrowRight,
-    ChevronDown,
-    Star,
-    Quote,
-    Loader2
+    ArrowLeft, ArrowRight, ArrowUpRight, CalendarDays, Clock3,
+    Expand, Loader2, MapPin, MessageCircle, Ticket,
 } from "lucide-react";
-import { useEvents, useTestimonials } from "@/hooks/useSupabaseData";
+import Layout from "@/components/layout/Layout";
 import BookingModal from "@/components/events/BookingModal";
 import SEOHead from "@/components/seo/SEOHead";
-import { EventSchema, FAQSchema, BreadcrumbSchema } from "@/components/seo/StructuredData";
-import ScrollReveal from "@/components/ui/ScrollReveal";
+import { BreadcrumbSchema, EventSchema } from "@/components/seo/StructuredData";
+import { eventMetadata } from "@/components/seo/eventMetadata.mjs";
 import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import ScrollReveal from "@/components/ui/ScrollReveal";
+import { eventPhotos, type EventPhoto } from "@/data/eventPhotos";
 import { savannahRecapPhotos } from "@/data/savannahGallery";
+import { useEvents, useTestimonials } from "@/hooks/useSupabaseData";
+import { eventPath, resolveEventLink } from "@/lib/eventLinks.mjs";
+import "./EventDetail.css";
 
-// Helper to format date
-const formatDate = (dateString: string) => {
-    if (!dateString) return "";
-    const date = new Date(dateString);
-    return date.toLocaleDateString("en-GB", {
-        day: "numeric",
-        month: "long",
-        year: "numeric",
-    });
+const fallbackImage = "/assets/games-connect/hero-game-day.jpg";
+
+const EventPhotoGallery = ({ photos }: { photos: EventPhoto[] }) => {
+    const [failedPhotos, setFailedPhotos] = useState<string[]>([]);
+    const availablePhotos = photos.filter(photo => !failedPhotos.includes(photo.src)).slice(0, 3);
+    const markFailed = (src: string) => setFailedPhotos(failed => [...failed, src]);
+
+    return (
+        <div className="event-detail__photos" data-count={availablePhotos.length || 1}>
+            {availablePhotos.length > 0 ? availablePhotos.map((photo, index) => (
+                <Dialog key={photo.src}>
+                    <DialogTrigger asChild>
+                        <button type="button" className="event-detail__photo" aria-label={"Enlarge photo: " + photo.alt}>
+                            <img
+                                src={photo.src}
+                                alt={photo.alt}
+                                style={{ objectPosition: photo.position }}
+                                fetchPriority={index === 0 ? "high" : undefined}
+                                loading={index === 0 ? undefined : "lazy"}
+                                decoding="async"
+                                onError={() => markFailed(photo.src)}
+                            />
+                            <span className="event-detail__expand"><Expand aria-hidden="true" /></span>
+                        </button>
+                    </DialogTrigger>
+                    <DialogContent aria-describedby={undefined} className="w-[calc(100%-2rem)] max-w-5xl border-none p-5">
+                        <DialogTitle className="sr-only">{photo.alt}</DialogTitle>
+                        <img src={photo.src} alt={photo.alt} className="max-h-[82vh] w-full object-contain" />
+                    </DialogContent>
+                </Dialog>
+            )) : (
+                <div className="event-detail__photo">
+                    <img src={fallbackImage} alt="Games and Connect attendees playing together" fetchPriority="high" />
+                    <span className="event-detail__photo-credit">From Games &amp; Connect</span>
+                </div>
+            )}
+        </div>
+    );
 };
 
-// Helper to get price number
-const parsePrice = (price: string | null): number => {
-    if (!price) return 0;
-    const cleaned = price.replace(/[^0-9.]/g, '');
-    return parseFloat(cleaned) || 0;
-};
+const dateFormatter = new Intl.DateTimeFormat("en-GB", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    timeZone: "UTC",
+});
+
+const formatDate = (date: string, endDate?: string) => (
+    endDate && endDate !== date
+        ? dateFormatter.formatRange(new Date(date), new Date(endDate))
+        : dateFormatter.format(new Date(date))
+);
 
 const EventDetail = () => {
     const { id } = useParams();
     const location = useLocation();
-    const [openFaq, setOpenFaq] = useState<number | null>(0);
-    const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
+    const bookingTrigger = useRef<HTMLButtonElement | null>(null);
+    const [bookingEventId, setBookingEventId] = useState<number | null>(null);
     const [selectedRecapPhoto, setSelectedRecapPhoto] = useState<string | null>(null);
-
     const { data: allEvents = [], isLoading, error } = useEvents();
-    const event = resolveEventLink(allEvents, id);
-
     const { data: testimonials = [] } = useTestimonials();
-
-    const relatedEvents = allEvents
-        .filter(e => e.id !== event?.id && e.category === event?.category)
-        .slice(0, 2);
-
-    const featuredTestimonial = testimonials[0] || {
-        content: "Absolutely the best community event I've attended! Made friends I still talk to daily.",
-        name: "Kwame A.",
-        role: "Game Day Attendee"
-    };
+    const event = resolveEventLink(allEvents, id);
 
     if (isLoading) {
         return (
             <Layout>
-                <div className="min-h-[70vh] flex items-center justify-center">
-                    <Loader2 className="h-10 w-10 animate-spin text-[#4d7c0f]" />
+                <div role="status" className="flex min-h-[65vh] items-center justify-center">
+                    <Loader2 aria-hidden="true" className="h-8 w-8 animate-spin text-[var(--forest)]" />
+                    <span className="sr-only">Loading event</span>
                 </div>
             </Layout>
         );
     }
 
     if (error || !event) {
+        const title = error ? "We couldn’t load this event" : "Event not found";
         return (
             <Layout>
-                <div className="min-h-[70vh] flex flex-col items-center justify-center container text-center">
-                    <SEOHead title="Event not found" description="This event could not be found. Explore upcoming Games and Connect experiences." noindex />
-                    <h2 className="font-serif text-3xl mb-4">Event not found</h2>
-                    <p className="text-muted-foreground mb-8">The event you're looking for doesn't exist or has been moved.</p>
-                    <Button asChild>
-                        <Link to="/events">Back to Events</Link>
-                    </Button>
+                <SEOHead title={title} description="Explore upcoming Games and Connect events." noindex />
+                <div className="container flex min-h-[65vh] flex-col items-center justify-center gap-5 text-center">
+                    <h1 className="font-serif text-4xl">{title}</h1>
+                    <Link to="/events" className="event-detail__action">Browse events <ArrowRight aria-hidden="true" /></Link>
                 </div>
             </Layout>
         );
@@ -93,21 +106,49 @@ const EventDetail = () => {
 
     const canonicalPath = eventPath(event);
     if (location.pathname !== canonicalPath) {
-        return <Navigate to={`${canonicalPath}${location.search}${location.hash}`} replace />;
+        return <Navigate to={canonicalPath + location.search + location.hash} replace />;
     }
-    const metadata = eventMetadata(event);
-    const priceNum = parsePrice(event.price);
-    const eventDate = new Date(event.date);
-    const today = new Date();
-    today.setHours(0, 0, 0, 0); // Reset time for comparison
-    const isPastEvent = eventDate < today;
 
+    const metadata = eventMetadata(event);
+    const today = new Date().toISOString().slice(0, 10);
+    const isPastEvent = event.date.slice(0, 10) < today;
+    const isBookingOpen = bookingEventId === event.id;
+    const openBooking = (click: MouseEvent<HTMLButtonElement>) => {
+        bookingTrigger.current = click.currentTarget;
+        setBookingEventId(event.id);
+    };
+    const price = event.price?.trim();
+    const description = event.description?.trim();
+    const eventDate = formatDate(event.date, metadata.endDate);
+    const testimonial = testimonials.find(({ is_featured }) => is_featured) || testimonials[0];
+    const photos = eventPhotos(event);
+    const upcomingByPath = new Map<string, typeof event>();
+    for (const related of allEvents) {
+        const path = eventPath(related);
+        if (path !== canonicalPath && related.date.slice(0, 10) >= today) {
+            const current = upcomingByPath.get(path);
+            if (!current || related.date > current.date || (related.date === current.date && related.id > current.id)) {
+                upcomingByPath.set(path, related);
+            }
+        }
+    }
+    const relatedEvents = [...upcomingByPath.values()].sort((a, b) => a.date.localeCompare(b.date));
+    const upcomingEvents = [
+        ...relatedEvents.filter(related => related.category === event.category),
+        ...relatedEvents.filter(related => related.category !== event.category),
+    ].slice(0, 2);
+
+    const ticketButton = () => (
+        <button type="button" className="event-detail__action" onClick={openBooking}>
+            <Ticket aria-hidden="true" /> Get tickets <ArrowRight aria-hidden="true" />
+        </button>
+    );
 
     return (
         <Layout>
             <SEOHead
-                title={`${event.title} — Event in ${event.location}`}
-                description={event.description?.slice(0, 155) || `Join ${event.title} by Games and Connect in ${event.location}. Book your spot for this exciting event in Ghana!`}
+                title={event.title + " — Event in " + event.location}
+                description={description?.slice(0, 155) || "Find event details for " + event.title + " by Games and Connect."}
                 canonical={canonicalPath}
                 ogImage={event.image_url || undefined}
             />
@@ -118,7 +159,7 @@ const EventDetail = () => {
                 location={event.location}
                 image={event.image_url || undefined}
                 price={event.price || undefined}
-                url={`https://gamesandconnect.com${canonicalPath}`}
+                url={"https://gamesandconnect.com" + canonicalPath}
                 timeRange={event.time_range}
                 capacity={event.capacity}
                 endDate={metadata.endDate}
@@ -129,153 +170,102 @@ const EventDetail = () => {
             <BreadcrumbSchema items={[
                 { name: "Home", url: "/" },
                 { name: "Events", url: "/events" },
-                { name: event.title, url: canonicalPath }
+                { name: event.title, url: canonicalPath },
             ]} />
-            {/* Hero Section */}
-            <section className="relative h-[70vh] min-h-[500px] flex items-end overflow-hidden">
-                <div className="absolute inset-0 z-0">
-                    <img
-                        src={event.image_url || "https://res.cloudinary.com/drkjnrvtu/image/upload/v1742488676/_MG_1758_mj5kho.jpg"}
-                        alt={event.title}
-                        className="h-full w-full object-cover"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
-                </div>
 
-                <div className="container relative z-10 pb-16 text-white">
-                    <ScrollReveal>
-                        <Badge className="mb-4 bg-white/20 text-white border-none backdrop-blur-sm">
-                            {formatDate(event.date)}
-                        </Badge>
-                        <h1 className="font-serif text-5xl md:text-7xl font-medium mb-4 max-w-3xl">
-                            {event.title}
-                        </h1>
-                        <p className="text-xl text-white/80 max-w-xl font-light">
-                            {event.category?.toUpperCase()} EXPERIENCE
-                        </p>
+            <article className="event-detail">
+                <div className="event-detail__wrap">
+                    <Link className="event-detail__back" to="/events">
+                        <ArrowLeft aria-hidden="true" /> All events
+                    </Link>
 
-                        <div className="mt-8 flex items-center gap-2 text-white/60 animate-bounce">
-                            <ChevronDown className="h-6 w-6" />
-                            <span className="text-sm">Scroll to explore</span>
+                    <header className="event-detail__hero">
+                        <div className="event-detail__hero-title">
+                            {(isPastEvent || event.category) && (
+                                <p className="event-detail__eyebrow">{isPastEvent ? "Past event" : event.category}</p>
+                            )}
+                            <h1>{event.title}</h1>
                         </div>
-                    </ScrollReveal>
-                </div>
-            </section>
 
-            {/* About & Booking Section */}
-            <section className="py-20 bg-accent/30">
-                <div className="container">
-                    <div className="grid lg:grid-cols-3 gap-16">
-                        {/* Left: About Content */}
-                        <div className="lg:col-span-2 space-y-12">
-                            <div>
-                                <h2 className="font-serif text-3xl md:text-4xl font-medium mb-6">About this event</h2>
-                                <p className="text-muted-foreground text-lg leading-relaxed whitespace-pre-line">
-                                    {event.description}
-                                </p>
-                            </div>
+                        <div className="event-detail__hero-info">
+                            <ul className="event-detail__facts">
+                                <li><CalendarDays aria-hidden="true" /><time dateTime={event.date}>{eventDate}</time></li>
+                                {event.time_range && <li><Clock3 aria-hidden="true" /><span>{event.time_range} <small>Ghana time</small></span></li>}
+                                {event.location && <li><MapPin aria-hidden="true" /><span>{event.location}</span></li>}
+                            </ul>
 
-                            {/* Highlights */}
-                            <div>
-                                <h3 className="font-serif text-2xl font-medium mb-6">What to expect</h3>
-                                <div className="grid sm:grid-cols-2 gap-4">
-                                    {[
-                                        "Expertly curated activities",
-                                        "Professional networking",
-                                        "Vibrant community atmosphere",
-                                        "Memorably experiences",
-                                        "Safe and secure environment"
-                                    ].map((item, i) => (
-                                        <ScrollReveal key={i} delay={i * 0.1}>
-                                            <div className="flex items-center gap-3 p-4 bg-white rounded-xl border border-accent">
-                                                <CheckCircle2 className="h-5 w-5 text-[#4d7c0f] shrink-0" />
-                                                <span className="text-foreground/80">{item}</span>
-                                            </div>
-                                        </ScrollReveal>
-                                    ))}
+                            {isPastEvent ? (
+                                <Link to="/events" className="event-detail__action">
+                                    Browse upcoming events <ArrowRight aria-hidden="true" />
+                                </Link>
+                            ) : (
+                                <div className="event-detail__hero-booking">
+                                    {price && <div className="event-detail__price"><span>Tickets</span><strong>{price}</strong></div>}
+                                    {ticketButton()}
                                 </div>
-                            </div>
+                            )}
+                        </div>
+                    </header>
+                </div>
+
+                <EventPhotoGallery key={event.id} photos={photos} />
+
+                <div className="event-detail__wrap">
+                    <div className="event-detail__body">
+                        <div>
+                            {description && (
+                                <section aria-labelledby="event-about-title">
+                                    <h2 id="event-about-title">About this event</h2>
+                                    <p className="event-detail__description">{description}</p>
+                                </section>
+                            )}
+                            {testimonial && (
+                                <figure className="event-detail__quote">
+                                    <figcaption>
+                                        <span className="event-detail__eyebrow">From the community</span>
+                                        <span>{testimonial.name}{testimonial.role && " · " + testimonial.role}</span>
+                                    </figcaption>
+                                    <blockquote>“{testimonial.content}”</blockquote>
+                                </figure>
+                            )}
                         </div>
 
-                        {/* Right: Booking Card */}
-                        <div className="lg:col-span-1">
-                            <Card className="sticky top-24 border-accent shadow-lg rounded-3xl overflow-hidden">
-                                <CardContent className="p-8 space-y-6">
-                                    <div className="text-center pb-6 border-b border-accent">
-                                        <p className="text-muted-foreground text-sm mb-1">Starting from</p>
-                                        <p className="font-serif text-4xl font-bold text-[#4d7c0f]">{event.price}</p>
-                                        <p className="text-muted-foreground text-sm">per person</p>
-                                    </div>
-
-                                    <div className="space-y-4">
-                                        <div className="flex items-center gap-3 text-sm">
-                                            <Calendar className="h-5 w-5 text-[#4d7c0f]" />
-                                            <span>{formatDate(event.date)}{metadata.endDate && metadata.endDate !== event.date ? ` – ${formatDate(metadata.endDate)}` : ''}</span>
-                                        </div>
-                                        <div className="flex items-center gap-3 text-sm">
-                                            <Clock className="h-5 w-5 text-[#4d7c0f]" />
-                                            <span>{event.time_range}</span>
-                                        </div>
-                                        <div className="flex items-center gap-3 text-sm">
-                                            <MapPin className="h-5 w-5 text-[#4d7c0f]" />
-                                            <span>{event.location}</span>
-                                        </div>
-                                        <div className="flex items-center gap-3 text-sm">
-                                            <Users className="h-5 w-5 text-[#4d7c0f]" />
-                                            <span>Capacity: {event.capacity} people</span>
-                                        </div>
-                                    </div>
-
-                                    <Button
-                                        onClick={() => setIsBookingModalOpen(true)}
-                                        className={`w-full h-14 rounded-full text-lg ${isPastEvent ? "bg-muted text-muted-foreground hover:bg-muted cursor-not-allowed" : "bg-primary hover:bg-primary/90"}`}
-                                        disabled={isPastEvent}
-                                    >
-                                        {isPastEvent ? "Event Completed" : "Book Now"}
-                                    </Button>
-
-                                    {isPastEvent && (
-                                        <div className="bg-muted/30 p-4 rounded-xl text-center text-sm text-muted-foreground border border-dashed border-border mt-4">
-                                            Booking is no longer available as this event has already taken place.
-                                        </div>
-                                    )}
-
-
-                                    <p className="text-center text-xs text-muted-foreground">
-                                        Free cancellation up to 48 hours before
-                                    </p>
-                                </CardContent>
-                            </Card>
+                        <div className="event-detail__sidebar">
+                            {event.image_url && (
+                                <Dialog>
+                                    <section className="event-detail__flyer-section" aria-labelledby="event-flyer-title">
+                                        <h2 id="event-flyer-title">Event flyer</h2>
+                                        <DialogTrigger asChild>
+                                            <button type="button" className="event-detail__flyer-preview" aria-label="Enlarge event flyer">
+                                                <img src={event.image_url} alt={event.title + " event flyer"} loading="lazy" decoding="async" />
+                                                <span className="event-detail__expand"><Expand aria-hidden="true" /></span>
+                                            </button>
+                                        </DialogTrigger>
+                                    </section>
+                                    <DialogContent aria-describedby={undefined} className="w-[calc(100%-2rem)] max-w-4xl border-none p-5">
+                                        <DialogTitle className="sr-only">{event.title} event flyer</DialogTitle>
+                                        <img src={event.image_url} alt={event.title + " event flyer"} className="max-h-[82vh] w-full object-contain" />
+                                    </DialogContent>
+                                </Dialog>
+                            )}
+                            <aside className="event-detail__help" aria-labelledby="event-help-title">
+                                <MessageCircle aria-hidden="true" />
+                                <h2 id="event-help-title">Questions?</h2>
+                                <p>Ask Games &amp; Connect about the event or your booking.</p>
+                                <a
+                                    href={"https://wa.me/233505891665?text=" + encodeURIComponent("Hi Games & Connect, I have a question about " + event.title + ".")}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                >
+                                    Chat on WhatsApp <ArrowUpRight aria-hidden="true" />
+                                    <span className="sr-only"> (opens in a new tab)</span>
+                                </a>
+                                {!isPastEvent && <Link to="/terms-and-conditions">Booking and refund terms <ArrowRight aria-hidden="true" /></Link>}
+                            </aside>
                         </div>
                     </div>
                 </div>
-            </section>
 
-            {/* Event Flyer Section */}
-            {event.image_url && (
-                <section className="py-20 bg-background">
-                    <div className="container max-w-4xl">
-                        <ScrollReveal>
-                            <div className="text-center mb-10">
-                                <h2 className="font-serif text-3xl md:text-4xl font-medium mb-3">Event Flyer</h2>
-                                <p className="text-muted-foreground text-lg">Full details at a glance</p>
-                            </div>
-                        </ScrollReveal>
-
-                        <ScrollReveal>
-                            <div className="rounded-3xl overflow-hidden shadow-xl border border-accent bg-white">
-                                <img
-                                    src={event.image_url}
-                                    alt={`${event.title} flyer`}
-                                    className="w-full h-auto object-contain transition-transform duration-500 hover:scale-[1.02]"
-                                />
-                            </div>
-                        </ScrollReveal>
-                    </div>
-                </section>
-            )}
-
-            {/* Savannah trip recap */}
             {String(event.id) === "40" && (
                 <section className="py-20 bg-accent/30" aria-labelledby="savannah-recap-title">
                     <div className="container">
@@ -317,159 +307,60 @@ const EventDetail = () => {
                 </section>
             )}
 
-            {/* Testimonial Section */}
-            <section className="py-20 bg-accent/30">
-                <div className="container max-w-4xl text-center">
-                    <h2 className="font-serif text-3xl font-medium mb-12">Don't just take our word for it</h2>
-
-                    <ScrollReveal>
-                        <div className="relative bg-white rounded-3xl p-8 md:p-12 shadow-sm border border-accent">
-                            <Quote className="absolute -top-4 left-8 h-8 w-8 text-[#4d7c0f]/30" />
-                            <p className="font-serif text-2xl md:text-3xl leading-relaxed mb-8 italic text-foreground/80">
-                                "{featuredTestimonial.content}"
-                            </p>
-                            <div className="flex items-center justify-center gap-4">
-                                <div className="flex">
-                                    {[1, 2, 3, 4, 5].map(i => (
-                                        <Star key={i} className="h-5 w-5 fill-yellow-400 text-yellow-400" />
-                                    ))}
-                                </div>
-                                <span className="text-muted-foreground">—</span>
-                                <div className="text-left">
-                                    <p className="font-medium">{featuredTestimonial.name}</p>
-                                    <p className="text-sm text-muted-foreground">{featuredTestimonial.role}</p>
-                                </div>
-                            </div>
-                        </div>
-                    </ScrollReveal>
-                </div>
-            </section>
-
-            {/* FAQ Section */}
-            <section className="py-20 bg-background">
-                <div className="container max-w-3xl">
-                    <h2 className="font-serif text-3xl md:text-4xl font-medium text-center mb-12">
-                        Frequently asked questions
-                    </h2>
-
-                    <div className="space-y-4">
-                        {[
-                            { q: "What should I wear?", a: "Comfortable athletic wear and sneakers. You'll be moving around a lot!" },
-                            { q: "Can I come alone?", a: "Absolutely! Most of our attendees come solo. You'll be placed on a team and make friends instantly." },
-                            { q: "Is food provided?", a: "Yes, light refreshments and snacks are included. We also have water stations throughout." },
-                            { q: "What if it rains?", a: "We have a covered backup venue. The event will proceed rain or shine!" }
-                        ].map((faq, i) => (
-                            <ScrollReveal key={i} delay={i * 0.1}>
-                                <div
-                                    className="bg-accent/30 rounded-2xl border border-accent overflow-hidden"
-                                >
-                                    <button
-                                        onClick={() => setOpenFaq(openFaq === i ? null : i)}
-                                        className="w-full flex items-center justify-between p-6 text-left hover:bg-accent/30 transition-colors"
-                                    >
-                                        <span className="font-serif text-lg font-medium">{faq.q}</span>
-                                        <ChevronDown className={`h-5 w-5 text-[#4d7c0f] transition-transform duration-300 ${openFaq === i ? 'rotate-180' : ''}`} />
-                                    </button>
-                                    {openFaq === i && (
-                                        <div className="px-6 pb-6 animate-fade-in">
-                                            <p className="text-muted-foreground leading-relaxed">{faq.a}</p>
-                                        </div>
-                                    )}
-                                </div>
-                            </ScrollReveal>
-                        ))}
-                    </div>
-                </div>
-            </section>
-
-            {/* Related Events */}
-            <section className="py-20 bg-accent/30">
-                <div className="container">
-                    <div className="flex items-end justify-between mb-12">
+                {!isPastEvent && (
+                    <section className="event-detail__wrap event-detail__close" aria-label="Book this event">
                         <div>
-                            <h2 className="font-serif text-3xl md:text-4xl font-medium mb-2">Other events</h2>
-                            <p className="text-muted-foreground">Discover more experiences you might love</p>
+                            <p className="event-detail__eyebrow">{eventDate}</p>
+                            <h2>Join us at {event.title}</h2>
                         </div>
-                        <Button variant="outline" className="rounded-full hidden md:flex" asChild>
-                            <Link to="/events">View All <ArrowRight className="ml-2 h-4 w-4" /></Link>
-                        </Button>
-                    </div>
+                        {ticketButton()}
+                    </section>
+                )}
 
-                    <div className="grid md:grid-cols-2 gap-8">
-                        {relatedEvents.map((related, i) => (
-                            <ScrollReveal key={related.id} delay={i * 0.1}>
-                                <Link
-                                    to={eventPath(related)}
-                                    className="group block bg-white rounded-3xl overflow-hidden border border-accent hover:shadow-xl transition-all duration-300 h-full"
-                                >
-                                    <div className="grid md:grid-cols-2 h-full">
-                                        <div className="aspect-[4/3] md:aspect-auto overflow-hidden">
-                                            <img
-                                                src={related.image_url || "https://res.cloudinary.com/drkjnrvtu/image/upload/v1746915388/_MG_2318_kszvtt.jpg"}
-                                                alt={related.title}
-                                                className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-500"
-                                            />
-                                        </div>
-                                        <div className="p-6 flex flex-col justify-center">
-                                            <Badge variant="outline" className="w-fit mb-3 border-primary/20 text-[#4d7c0f]">
-                                                {formatDate(related.date)}
-                                            </Badge>
-                                            <h3 className="font-serif text-2xl font-medium mb-2 group-hover:text-[#4d7c0f] transition-colors">
-                                                {related.title}
-                                            </h3>
-                                            <p className="text-muted-foreground text-sm flex items-center gap-2">
-                                                <MapPin className="h-4 w-4" />
-                                                {related.location}
-                                            </p>
-                                        </div>
+                {upcomingEvents.length > 0 && (
+                    <section className="event-detail__wrap event-detail__related" aria-labelledby="event-related-title">
+                        <div className="event-detail__related-heading">
+                            <h2 id="event-related-title">More upcoming events</h2>
+                            <Link to="/events">View all <ArrowRight aria-hidden="true" /></Link>
+                        </div>
+                        <div className="event-detail__related-list">
+                            {upcomingEvents.map(related => (
+                                <Link key={related.id} to={eventPath(related)} className="event-detail__related-event">
+                                    <img src={related.image_url || fallbackImage} alt="" loading="lazy" />
+                                    <div>
+                                        <time dateTime={related.date}>{formatDate(related.date)}</time>
+                                        <h3>{related.title}</h3>
+                                        <p>{related.location}</p>
                                     </div>
+                                    <ArrowUpRight aria-hidden="true" />
                                 </Link>
-                            </ScrollReveal>
-                        ))}
+                            ))}
+                        </div>
+                    </section>
+                )}
+
+                {!isPastEvent && (
+                    <div className="event-detail__mobile-booking">
+                        {price ? <div className="event-detail__price"><span>Tickets</span><strong>{price}</strong></div> : null}
+                        {ticketButton()}
                     </div>
+                )}
+            </article>
 
-                    <div className="mt-8 text-center md:hidden">
-                        <Button variant="outline" className="rounded-full w-full" asChild>
-                            <Link to="/events">View All Events</Link>
-                        </Button>
-                    </div>
-                </div>
-            </section>
-
-            {/* Bottom CTA */}
-            <section className="py-20 bg-primary text-primary-foreground text-center">
-                <div className="container">
-                    <ScrollReveal>
-                        <h2 className="font-serif text-4xl md:text-5xl font-medium mb-6">Ready to join us?</h2>
-                        <p className="text-white/70 max-w-lg mx-auto mb-10 text-lg">
-                            Spots fill up fast. Secure your place and get ready for an unforgettable experience.
-                        </p>
-                        <Button
-                            onClick={() => setIsBookingModalOpen(true)}
-                            size="lg"
-                            className={`rounded-full h-14 px-10 text-lg ${isPastEvent ? "bg-white/20 text-white/50 cursor-not-allowed" : "bg-white text-[#4d7c0f] hover:bg-accent/30"}`}
-                            disabled={isPastEvent}
-                        >
-                            {isPastEvent ? "Event Completed" : "Book Your Spot"}
-                        </Button>
-
-                    </ScrollReveal>
-                </div>
-            </section>
-
-            {/* Booking Modal */}
-            <BookingModal
-                isOpen={isBookingModalOpen}
-                onClose={() => setIsBookingModalOpen(false)}
-                event={{
-                    id: event.id,
-                    title: event.title,
-                    price: event.price,
-                    date: event.date,
-                    time_range: event.time_range,
-                    location: event.location,
-                }}
-            />
+            {!isPastEvent && (
+                <BookingModal
+                    key={event.id}
+                    isOpen={isBookingOpen}
+                    onClose={() => setBookingEventId(null)}
+                    onCloseAutoFocus={(focusEvent) => {
+                        if (bookingTrigger.current) {
+                            focusEvent.preventDefault();
+                            bookingTrigger.current.focus({ preventScroll: true });
+                        }
+                    }}
+                    event={event}
+                />
+            )}
         </Layout>
     );
 };
