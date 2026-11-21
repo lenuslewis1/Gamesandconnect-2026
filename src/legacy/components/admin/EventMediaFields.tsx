@@ -123,7 +123,7 @@ export default function EventMediaFields({ flyer, gallery, onFlyerChange, onGall
                     }}
                 />
                 <p id={`${galleryInputId}-help`} className="text-xs text-muted-foreground">
-                    The first photo is the hero. The next two appear beside it. Reorder photos to choose which ones appear.
+                    The first three photos rotate in the event hero background. Reorder them to choose which photo opens the carousel.
                 </p>
                 {gallery.map((photo, index) => (
                     <ImageField

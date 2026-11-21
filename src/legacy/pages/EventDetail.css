@@ -9,17 +9,6 @@
   margin-inline: auto;
 }
 
-.event-detail__back {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  min-height: 44px;
-  margin: 4px 0 12px;
-  font-size: .875rem;
-  font-weight: 600;
-}
-
-.event-detail__back svg,
 .event-detail__help a svg,
 .event-detail__related-heading a svg {
   width: 16px;
@@ -27,29 +16,10 @@
   flex: none;
 }
 
-.event-detail__back:hover,
 .event-detail__help a:hover,
 .event-detail__related-heading a:hover {
   text-decoration: underline;
   text-underline-offset: 4px;
-}
-
-.event-detail__hero {
-  display: grid;
-  grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
-  align-items: end;
-  gap: clamp(24px, 5vw, 92px);
-  padding: clamp(12px, 1.8vw, 30px) 0 clamp(26px, 3.5vw, 52px);
-  animation: event-detail-enter .48s ease-out both;
-}
-
-.event-detail__hero-info {
-  display: grid;
-  gap: 16px;
-}
-
-.event-detail__hero-info > .event-detail__action {
-  justify-self: start;
 }
 
 .event-detail__eyebrow {
@@ -66,56 +36,12 @@
   color: var(--lime);
 }
 
-.event-detail h1,
 .event-detail h2,
 .event-detail h3,
 .event-detail__quote blockquote {
   font-family: "Cormorant Garamond", Georgia, serif;
   font-weight: 400;
   margin: 0;
-}
-
-.event-detail h1 {
-  max-width: 20ch;
-  font-size: clamp(3rem, 5.9vw, 5.8rem);
-  letter-spacing: -.045em;
-  line-height: 1;
-  overflow-wrap: anywhere;
-}
-
-.event-detail__facts {
-  display: grid;
-  gap: 7px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.event-detail__facts li {
-  display: flex;
-  align-items: flex-start;
-  gap: 11px;
-}
-
-.event-detail__facts svg {
-  width: 19px;
-  height: 19px;
-  flex: none;
-  margin-top: 2px;
-  color: var(--forest);
-}
-
-.event-detail__facts small {
-  margin-left: .25rem;
-  color: var(--event-muted);
-  white-space: nowrap;
-}
-
-.event-detail__hero-booking {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 14px 24px;
 }
 
 .event-detail__price {
@@ -176,59 +102,8 @@
   outline-offset: 4px;
 }
 
-.event-detail__photos {
-  display: grid;
-  width: min(1720px, calc(100% - 36px));
-  height: clamp(470px, 48vw, 750px);
-  grid-template: repeat(2, minmax(0, 1fr)) / minmax(0, 1.9fr) minmax(0, 1fr);
-  gap: 12px;
-  margin-inline: auto;
-}
-
-.event-detail__photos[data-count="1"] {
-  grid-template: minmax(0, 1fr) / minmax(0, 1fr);
-}
-
-.event-detail__photos[data-count="2"] {
-  grid-template-rows: minmax(0, 1fr);
-}
-
-.event-detail__photos[data-count="3"] > :first-child {
-  grid-row: span 2;
-}
-
-.event-detail__photo {
-  position: relative;
-  display: block;
-  width: 100%;
-  min-height: 0;
-  overflow: hidden;
-  padding: 0;
-  border-radius: clamp(14px, 2vw, 28px);
-  background: var(--forest);
-}
-
-.event-detail__photo > img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform .35s ease;
-}
-
-button.event-detail__photo:hover > img {
-  transform: scale(1.025);
-}
-
-.event-detail__photo-credit {
-  position: absolute;
-  bottom: 12px;
-  left: 12px;
-  padding: 6px 12px;
-  border-radius: 999px;
-  background: var(--cream);
-  color: var(--forest);
-  font-size: .75rem;
+.event-detail__content {
+  scroll-margin-top: 12px;
 }
 
 .event-detail__expand {
@@ -245,7 +120,7 @@ button.event-detail__photo:hover > img {
   transition: background-color .18s ease;
 }
 
-:is(.event-detail__photo, .event-detail__flyer-preview):hover .event-detail__expand {
+.event-detail__flyer-preview:hover .event-detail__expand {
   background: var(--lime);
 }
 
@@ -447,63 +322,13 @@ button.event-detail__photo:hover > img {
   display: none;
 }
 
-.event-detail__close:has(+ .event-detail__mobile-booking) {
+.event-detail__close:not(:has(+ .event-detail__related)) {
   margin-bottom: clamp(42px, 6vw, 84px);
-}
-
-@keyframes event-detail-enter {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
 }
 
 @media (max-width: 767px) {
   .event-detail__wrap {
     width: calc(100% - 32px);
-  }
-
-  .event-detail__hero {
-    grid-template-columns: minmax(0, 1fr);
-    align-items: start;
-    gap: 15px;
-    padding: 6px 0 21px;
-  }
-
-  .event-detail__hero-info {
-    gap: 12px;
-  }
-
-  .event-detail h1 {
-    font-size: clamp(2.35rem, 10vw, 4rem);
-  }
-
-  .event-detail__facts {
-    gap: 6px;
-    font-size: .9rem;
-  }
-
-  .event-detail__photos {
-    width: calc(100% - 20px);
-    height: auto;
-    gap: 8px;
-  }
-
-  .event-detail__photos,
-  .event-detail__photos[data-count="2"] {
-    grid-template: auto / repeat(2, minmax(0, 1fr));
-  }
-
-  .event-detail__photos[data-count] > :first-child {
-    grid-column: 1 / -1;
-    grid-row: auto;
-    height: clamp(300px, 82vw, 540px);
-  }
-
-  .event-detail__photos[data-count="2"] > :last-child {
-    grid-column: 1 / -1;
-  }
-
-  .event-detail__photo {
-    height: clamp(145px, 46vw, 270px);
   }
 
   .event-detail__expand {
@@ -513,7 +338,6 @@ button.event-detail__photo:hover > img {
     height: 35px;
   }
 
-  .event-detail__hero-booking,
   .event-detail__close {
     display: none;
   }
@@ -553,19 +377,13 @@ button.event-detail__photo:hover > img {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .event-detail__hero {
-    animation: none;
-  }
-
   .event-detail__action,
   .event-detail__action svg:last-child,
-  .event-detail__photo > img,
   .event-detail__expand {
     transition: none;
   }
 
-  .event-detail__action:hover svg:last-child,
-  button.event-detail__photo:hover > img {
+  .event-detail__action:hover svg:last-child {
     transform: none;
   }
 }

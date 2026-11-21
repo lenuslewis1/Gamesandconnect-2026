@@ -44,7 +44,12 @@ export function SiteHeader() {
  const mediaRef = useRef(null);
  const mediaButton = useRef(null);
  const {pathname} = useLocation();
- useEffect(()=>{setMobile(false);setMediaOpen(false);window.scrollTo(0,0)},[pathname]);
+ useEffect(() => {
+  setMobile(false);
+  setMediaOpen(false);
+  const isEventBookingAnchor = /^\/events\/[^/]+$/.test(pathname) && window.location.hash === '#booking';
+  if (!isEventBookingAnchor) window.scrollTo(0, 0);
+ }, [pathname]);
  useEffect(()=>{const close=e=>{if(e.key==='Escape'){setMobile(false);setMediaOpen(false);if(mediaOpen)mediaButton.current?.focus()}};document.addEventListener('keydown',close);return()=>document.removeEventListener('keydown',close)},[mediaOpen]);
  useEffect(()=>{const outside=e=>{if(!mediaRef.current?.contains(e.target))setMediaOpen(false)};document.addEventListener('pointerdown',outside);return()=>document.removeEventListener('pointerdown',outside)},[]);
  useEffect(()=>{if(!mobile)return;const previous=document.body.style.overflow;document.body.style.overflow='hidden';const resize=()=>{if(window.innerWidth>900)setMobile(false)};window.addEventListener('resize',resize);return()=>{document.body.style.overflow=previous;window.removeEventListener('resize',resize)}},[mobile]);

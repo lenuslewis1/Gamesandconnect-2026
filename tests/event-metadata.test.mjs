@@ -20,6 +20,7 @@ test('multi-day trips preserve the published end date without fabricating return
         startDate: '2026-09-18', endDate: '2026-09-20',
     });
     assert.equal(eventMetadata({ id: 35, date: '2026-03-07' }).endDate, '2026-03-08');
+    assert.equal(eventMetadata({ id: 41, date: '2026-12-04' }).endDate, '2026-12-05');
     assert.equal(eventMetadata({ id: 40, date: '2027-09-18' }).endDate, undefined);
 });
 test('active booking offers have availability; completed events have no ticket offer', () => {

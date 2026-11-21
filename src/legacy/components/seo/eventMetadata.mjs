@@ -1,6 +1,7 @@
 // Verified exceptions to the legacy single-date records. Guard by start date so
 // rescheduling an event cannot silently reuse an old end date.
 const verifiedDates = {
+    41: { startDate: '2026-12-04', endDate: '2026-12-05' }, // public Island Camping flyer: 4–5 December
     40: { startDate: '2026-09-18', endDate: '2026-09-20' }, // public Savannah flyer: 18–20 September
     35: { startDate: '2026-03-07', endDate: '2026-03-08' }, // description: two-day riverside getaway
     4: { startDate: '2025-08-22', endDate: '2025-08-23' }, // description: Friday/Saturday itinerary
@@ -43,6 +44,19 @@ export function eventDates(startDate, timeRange = '', endDate) {
         ? new Date(Date.parse(startDate + 'T00:00:00Z') + 86400000).toISOString().slice(0, 10)
         : startDate;
     return { startDate: `${startDate}T${start}+00:00`, endDate: `${endingDay}T${end}+00:00` };
+}
+
+const dateFormatter = new Intl.DateTimeFormat('en-GB', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+    timeZone: 'UTC',
+});
+
+export function formatEventDate(date, endDate) {
+    return endDate && endDate !== date
+        ? dateFormatter.formatRange(new Date(date), new Date(endDate))
+        : dateFormatter.format(new Date(date));
 }
 
 export function offerFields({ bookingOpen, ticketSalesStart, now = Date.now() }) {

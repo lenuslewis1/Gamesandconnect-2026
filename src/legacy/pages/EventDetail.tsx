@@ -1,84 +1,151 @@
-import { useRef, useState, type MouseEvent } from "react";
+import { useEffect, useRef, useState, type Ref } from "react";
 import { Link, Navigate, useLocation, useParams } from "react-router-dom";
 import {
     ArrowLeft, ArrowRight, ArrowUpRight, CalendarDays, Clock3,
     Expand, Loader2, MapPin, MessageCircle, Ticket,
 } from "lucide-react";
 import Layout from "@/components/layout/Layout";
-import BookingModal from "@/components/events/BookingModal";
+import BookingForm from "@/components/events/BookingForm";
 import SEOHead from "@/components/seo/SEOHead";
 import { BreadcrumbSchema, EventSchema } from "@/components/seo/StructuredData";
-import { eventMetadata } from "@/components/seo/eventMetadata.mjs";
+import { eventMetadata, formatEventDate } from "@/components/seo/eventMetadata.mjs";
 import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import ScrollReveal from "@/components/ui/ScrollReveal";
-import { eventPhotos, type EventPhoto } from "@/data/eventPhotos";
+import { defaultEventCover, eventPhotos, type EventPhoto } from "@/data/eventPhotos";
 import { savannahRecapPhotos } from "@/data/savannahGallery";
 import { useEvents, useTestimonials } from "@/hooks/useSupabaseData";
 import { eventPath, resolveEventLink } from "@/lib/eventLinks.mjs";
+import type { DbEvent } from "@/lib/supabase";
 import "./EventDetail.css";
+import "./EventBooking.css";
 
-const fallbackImage = "/assets/games-connect/hero-game-day.jpg";
-
-const EventPhotoGallery = ({ photos }: { photos: EventPhoto[] }) => {
+function EventHero({ event, eventDate, photos, isPastEvent, heroRef }: {
+    event: DbEvent;
+    eventDate: string;
+    photos: EventPhoto[];
+    isPastEvent: boolean;
+    heroRef: Ref<HTMLElement>;
+}) {
     const [failedPhotos, setFailedPhotos] = useState<string[]>([]);
+    const [slideIndex, setSlideIndex] = useState(0);
+    const [bookingStarted, setBookingStarted] = useState(false);
+    const [reducedMotion, setReducedMotion] = useState(() => window.matchMedia("(prefers-reduced-motion: reduce)").matches);
     const availablePhotos = photos.filter(photo => !failedPhotos.includes(photo.src)).slice(0, 3);
-    const markFailed = (src: string) => setFailedPhotos(failed => [...failed, src]);
+    const slides: EventPhoto[] = availablePhotos.length ? availablePhotos : [{ src: defaultEventCover, alt: "" }];
+    const slideCount = slides.length;
+    const activeIndex = slideIndex % slideCount;
+    useEffect(() => {
+        const motion = window.matchMedia("(prefers-reduced-motion: reduce)");
+        const update = () => setReducedMotion(motion.matches);
+        motion.addEventListener("change", update);
+        return () => motion.removeEventListener("change", update);
+    }, []);
+
+    useEffect(() => {
+        if (bookingStarted || reducedMotion || slideCount < 2) return;
+        const timer = window.setInterval(() => {
+            if (!document.hidden) setSlideIndex(index => (index + 1) % slideCount);
+        }, 6500);
+        return () => window.clearInterval(timer);
+    }, [bookingStarted, reducedMotion, slideCount]);
 
     return (
-        <div className="event-detail__photos" data-count={availablePhotos.length || 1}>
-            {availablePhotos.length > 0 ? availablePhotos.map((photo, index) => (
-                <Dialog key={photo.src}>
-                    <DialogTrigger asChild>
-                        <button type="button" className="event-detail__photo" aria-label={"Enlarge photo: " + photo.alt}>
-                            <img
-                                src={photo.src}
-                                alt={photo.alt}
-                                style={{ objectPosition: photo.position }}
-                                fetchPriority={index === 0 ? "high" : undefined}
-                                loading={index === 0 ? undefined : "lazy"}
-                                decoding="async"
-                                onError={() => markFailed(photo.src)}
-                            />
-                            <span className="event-detail__expand"><Expand aria-hidden="true" /></span>
-                        </button>
-                    </DialogTrigger>
-                    <DialogContent aria-describedby={undefined} className="w-[calc(100%-2rem)] max-w-5xl border-none p-5">
-                        <DialogTitle className="sr-only">{photo.alt}</DialogTitle>
-                        <img src={photo.src} alt={photo.alt} className="max-h-[82vh] w-full object-contain" />
-                    </DialogContent>
-                </Dialog>
-            )) : (
-                <div className="event-detail__photo">
-                    <img src={fallbackImage} alt="Games and Connect attendees playing together" fetchPriority="high" />
-                    <span className="event-detail__photo-credit">From Games &amp; Connect</span>
+        <header ref={heroRef} className="event-checkout"
+            onFocusCapture={event => {
+                if (event.target.closest("#booking")) setBookingStarted(true);
+            }}>
+            <div aria-hidden="true" className="event-checkout__backdrop">
+                {slides.map((photo, index) => (
+                    <img
+                        key={photo.src}
+                        src={photo.src}
+                        style={{ objectPosition: photo.position }}
+                        alt=""
+                        className={activeIndex === index ? "is-current" : undefined}
+                        fetchPriority={index === 0 ? "high" : "low"}
+                        onError={photo.src === defaultEventCover ? undefined
+                            : () => setFailedPhotos(failed => [...failed, photo.src])}
+                    />
+                ))}
+            </div>
+            <div className="event-checkout__wrap">
+                <Link className="event-checkout__back" to="/events">
+                    <ArrowLeft aria-hidden="true" size={17} /> All events
+                </Link>
+                <div className="event-checkout__layout">
+                    <div className="event-checkout__intro">
+                        {(isPastEvent || event.category) && (
+                            <p className="event-checkout__category">{isPastEvent ? "Past event" : event.category}</p>
+                        )}
+                        <h1>{event.title}</h1>
+                        <ul aria-label="Event details" className="event-checkout__facts">
+                            <li><CalendarDays aria-hidden="true" /><time dateTime={event.date}>{eventDate}</time></li>
+                            {event.time_range && <li><Clock3 aria-hidden="true" /><span>{event.time_range} <small>Ghana time</small></span></li>}
+                            {event.location && <li><MapPin aria-hidden="true" /><span>{event.location}</span></li>}
+                        </ul>
+                    </div>
+                    {isPastEvent ? (
+                        <section id="booking" tabIndex={-1} className="event-checkout__panel" aria-labelledby="booking-closed-title">
+                            <h2 id="booking-closed-title">Booking has closed</h2>
+                            <Link className="event-checkout__retry" to="/events">Browse upcoming events <ArrowRight aria-hidden="true" size={16} /></Link>
+                        </section>
+                    ) : <BookingForm event={event} />}
                 </div>
-            )}
-        </div>
+            </div>
+        </header>
     );
-};
+}
 
-const dateFormatter = new Intl.DateTimeFormat("en-GB", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-    timeZone: "UTC",
-});
-
-const formatDate = (date: string, endDate?: string) => (
-    endDate && endDate !== date
-        ? dateFormatter.formatRange(new Date(date), new Date(endDate))
-        : dateFormatter.format(new Date(date))
-);
-
-const EventDetail = () => {
+const EventDetail = ({ bookingRedirect = false }: { bookingRedirect?: boolean }) => {
     const { id } = useParams();
     const location = useLocation();
-    const bookingTrigger = useRef<HTMLButtonElement | null>(null);
-    const [bookingEventId, setBookingEventId] = useState<number | null>(null);
     const [selectedRecapPhoto, setSelectedRecapPhoto] = useState<string | null>(null);
+    const heroRef = useRef<HTMLElement>(null);
+    const [heroPassed, setHeroPassed] = useState(false);
     const { data: allEvents = [], isLoading, error } = useEvents();
     const { data: testimonials = [] } = useTestimonials();
     const event = resolveEventLink(allEvents, id);
+    const isPastEvent = Boolean(event && event.date.slice(0, 10) < new Date().toISOString().slice(0, 10));
+    const canonicalPath = event ? eventPath(event) : "";
+
+    useEffect(() => {
+        const hero = heroRef.current;
+        if (!hero || isPastEvent || typeof IntersectionObserver === "undefined") return;
+
+        const observer = new IntersectionObserver(([entry]) => {
+            setHeroPassed(!entry.isIntersecting && entry.boundingClientRect.bottom <= 0);
+        });
+        observer.observe(hero);
+        return () => observer.disconnect();
+    }, [canonicalPath, isPastEvent, location.pathname]);
+
+    useEffect(() => {
+        if (location.pathname !== canonicalPath || location.hash !== "#booking") return;
+        const booking = document.getElementById("booking");
+        if (!booking) return;
+
+        let anchorScroll = window.scrollY;
+        const scrollToBooking = () => {
+            const headerHeight = document.querySelector(".site-header")?.getBoundingClientRect().height ?? 0;
+            const top = window.scrollY + booking.getBoundingClientRect().top - headerHeight - 12;
+            window.scrollTo({ top, behavior: "instant" });
+            anchorScroll = window.scrollY;
+        };
+
+        scrollToBooking();
+        booking.focus({ preventScroll: true });
+
+        // Keep the anchor aligned if the event introduction reflows before the user scrolls.
+        const intro = heroRef.current?.querySelector(".event-checkout__intro");
+        if (!intro || typeof ResizeObserver === "undefined") return;
+        const observer = new ResizeObserver(() => {
+            if (document.activeElement === booking && Math.abs(window.scrollY - anchorScroll) <= 2) {
+                scrollToBooking();
+            }
+        });
+        observer.observe(intro);
+        return () => observer.disconnect();
+    }, [canonicalPath, location.pathname, location.hash]);
 
     if (isLoading) {
         return (
@@ -104,22 +171,18 @@ const EventDetail = () => {
         );
     }
 
-    const canonicalPath = eventPath(event);
+    if (bookingRedirect) {
+        return <Navigate to={canonicalPath + location.search + "#booking"} replace />;
+    }
     if (location.pathname !== canonicalPath) {
         return <Navigate to={canonicalPath + location.search + location.hash} replace />;
     }
 
     const metadata = eventMetadata(event);
     const today = new Date().toISOString().slice(0, 10);
-    const isPastEvent = event.date.slice(0, 10) < today;
-    const isBookingOpen = bookingEventId === event.id;
-    const openBooking = (click: MouseEvent<HTMLButtonElement>) => {
-        bookingTrigger.current = click.currentTarget;
-        setBookingEventId(event.id);
-    };
     const price = event.price?.trim();
     const description = event.description?.trim();
-    const eventDate = formatDate(event.date, metadata.endDate);
+    const eventDate = formatEventDate(event.date, metadata.endDate);
     const testimonial = testimonials.find(({ is_featured }) => is_featured) || testimonials[0];
     const photos = eventPhotos(event);
     const upcomingByPath = new Map<string, typeof event>();
@@ -138,10 +201,10 @@ const EventDetail = () => {
         ...relatedEvents.filter(related => related.category !== event.category),
     ].slice(0, 2);
 
-    const ticketButton = () => (
-        <button type="button" className="event-detail__action" onClick={openBooking}>
+    const ticketLink = () => (
+        <a className="event-detail__action" href="#booking">
             <Ticket aria-hidden="true" /> Get tickets <ArrowRight aria-hidden="true" />
-        </button>
+        </a>
     );
 
     return (
@@ -174,43 +237,9 @@ const EventDetail = () => {
             ]} />
 
             <article className="event-detail">
-                <div className="event-detail__wrap">
-                    <Link className="event-detail__back" to="/events">
-                        <ArrowLeft aria-hidden="true" /> All events
-                    </Link>
+                <EventHero key={event.id} event={event} eventDate={eventDate} photos={photos} isPastEvent={isPastEvent} heroRef={heroRef} />
 
-                    <header className="event-detail__hero">
-                        <div className="event-detail__hero-title">
-                            {(isPastEvent || event.category) && (
-                                <p className="event-detail__eyebrow">{isPastEvent ? "Past event" : event.category}</p>
-                            )}
-                            <h1>{event.title}</h1>
-                        </div>
-
-                        <div className="event-detail__hero-info">
-                            <ul className="event-detail__facts">
-                                <li><CalendarDays aria-hidden="true" /><time dateTime={event.date}>{eventDate}</time></li>
-                                {event.time_range && <li><Clock3 aria-hidden="true" /><span>{event.time_range} <small>Ghana time</small></span></li>}
-                                {event.location && <li><MapPin aria-hidden="true" /><span>{event.location}</span></li>}
-                            </ul>
-
-                            {isPastEvent ? (
-                                <Link to="/events" className="event-detail__action">
-                                    Browse upcoming events <ArrowRight aria-hidden="true" />
-                                </Link>
-                            ) : (
-                                <div className="event-detail__hero-booking">
-                                    {price && <div className="event-detail__price"><span>Tickets</span><strong>{price}</strong></div>}
-                                    {ticketButton()}
-                                </div>
-                            )}
-                        </div>
-                    </header>
-                </div>
-
-                <EventPhotoGallery key={event.id} photos={photos} />
-
-                <div className="event-detail__wrap">
+                <div id="event-details" tabIndex={-1} className="event-detail__wrap event-detail__content">
                     <div className="event-detail__body">
                         <div>
                             {description && (
@@ -313,7 +342,7 @@ const EventDetail = () => {
                             <p className="event-detail__eyebrow">{eventDate}</p>
                             <h2>Join us at {event.title}</h2>
                         </div>
-                        {ticketButton()}
+                        {ticketLink()}
                     </section>
                 )}
 
@@ -326,9 +355,9 @@ const EventDetail = () => {
                         <div className="event-detail__related-list">
                             {upcomingEvents.map(related => (
                                 <Link key={related.id} to={eventPath(related)} className="event-detail__related-event">
-                                    <img src={related.image_url || fallbackImage} alt="" loading="lazy" />
+                                    <img src={related.image_url || defaultEventCover} alt="" loading="lazy" />
                                     <div>
-                                        <time dateTime={related.date}>{formatDate(related.date)}</time>
+                                        <time dateTime={related.date}>{formatEventDate(related.date)}</time>
                                         <h3>{related.title}</h3>
                                         <p>{related.location}</p>
                                     </div>
@@ -339,28 +368,13 @@ const EventDetail = () => {
                     </section>
                 )}
 
-                {!isPastEvent && (
+                {!isPastEvent && heroPassed && (
                     <div className="event-detail__mobile-booking">
                         {price ? <div className="event-detail__price"><span>Tickets</span><strong>{price}</strong></div> : null}
-                        {ticketButton()}
+                        {ticketLink()}
                     </div>
                 )}
             </article>
-
-            {!isPastEvent && (
-                <BookingModal
-                    key={event.id}
-                    isOpen={isBookingOpen}
-                    onClose={() => setBookingEventId(null)}
-                    onCloseAutoFocus={(focusEvent) => {
-                        if (bookingTrigger.current) {
-                            focusEvent.preventDefault();
-                            bookingTrigger.current.focus({ preventScroll: true });
-                        }
-                    }}
-                    event={event}
-                />
-            )}
         </Layout>
     );
 };

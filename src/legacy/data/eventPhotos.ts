@@ -4,6 +4,8 @@ import { savannahRecapPhotos } from "./savannahGallery";
 
 export type EventPhoto = { src: string; alt: string; position?: string };
 
+export const defaultEventCover = "/assets/games-connect/hero-game-day.jpg";
+
 const islandImagePath = "/assets/games-connect/island-camping/";
 const bundledPhotos: Record<number, EventPhoto[]> = {
     39: [beachGallery[0], beachGallery[12], beachGallery[26]].map(photo => ({

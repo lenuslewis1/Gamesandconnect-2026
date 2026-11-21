@@ -80,6 +80,7 @@ const App = () => (
               <Route path="/events" element={<Events />} />
               <Route path="/game-day" element={<GameDay />} />
               <Route path="/events/:id" element={<EventDetail />} />
+              <Route path="/events/:id/book" element={<EventDetail bookingRedirect />} />
               <Route path="/contact" element={<Contact />} />
               <Route path="/corporate-team-bonding" element={<LegacyCorporateRedirect />} />
               <Route path="/hire-us" element={<HireUs />} />

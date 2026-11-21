@@ -168,7 +168,7 @@ Deno.serve(async (req: Request) => {
                 account_number: account_number,
                 account_name: account_name || 'Customer',
                 amount: Number(actualPaymentAmount),
-                narration: cleanNarration,
+                narration: paymentPayload.narration,
                 status: 'failed',
                 response: responseData,
             });
@@ -209,7 +209,7 @@ Deno.serve(async (req: Request) => {
                 account_number: account_number,
                 account_name: account_name || 'Customer',
                 amount: Number(actualPaymentAmount),
-                narration: cleanNarration,
+                narration: paymentPayload.narration,
                 status: initialStatus,
                 response: responseData,
             });
