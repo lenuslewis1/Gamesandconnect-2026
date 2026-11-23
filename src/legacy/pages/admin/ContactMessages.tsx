@@ -1,11 +1,16 @@
 import { useCallback, useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { Button } from '@/components/ui/button';
+import { useQueryClient } from '@tanstack/react-query';
+import { useAuth } from '@/components/AuthProvider';
+import { adminAlertsKey } from '@/hooks/useAdminAlerts';
 
 type Message = { id: string; name: string; email: string; phone?: string; subject: string; message: string; created_at: string; is_read: boolean };
 const PAGE_SIZE = 50;
 
 export default function ContactMessages() {
+    const { user } = useAuth();
+    const queryClient = useQueryClient();
     const [rows, setRows] = useState<Message[]>([]);
     const [page, setPage] = useState(0);
     const [total, setTotal] = useState(0);
@@ -33,6 +38,7 @@ export default function ContactMessages() {
             const { data, error } = await supabase.from('contact_messages').update({ is_read: !row.is_read }).eq('id', row.id).select('id').single();
             if (error || !data) throw error || new Error('Message not updated');
             setRows(current => current.map(item => item.id === row.id ? { ...item, is_read: !row.is_read } : item));
+            void queryClient.invalidateQueries({ queryKey: [...adminAlertsKey, user?.id, 'contact_messages'] });
         } catch { setError('Read status could not be updated. Please retry.'); }
         finally { setUpdating(null); }
     }

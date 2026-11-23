@@ -1,9 +1,10 @@
 
 import { useEffect, useState } from "react";
 import { Link } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 import { useAdminArticles } from '@/hooks/useArticles';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Users, CreditCard, UserPlus, DollarSign, Loader2, ArrowUpRight, FileText, CalendarDays } from "lucide-react";
+import { useAuth } from '@/components/AuthProvider';
+import { Users, CreditCard, UserPlus, DollarSign, Loader2, ArrowUpRight, FileText } from "lucide-react";
 import {
     AreaChart,
     Area,
@@ -13,17 +14,81 @@ import {
     Tooltip,
     ResponsiveContainer,
     BarChart,
-    Bar,
-    Legend
+    Bar
 } from 'recharts';
 import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
-import { format, subMonths, startOfMonth, endOfMonth, eachMonthOfInterval, isSameMonth } from "date-fns";
+import { format, subMonths, eachMonthOfInterval, isSameMonth } from "date-fns";
 
 const CONFIRMED_PAYMENT_STATUSES = ['success', 'successful', 'completed', 'confirmed', 'paid'];
 
 const isConfirmedPayment = (status?: string | null) =>
     CONFIRMED_PAYMENT_STATUSES.includes(status?.toLowerCase().trim() || '');
+
+const dayMs = 86_400_000;
+const dayLabel = new Intl.DateTimeFormat('en-GB', { weekday: 'short', timeZone: 'UTC' });
+const fullDate = new Intl.DateTimeFormat('en-GB', { dateStyle: 'full', timeZone: 'UTC' });
+
+function EventRegistrationsChart() {
+    const { user } = useAuth();
+    const { data, isPending, isError, refetch } = useQuery({
+        queryKey: ['admin-registration-chart', user?.id],
+        refetchInterval: 30_000,
+        queryFn: async ({ signal }) => {
+            const today = Math.floor(Date.now() / dayMs) * dayMs;
+            return Promise.all(Array.from({ length: 7 }, async (_, index) => {
+                const start = new Date(today - (6 - index) * dayMs);
+                const end = new Date(start.getTime() + dayMs);
+                const { count, error } = await supabase.from('event_registrations')
+                    .select('id', { count: 'exact', head: true })
+                    .gte('created_at', start.toISOString()).lt('created_at', end.toISOString())
+                    .abortSignal(signal);
+                if (error) throw error;
+                return { day: dayLabel.format(start), date: fullDate.format(start), count: count ?? 0 };
+            }));
+        },
+    });
+    const total = data?.reduce((sum, day) => sum + day.count, 0) ?? 0;
+
+    return (
+        <section aria-labelledby="dashboard-registrations-title" className="min-w-0 rounded-xl border border-[#dfe8e1] bg-white p-5 sm:p-7">
+            <div className="flex items-start justify-between gap-3">
+                <div>
+                    <h3 id="dashboard-registrations-title" className="text-lg font-semibold">Event registrations</h3>
+                    <p className="mt-1 text-sm text-[#718479]">Submissions per day over the last 7 days</p>
+                </div>
+                {data && <span className="shrink-0 rounded-full bg-[#eef5ee] px-3 py-1 text-xs font-medium text-[#416a51]">{total} total</span>}
+            </div>
+            <div className="mt-8 h-[260px] w-full">
+                {isPending ? (
+                    <p role="status" className="pt-4 text-sm text-muted-foreground">Loading registrations&hellip;</p>
+                ) : isError && !data ? (
+                    <div className="space-y-3 pt-4 text-sm">
+                        <p role="alert">Registration data could not be loaded.</p>
+                        <button type="button" className="font-medium text-[#0f3d2e] underline" onClick={() => void refetch()}>Try again</button>
+                    </div>
+                ) : (
+                    <ResponsiveContainer width="100%" height="100%">
+                        <BarChart data={data} margin={{ top: 8, right: 0, left: -24, bottom: 0 }} accessibilityLayer>
+                            <CartesianGrid stroke="#edf2ed" vertical={false} />
+                            <XAxis dataKey="day" tickLine={false} axisLine={false} tick={{ fill: '#60756a', fontSize: 12 }} dy={10} />
+                            <YAxis allowDecimals={false} domain={[0, (maximum: number) => Math.max(1, maximum)]}
+                                tickLine={false} axisLine={false} tick={{ fill: '#60756a', fontSize: 11 }} />
+                            <Tooltip cursor={{ fill: '#f4f8f3' }} labelFormatter={(_, points) => points[0]?.payload.date}
+                                contentStyle={{ border: '1px solid #dfe8e1', borderRadius: 10 }} />
+                            <Bar dataKey="count" name="Registrations" fill="#43855c" radius={[5, 5, 0, 0]} maxBarSize={34} />
+                        </BarChart>
+                    </ResponsiveContainer>
+                )}
+            </div>
+            {data && (
+                <ul className="sr-only" aria-label="Daily registration counts">
+                    {data.map(day => <li key={day.date}>{day.date} &middot; {day.count} registrations</li>)}
+                </ul>
+            )}
+        </section>
+    );
+}
 
 const AdminDashboard = () => {
     const {data: articles = []} = useAdminArticles();
@@ -35,7 +100,6 @@ const AdminDashboard = () => {
         { title: "Total Payments", value: "0", change: "...", icon: CreditCard, color: "bg-gradient-to-br from-orange-500 to-red-700", textColor: "text-white" },
     ]);
     const [revenueData, setRevenueData] = useState<any[]>([]);
-    const [userActivityData, setUserActivityData] = useState<any[]>([]);
 
     useEffect(() => {
         fetchDashboardData();
@@ -130,19 +194,6 @@ const AdminDashboard = () => {
             });
             setRevenueData(processedRevenue);
 
-            // 3. Process User Activity Data (Signups per day last 7 days)
-            const { data: recentProfiles } = await supabase
-                .from('profiles')
-                .select('created_at')
-                .gte('created_at', subMonths(new Date(), 1).toISOString()); // Just get last month for simplicity
-
-            const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-            const processedActivity = days.map(day => {
-                const count = recentProfiles?.filter((p: any) => format(new Date(p.created_at), 'EEE') === day).length || 0;
-                return { name: day, new: count };
-            });
-            setUserActivityData(processedActivity);
-
         } catch (error) {
             console.error("Dashboard data error:", error);
             toast.error("An unexpected error occurred");
@@ -186,10 +237,7 @@ const AdminDashboard = () => {
                     <div className="mb-8 flex flex-wrap items-start justify-between gap-4"><div><p className="text-xs font-bold uppercase tracking-[0.15em] text-[#7b9183]">Payments</p><h3 className="mt-2 text-lg font-semibold">Revenue overview</h3><p className="mt-1 text-sm text-[#718479]">Confirmed payments over the last 6 months</p></div><span className="rounded-full bg-[#eef5ee] px-3 py-1 text-xs font-medium text-[#416a51]">Last 6 months</span></div>
                     <div className="h-[260px] w-full"><ResponsiveContainer width="100%" height="100%"><AreaChart data={revenueData} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}><defs><linearGradient id="dashboardRevenue" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#a6f15d" stopOpacity={0.4}/><stop offset="100%" stopColor="#a6f15d" stopOpacity={0.02}/></linearGradient></defs><CartesianGrid stroke="#edf2ed" vertical={false}/><XAxis dataKey="name" tickLine={false} axisLine={false} tick={{fill:'#829389',fontSize:12}} dy={10}/><YAxis tickLine={false} axisLine={false} width={55} tick={{fill:'#829389',fontSize:11}} tickFormatter={(value) => value >= 1000 ? `${value / 1000}k` : `${value}`}/><Tooltip formatter={(value: number) => [`GHS ${value.toLocaleString()}`, 'Revenue']} contentStyle={{border:'1px solid #dfe8e1',borderRadius:10}}/><Area type="monotone" dataKey="revenue" stroke="#43855c" strokeWidth={2.5} fill="url(#dashboardRevenue)"/></AreaChart></ResponsiveContainer></div>
                 </section>
-                <section className="min-w-0 rounded-xl border border-[#dfe8e1] bg-white p-5 sm:p-7">
-                    <p className="text-xs font-bold uppercase tracking-[0.15em] text-[#7b9183]">Community</p><h3 className="mt-2 text-lg font-semibold">New profiles</h3><p className="mt-1 text-sm text-[#718479]">Signups by day of week over the past month</p>
-                    <div className="mt-8 h-[260px] w-full"><ResponsiveContainer width="100%" height="100%"><BarChart data={userActivityData} margin={{top:8,right:0,left:-25,bottom:0}}><CartesianGrid stroke="#edf2ed" vertical={false}/><XAxis dataKey="name" tickLine={false} axisLine={false} tick={{fill:'#829389',fontSize:12}} dy={10}/><YAxis allowDecimals={false} tickLine={false} axisLine={false} tick={{fill:'#829389',fontSize:11}}/><Tooltip cursor={{fill:'#f4f8f3'}} contentStyle={{border:'1px solid #dfe8e1',borderRadius:10}}/><Bar dataKey="new" name="New profiles" fill="#82c96f" radius={[5,5,0,0]} maxBarSize={34}/></BarChart></ResponsiveContainer></div>
-                </section>
+                <EventRegistrationsChart />
             </div>
             <section className="rounded-xl border border-[#dfe8e1] bg-white p-5 sm:p-7">
                 <div className="flex flex-wrap items-center justify-between gap-5"><div className="flex items-start gap-4"><div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-[#eef5ee] text-[#2f7049]"><FileText className="h-5 w-5"/></div><div><h3 className="font-semibold">Articles</h3><p className="mt-1 text-sm text-[#718479]">{articles.filter(article => article.status === 'published').length} published · {articles.filter(article => article.status === 'draft').length} drafts</p></div></div><div className="flex flex-wrap gap-2"><Link className="rounded-lg border border-[#d8e4da] px-4 py-2.5 text-sm font-medium transition-colors hover:bg-[#f4f8f3]" to="/admin/articles">Manage articles</Link><Link className="rounded-lg bg-[#a6f15d] px-4 py-2.5 text-sm font-semibold text-[#163a24] transition-colors hover:bg-[#b9f782]" to="/admin/articles/new">Write an article</Link></div></div>
