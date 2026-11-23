@@ -27,6 +27,7 @@ function EventHero({ event, eventDate, photos, isPastEvent, heroRef }: {
     heroRef: Ref<HTMLElement>;
 }) {
     const [failedPhotos, setFailedPhotos] = useState<string[]>([]);
+    const [loadedPhotos, setLoadedPhotos] = useState<string[]>([]);
     const [slideIndex, setSlideIndex] = useState(0);
     const [bookingStarted, setBookingStarted] = useState(false);
     const [reducedMotion, setReducedMotion] = useState(() => window.matchMedia("(prefers-reduced-motion: reduce)").matches);
@@ -34,6 +35,8 @@ function EventHero({ event, eventDate, photos, isPastEvent, heroRef }: {
     const slides: EventPhoto[] = availablePhotos.length ? availablePhotos : [{ src: defaultEventCover, alt: "" }];
     const slideCount = slides.length;
     const activeIndex = slideIndex % slideCount;
+    const leadReady = loadedPhotos.includes(slides[0].src);
+    const nextReady = loadedPhotos.includes(slides[(activeIndex + 1) % slideCount].src);
     useEffect(() => {
         const motion = window.matchMedia("(prefers-reduced-motion: reduce)");
         const update = () => setReducedMotion(motion.matches);
@@ -42,12 +45,12 @@ function EventHero({ event, eventDate, photos, isPastEvent, heroRef }: {
     }, []);
 
     useEffect(() => {
-        if (bookingStarted || reducedMotion || slideCount < 2) return;
+        if (bookingStarted || reducedMotion || slideCount < 2 || !leadReady || !nextReady) return;
         const timer = window.setInterval(() => {
             if (!document.hidden) setSlideIndex(index => (index + 1) % slideCount);
         }, 6500);
         return () => window.clearInterval(timer);
-    }, [bookingStarted, reducedMotion, slideCount]);
+    }, [activeIndex, bookingStarted, leadReady, nextReady, reducedMotion, slideCount]);
 
     return (
         <header ref={heroRef} className="event-checkout"
@@ -55,18 +58,25 @@ function EventHero({ event, eventDate, photos, isPastEvent, heroRef }: {
                 if (event.target.closest("#booking")) setBookingStarted(true);
             }}>
             <div aria-hidden="true" className="event-checkout__backdrop">
-                {slides.map((photo, index) => (
-                    <img
-                        key={photo.src}
-                        src={photo.src}
-                        style={{ objectPosition: photo.position }}
-                        alt=""
-                        className={activeIndex === index ? "is-current" : undefined}
-                        fetchPriority={index === 0 ? "high" : "low"}
-                        onError={photo.src === defaultEventCover ? undefined
-                            : () => setFailedPhotos(failed => [...failed, photo.src])}
-                    />
-                ))}
+                {slides.map((photo, index) => {
+                    if (index !== 0 && index !== activeIndex && (!leadReady || reducedMotion)) return null;
+                    return (
+                        <picture key={photo.src}>
+                            {photo.mobileSrc && <source media="(max-width: 767px)" srcSet={photo.mobileSrc} />}
+                            <img
+                                src={photo.src}
+                                style={{ objectPosition: photo.position }}
+                                alt=""
+                                className={activeIndex === index ? "is-current" : undefined}
+                                fetchPriority={index === 0 ? "high" : "low"}
+                                decoding={index === 0 ? "auto" : "async"}
+                                onLoad={() => setLoadedPhotos(loaded => loaded.includes(photo.src) ? loaded : [...loaded, photo.src])}
+                                onError={photo.src === defaultEventCover ? undefined
+                                    : () => setFailedPhotos(failed => [...failed, photo.src])}
+                            />
+                        </picture>
+                    );
+                })}
             </div>
             <div className="event-checkout__wrap">
                 <Link className="event-checkout__back" to="/events">

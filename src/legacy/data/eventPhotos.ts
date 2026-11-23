@@ -2,7 +2,7 @@ import type { DbEvent } from "@/lib/supabase";
 import { beachGallery } from "./beachGallery";
 import { savannahRecapPhotos } from "./savannahGallery";
 
-export type EventPhoto = { src: string; alt: string; position?: string };
+export type EventPhoto = { src: string; mobileSrc?: string; alt: string; position?: string };
 
 export const defaultEventCover = "/assets/games-connect/hero-game-day.jpg";
 
@@ -17,9 +17,24 @@ const bundledPhotos: Record<number, EventPhoto[]> = {
         alt: photo.caption || "Savannah Experience",
     })),
     41: [
-        { src: islandImagePath + "lakeside-camp.webp", alt: "Tents by the lake beneath a spreading tree at sunset", position: "50% 76%" },
-        { src: islandImagePath + "boat-ride.webp", alt: "Blue boat crossing the lake", position: "50% 61%" },
-        { src: islandImagePath + "shoreline-walk.webp", alt: "Group walking along the lake shore", position: "50% 68%" },
+        {
+            src: islandImagePath + "lakeside-camp.webp",
+            mobileSrc: islandImagePath + "lakeside-camp-mobile.webp",
+            alt: "Tents by the lake beneath a spreading tree at sunset",
+            position: "47% 76%",
+        },
+        {
+            src: islandImagePath + "boat-ride.webp",
+            mobileSrc: islandImagePath + "boat-ride-mobile.webp",
+            alt: "Blue boat crossing the lake",
+            position: "71% 61%",
+        },
+        {
+            src: islandImagePath + "shoreline-walk.webp",
+            mobileSrc: islandImagePath + "shoreline-walk-mobile.webp",
+            alt: "Group walking along the lake shore",
+            position: "60% 68%",
+        },
     ],
 };
 
