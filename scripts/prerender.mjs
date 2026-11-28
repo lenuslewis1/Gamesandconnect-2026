@@ -8,6 +8,8 @@ const root = fileURLToPath(new URL('../', import.meta.url));
 const dist = path.join(root, 'dist/client');
 const shell = await readFile(path.join(dist, 'index.html'), 'utf8');
 const routes = ['/', '/about', '/events', '/game-day', '/contact', '/terms-and-conditions', '/travel', '/community', '/gallery', '/teams', '/teams/red', '/teams/green', '/teams/blue', '/teams/yellow', '/trivia', '/team-building', '/games-day-accra', '/corporate-events', '/hire-us', '/hire-us/corporate', '/hire-us/packages', '/outdoor-adventures', '/about/what-is-games-and-connect', '/blog'];
+const unlistedRoutes = new Set(['/roots']);
+routes.push(...unlistedRoutes);
 // Published article routes are discovered from the live blog listing below.
 const mime = { '.js': 'text/javascript', '.css': 'text/css', '.png': 'image/png', '.jpg': 'image/jpeg', '.svg': 'image/svg+xml', '.woff2': 'font/woff2' };
 const server = createServer(async (request, response) => {
@@ -88,7 +90,8 @@ try {
     // SPA fallback stays generic; unknown URLs must never inherit homepage metadata/content.
     const fallback = shell.replace('</head>', '<meta name="robots" content="noindex, follow" data-rh="true" /></head>');
     await writeFile(path.join(dist, 'app.html'), fallback);
-    await writeFile(path.join(dist, 'sitemap.xml'), '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + [...pages.keys()].map(route => `  <url><loc>https://gamesandconnect.com${route}</loc></url>`).join('\n') + '\n</urlset>\n');
+    const sitemapRoutes = [...pages.keys()].filter(route => !unlistedRoutes.has(route));
+    await writeFile(path.join(dist, 'sitemap.xml'), '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + sitemapRoutes.map(route => `  <url><loc>https://gamesandconnect.com${route}</loc></url>`).join('\n') + '\n</urlset>\n');
     console.log(`SEO build complete: ${pages.size} public pages and sitemap.`);
 } finally {
     await browser?.close();

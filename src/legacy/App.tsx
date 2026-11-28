@@ -16,6 +16,7 @@ const CorporateTeamBonding = lazy(() => import("./pages/CorporateTeamBonding"));
 const HireUs = lazy(() => import("./pages/HireUs"));
 const Packages = lazy(() => import("./pages/Packages"));
 const Contact = lazy(() => import("./pages/Contact"));
+const RootsRegistration = lazy(() => import("./pages/RootsRegistration"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const Auth = lazy(() => import("./pages/Auth"));
 const Teams = lazy(() => import("./pages/Teams"));
@@ -82,6 +83,7 @@ const App = () => (
               <Route path="/events/:id" element={<EventDetail />} />
               <Route path="/events/:id/book" element={<EventDetail bookingRedirect />} />
               <Route path="/contact" element={<Contact />} />
+              <Route path="/roots" element={<RootsRegistration />} />
               <Route path="/corporate-team-bonding" element={<LegacyCorporateRedirect />} />
               <Route path="/hire-us" element={<HireUs />} />
               <Route path="/hire-us/corporate" element={<CorporateTeamBonding />} />
